@@ -59,7 +59,9 @@ def get_post_image_content(api_post_data: Dict[Hashable, Any]) -> models.PostCon
 
 def get_embed_content(embed_data: Dict[Hashable, Any]) -> models.PostContent:
     content = html.unescape(embed_data["html"])
-    width, height = get_post_content_size(embed_data["width"] + 25, embed_data["height"])
+    width, height = get_post_content_size(
+        embed_data["width"] + 25, embed_data["height"]
+    )
     content_type = None
     is_gif = False
     is_embed = True

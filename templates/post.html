@@ -1,0 +1,12 @@
+{% import "macros/post.html" as post_macros with context %}
+{% import "macros/comments.html" as comments_macros with context %}
+
+{% set title = subreddit.title %}
+
+{% extends "base.html" %}
+
+{% block main_content %}
+{{ post_macros.render_post_card(post, subreddit.show_thumbnails, True) }}
+<hr />
+{{ comments_macros.render_comments(subreddit.name, post.id, post.comments) }}
+{% endblock %}

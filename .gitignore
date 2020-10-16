@@ -1,0 +1,11 @@
+# Editors
+.vscode/
+
+# Python
+__pycache__/
+.coverage
+.mypy_cache/
+.venv/
+*.egg-info/
+*.py[cod]
+*$py.class

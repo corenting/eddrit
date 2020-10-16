@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "eddrit"
+version = "0.1.0"
+description = "Alternative Reddit frontend"
+authors = ["corenting <corenting@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+aiofiles = "^0.5.0"
+environs = "^8.0.0"
+httpx = "^0.13.3"
+Jinja2 = "^2.11.2"
+lxml = "^4.5.2"
+markdown = "^3.2.2"
+python-multipart="^0.0.5"
+starlette = "^0.13.5"
+timeago = "^1.0.14"
+tldextract = "^2.2.2"
+uvicorn = "^0.11.6"
+
+[tool.poetry.dev-dependencies]
+black = "^19.10b0"
+coverage = {version = "*", extras = ["toml"]}
+isort = "*"
+mypy = "*"
+pyflakes = "*"
+pytest = "*"
+pytest-cov = "*"
+requests = "*"
+
+[tool.isort]
+profile = "black"
+
+[tool.coverage.run]
+omit = ["eddrit/config.py"]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

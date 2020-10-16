@@ -1,0 +1,46 @@
+{% macro checkbox_is_checked(pref_name) %}
+{% if settings[pref_name] %}
+checked
+{% endif %}
+{% endmacro %}
+
+{% set title = "Settings" %}
+
+{% extends "base.html" %}
+
+{% block main_content %}
+
+{% if is_saved %}
+<div class="notification is-success">
+    Your settings have been saved!
+  </div>
+{% endif %}
+
+<h2 class="subtitle">Content</h2>
+<form action="/settings" method="post">
+    <div class="field">
+        <div class="control">
+            <label for="nsfw_popular_all" class="checkbox">
+                <input id="nsfw_popular_all" name="nsfw_popular_all" type="checkbox" {{ checkbox_is_checked("nsfw_popular_all") }}>
+                Show NSFW content on /r/popular and /r/all
+            </label>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="control">
+            <label for="nsfw_thumbnails" class="checkbox">
+                <input id="nsfw_thumbnails" name="nsfw_thumbnails" type="checkbox" {{ checkbox_is_checked("nsfw_thumbnails") }}>
+                Show NSFW thumbnails
+            </label>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="control">
+            <button class="button is-primary">Save</button>
+          </div>
+    </div>
+</form>
+
+{% endblock %}

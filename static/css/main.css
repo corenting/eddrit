@@ -1,0 +1,111 @@
+@media screen and (max-width: 1023px) {
+  /* show mavbar-menu on screen less than 1024px */
+  #menu-toggle:checked ~ #main-nav { display: block; }
+
+  /* make navbar-burger become cross on screen less than 1024px */
+  #menu-toggle:checked + .navbar-brand > label > span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+  #menu-toggle:checked + .navbar-brand > label > span:nth-child(2) { opacity: 0; }
+  #menu-toggle:checked + .navbar-brand > label > span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+  /* show columns reversed on <tablet */
+  .reverse-row-order{
+    display: flex;
+    flex-flow: column-reverse;
+  }
+}
+
+.main {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.section {
+  flex: 1;
+}
+
+.footer {
+  padding: 1rem 1rem 1rem;
+}
+
+.flair-icon {
+  height: 16px;
+  width: 16px;
+}
+
+.post-content {
+  width: max-content;
+  max-width: 80vw;
+}
+
+.post-text p:not(:last-of-type) {
+  margin-bottom: 1rem;
+}
+
+.post-nav {
+  padding-top: 0.3rem;
+}
+
+.post-content-box {
+  width: fit-content;
+}
+
+.media .post-infos {
+  border-top: unset;
+  padding-top: unset;
+  align-items: center;
+}
+
+.post-comments-text {
+  margin-left: 0.5rem;
+}
+
+.post-author-tag {
+  border-radius: 4px;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  margin-right: 0.25rem;
+}
+
+.sticky-title {
+  color: green;
+}
+
+img.post-img {
+  max-height: 35rem;
+  width: auto;
+}
+
+.pagination {
+  display: block;
+  margin-top: 1rem;
+}
+
+.pagination-button {
+  width: 7rem;
+}
+
+.comment-item {
+  padding-left: 1.2rem;
+  border-left: dotted gray 0.1rem;
+}
+
+.comment-content {
+  margin-bottom: 1.2rem;
+}
+
+.comment-show-more {
+  margin-top: 0.6rem;
+  margin-bottom: 0.6rem;
+  border-left: none;
+}
+
+span.flair {
+  vertical-align: top;
+}
+
+span.spoiler-flair {
+  border: solid red 0.1rem;
+  color: red;
+  background: none;
+}

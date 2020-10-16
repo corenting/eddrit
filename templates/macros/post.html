@@ -1,0 +1,131 @@
+{% macro render_flair(flair) %}
+{% if flair %}
+<span style="background-color: {{ flair.background_color }};" class="tag flair">
+    {% for item in flair.items %}
+    {% if item.item_type.value == 'text' %}
+    <span class="has-text-{{ flair.text_color }}">
+        {{ item.content }}
+    </span>
+    {% elif item.item_type.value == 'emoji' %}
+    <span class="icon">
+        <img class="flair-icon" src="{{ item.content }}" />
+    </span>
+    {% endif %}
+    {% endfor %}
+</span>
+{% endif %}
+{% endmacro %}
+
+{% macro render_warning_flair(is_enabled, text) %}
+{% if is_enabled %}
+<span class="spoiler-flair flair tag">
+    <span class="has-text-red">
+        {{ text }}
+    </span>
+</span>
+{% endif %}
+{% endmacro %}
+
+{% macro render_post_card(post, show_thumbnails, content_expanded) %}
+<article class="media">
+    {% if show_thumbnails %}
+    <figure class="media-left">
+        <p class="image is-64x64">
+            {% if post.over18 and not settings.nsfw_thumbnails %}
+            <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}">
+            {% else %}
+            <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='')) }}">
+            {% endif %}
+        </p>
+    </figure>
+    {% endif %}
+    <div class="media-content">
+        <div class="content is-centered">
+            <a href="{{ post.url }}"><strong
+                    {{ 'class=sticky-title' if post.is_sticky else '' }}>{{ post.title }}</strong></a> <small
+                class="is-size-7">{{ render_warning_flair(post.over18, "NSFW") }}
+                {{ render_warning_flair(post.spoiler, "Spoiler") }} {{ render_flair(post.flair) }}</small>
+            <small>({{ post.domain }}) </small>
+            <br>
+
+            <div class="media post-infos">
+
+                {% if post.content.type.value != "link" %}
+                <a class="media-left button is-size-7" onclick="togglePostVisibility('{{ post.id }}');">
+                    <span class="icon is-small">
+                        <img id="toggle-{{ post.id }}" loading="lazy"
+                            src="{{ request.url_for('static', path='images/icons/' ~ ('dash' if content_expanded else 'plus')  ~ '.svg') }}" />
+                    </span>
+                </a>
+                {% endif %}
+
+                <small class="media-content is-size-7"> {{ post.human_score }} points - submitted {{ post.human_date }}
+                    by
+                    {{ post.author }} to <a
+                        href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{ post.subreddit }}</a>
+
+                    <nav class="post-nav level is-mobile">
+                        <div class="level-left">
+                            <a class="level-item" href="{{ post.comments_url_path }}">
+                                <span class="icon is-small"><img id="toggle-{{ post.id }}"
+                                        src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
+                                </span>
+                                <small class="post-comments-text is-size-7">{{ post.comments_count }} comments</small>
+                            </a>
+                        </div>
+                    </nav>
+                </small>
+            </div>
+
+        </div>
+
+        {% if post.content.type.value != "link" %}
+        <div class="postcontent-box box" id="content-{{ post.id }}" style="display: {{ 'block' if content_expanded else 'none' }};">
+            <template id="content-{{ post.id }}-template">
+                <div id="content-{{ post.id }}-preview">
+                    {{ render_content(post) }}
+                </div>
+            </template>
+            {% if content_expanded %}
+            <div id="content-{{ post.id }}-preview">
+                {{ render_content(post) }}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</article>
+{% endmacro %}
+
+{% macro render_content(post) %}
+{% if post.content.content %}
+{% if post.content.type.value == 'text' %}
+<div class="post-text">
+    {{ post.content.content|safe }}
+</div>
+{% endif %}
+{% if post.content.type.value == 'image' %}
+<a href="{{ post.url }}">
+    <figure class="image">
+        <img class="post-img" src="{{ post.content.content }}"
+            {{ "max-height=" ~ post.content.height if post.content.heigth else '' }}
+            {{ "max-width=" ~ post.content.width if post.content.width else '' }} />
+    </figure>
+</a>
+{% endif %}
+{% if post.content.type.value == 'video' %}
+{% if not post.content.is_embed %}
+<div class="post-video" id="video-{{ post.id }}" data-type="{{ post.content.content_type }}"
+    data-autoplay="{{ post.content.is_gif }}" data-src="{{ post.content.content }}"
+    data-poster="{{ post.content.thumbnail_url_hq }}"
+    style="max-width: {{ post.content.width }}px; max-height: {{ post.content.height }}px;"
+    data-height="{{ post.content.height }}" data-width="{{ post.content.width }}">
+</div>
+{% else %}
+<div style="max-width: {{ post.content.width }}px; max-height: {{ post.content.height }}px;">
+    {{ post.content.content|safe }}
+</div>
+{% endif %}
+{% endif %}
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,31 @@
+<nav class="navbar has-shadow" role="navigation" aria-label="main navigation">
+    <input type="checkbox" id="menu-toggle" class="is-hidden">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{{ url_for('root', path='') }}">
+            <img src="{{ url_for('static', path='images/logo.svg') }}" width="132" height="28">
+        </a>
+
+        <label for="menu-toggle" class="navbar-burger burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </label>
+    </div>
+
+    <div id="main-nav" class="navbar-menu">
+        <div class="navbar-start is-active">
+            <a href="/" class="navbar-item">
+                Popular
+            </a>
+        </div>
+
+        <div class="navbar-end">
+            <a href="/settings" class="navbar-item">
+                Settings
+            </a>
+            <a href="/meta/about" class="navbar-item">
+                About
+            </a>
+        </div>
+    </div>
+</nav>

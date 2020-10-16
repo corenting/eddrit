@@ -1,0 +1,46 @@
+{% import "macros/post.html" as post_macros with context %}
+
+{% set title = subreddit.title %}
+
+{% if subreddit.title == 'Popular' %}
+{% if pagination.before_post_id %}
+{% set previous_url = url_for('root', path='') ~ "?count=25&before=" ~ pagination.before_post_id %}
+{% endif %}
+{% if pagination.after_post_id %}
+{% set next_url = url_for('root', path='') ~ "?count=25&after=" ~ pagination.after_post_id %}
+{% endif %}
+{% else %}
+{% if pagination.before_post_id %}
+{% set previous_url = url_for('subreddit', path=subreddit.name) ~ "?count=25&before=" ~ pagination.before_post_id %}
+{% endif %}
+{% if pagination.after_post_id %}
+{% set next_url = url_for('subreddit', path=subreddit.name) ~ "?count=25&after=" ~ pagination.after_post_id %}
+{% endif %}
+{% endif %}
+
+
+{% extends "base.html" %}
+
+{% block main_content %}
+{% for post in posts %}
+{% if subreddit.title != 'Popular' %}
+{{ post_macros.render_post_card(post, subreddit.show_thumbnails, False) }}
+{% elif settings.nsfw_popular_all or (not settings.nsfw_popular_all and not post.over18) %}
+{{ post_macros.render_post_card(post, subreddit.show_thumbnails, False) }}
+{% endif %}
+{% endfor %}
+{% endblock %}
+
+{% block bottom_content %}
+<nav class="pagination" role="navigation" aria-label="pagination">
+    <a href="{{ previous_url }}" class="pagination-button pagination-previous"
+        {{ 'disabled' if not pagination.before_post_id else '' }}>
+        Newer
+    </a>
+    <a href="{{ next_url }}" class="pagination-button pagination-next"
+        {{ 'disabled' if not pagination.after_post_id else '' }}>
+        Older
+    </a>
+</nav>
+{% endblock %}
+

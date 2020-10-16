@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} | eddrit</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/bulma.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
+    {% endblock %}
+</head>
+
+<body class="main">
+    {% include 'header.html' %}
+
+    <section class="section">
+        <div class="">
+            <h1 class="title">
+                {{ title }}
+            </h1>
+
+            <div>
+                {% block main_content %}{% endblock %}
+            </div>
+            {% block bottom_content %}{% endblock %}
+        </div>
+    </section>
+
+    {% include 'footer.html' %}
+</body>
+<script type="text/javascript" src="{{ url_for('static', path='vendors/indigo-player/indigo-player.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', path='js/main.js') }}"></script>
+</html>

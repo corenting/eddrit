@@ -1,0 +1,2 @@
+class SubredditNotFound(Exception):
+    pass

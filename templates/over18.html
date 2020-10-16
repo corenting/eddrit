@@ -1,0 +1,29 @@
+{% set title = "Over 18?" %}
+
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="columns is-mobile is-centered">
+    <div class='column is-one-quarter card is-half'>
+        <div class="card-image has-text-centered">
+            <figure class='image is-inline-block is-128x128'>
+                <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}">
+            </figure>
+        </div>
+        <div class='card-content'>
+            <p class="has-text-centered">You must be over 18 to see this content.</p>
+            <p class="has-text-centered">Are you over 18 and willing to see adult (NSFW) content?</p>
+            <hr />
+            <div class="is-centered buttons">
+                <a class="button is-link is-large" href="{{ url_for('root', path='') }}">
+                    Go back
+                </a>
+                <form action="/over18" method="post">
+                    <button type="submit" name="continue" value="{{ destination_link }}" class="button is-link is-large">Continue</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

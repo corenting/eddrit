@@ -12,9 +12,9 @@ An alternative frontend for Reddit, written with Python + [Starlette](https://ww
 
 ## Screenshots
 
-![Subreddit view](doc/screenshots/subreddit.png | width=100)
+![Subreddit view](doc/screenshots/subreddit.png)
 
-![Thread view](doc/screenshots/subreddit.png | width=100)
+![Thread view](doc/screenshots/subreddit.png)
 
 
 ## Installation

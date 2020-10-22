@@ -28,3 +28,8 @@ test:
 .SILENT: run
 run:
 	$(PYTHON) uvicorn --reload eddrit.app:app
+
+.PHONY: build
+.SILENT: build
+build:
+	docker build -t eddrit .

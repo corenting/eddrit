@@ -1,0 +1,43 @@
+# System base
+FROM python:3.9 AS system-base
+
+RUN apt-get update && apt-get install -y dumb-init && rm -rf /var/lib/apt/lists/*
+
+
+# Python base (venv and user)
+FROM system-base AS python-base
+
+RUN useradd -m eddrit
+RUN mkdir /app/
+RUN chown -R eddrit /app/
+USER eddrit
+
+# Install Poetry and dumb-init
+ENV PATH="${PATH}:/home/eddrit/.poetry/bin"
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python && \
+    poetry config virtualenvs.in-project true
+
+# Dependencies
+WORKDIR /app/
+COPY ./pyproject.toml ./poetry.lock /app/
+RUN poetry install --no-interaction --no-ansi --no-root --no-dev
+
+
+# Prod image (app and default config)
+FROM python-base as prod
+
+COPY --from=system-base /usr/bin/dumb-init /usr/bin/
+COPY --from=python-base /app /app
+
+# App
+COPY eddrit /app/eddrit
+COPY static /app/static
+COPY templates /app/templates
+
+# Default app config
+ENV DEBUG=false
+ENV LOG_LEVEL=WARNING
+
+# Expose and run app
+EXPOSE 8080
+CMD ["dumb-init", "poetry", "run", "gunicorn", "eddrit.app:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8080", "--log-file=-"]

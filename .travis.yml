@@ -8,13 +8,17 @@ cache:
 
 python:
   - "3.8"
-before_install:
-  - pip install --upgrade pip
-  - pip install poetry
-install:
-  - poetry install
-script:
-  - make style
-  - make test
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+
+jobs:
+  include:
+    - stage: style & test
+      before_install:
+        - pip install --upgrade pip
+        - pip install poetry
+      install:
+        - poetry install
+      script:
+        - make style
+        - make test
+      after_success: bash <(curl -s https://codecov.io/bash)
+

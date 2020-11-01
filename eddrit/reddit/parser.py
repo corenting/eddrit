@@ -111,7 +111,8 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular: bool) -> models.Post:
         subreddit=post_data["subreddit"],
         domain=post_data["domain"],
         human_date=timeago.format(
-            datetime.datetime.utcfromtimestamp(post_data["created_utc"]), utc_now,
+            datetime.datetime.utcfromtimestamp(post_data["created_utc"]),
+            utc_now,
         ),
         thumbnail_url=thumbnail_url,
         thumbnail_url_hq=thumbnail_url_hq,

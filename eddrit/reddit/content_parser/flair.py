@@ -46,5 +46,7 @@ def get_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]:
 
     if len(flair_items) != 0:
         return models.Flair(
-            background_color=bg_color, text_color=text_color, items=flair_items,
+            background_color=bg_color,
+            text_color=text_color,
+            items=flair_items,
         )

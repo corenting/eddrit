@@ -12,7 +12,10 @@ from eddrit.utils.settings import get_settings_from_request
 async def settings_page(request: Request) -> Response:
     return templates.TemplateResponse(
         "settings.html",
-        {"request": request, "settings": get_settings_from_request(request),},
+        {
+            "request": request,
+            "settings": get_settings_from_request(request),
+        },
     )
 
 
@@ -28,7 +31,8 @@ async def settings_submit(request: Request) -> Response:
             "request": request,
             "is_saved": True,
             "settings": models.Settings(
-                nsfw_popular_all=nsfw_popular_all, nsfw_thumbnails=nsfw_thumbnails,
+                nsfw_popular_all=nsfw_popular_all,
+                nsfw_thumbnails=nsfw_thumbnails,
             ),
         },
     )

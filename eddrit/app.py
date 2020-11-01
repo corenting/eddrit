@@ -1,15 +1,19 @@
 import uvicorn
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
-from starlette.middleware.gzip import GZipMiddleware
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
 from eddrit import config
+from eddrit.config import PROXY_ENABLED
 from eddrit.routes import api, index, instance, meta, over18, settings, subreddit
-from eddrit.utils.middleware import NoReferrerMiddleware
+from eddrit.utils.middlewares import NoReferrerMiddleware, ProxyHeadersMiddleware
 
-middleware = [Middleware(NoReferrerMiddleware), Middleware(GZipMiddleware)]
+middlewares = [
+    Middleware(NoReferrerMiddleware),
+]
+if PROXY_ENABLED:
+    middlewares.insert(0, Middleware(ProxyHeadersMiddleware))
 
 app = Starlette(
     debug=config.DEBUG,
@@ -20,10 +24,12 @@ app = Starlette(
         Mount("/r", routes=subreddit.routes, name="subreddit"),
         Mount("/api", routes=api.routes, name="api"),
         Mount(
-            "/", routes=[*index.routes, *over18.routes, *settings.routes], name="root",
+            "/",
+            routes=[*index.routes, *over18.routes, *settings.routes],
+            name="root",
         ),
     ],
-    middleware=middleware,
+    middleware=middlewares,
 )
 
 

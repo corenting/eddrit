@@ -16,7 +16,11 @@ async def check_page(request: Request) -> Response:
             return RedirectResponse(url="/")
 
     return templates.TemplateResponse(
-        "over18.html", {"request": request, "destination_link": destination_link,}
+        "over18.html",
+        {
+            "request": request,
+            "destination_link": destination_link,
+        },
     )
 
 

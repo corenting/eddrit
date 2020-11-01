@@ -6,7 +6,12 @@ from eddrit.templates import templates
 
 
 async def about(request: Request) -> Response:
-    return templates.TemplateResponse("about.html", {"request": request,},)
+    return templates.TemplateResponse(
+        "about.html",
+        {
+            "request": request,
+        },
+    )
 
 
 routes = [

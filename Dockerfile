@@ -40,4 +40,4 @@ ENV LOG_LEVEL=WARNING
 
 # Expose and run app
 EXPOSE 8080
-CMD ["dumb-init", "poetry", "run", "gunicorn", "eddrit.app:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8080", "--log-file=-"]
+CMD ["dumb-init", "poetry", "run", "gunicorn", "eddrit.app:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8080", "--log-file=-", "--forwarded-allow-ips=\"*\""]

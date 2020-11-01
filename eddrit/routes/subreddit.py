@@ -44,7 +44,8 @@ async def subreddit(request: Request) -> Response:
     )
 
     posts, response_pagination = await get_subreddit_posts(
-        request.path_params["name"], request_pagination,
+        request.path_params["name"],
+        request_pagination,
     )
 
     return templates.TemplateResponse(

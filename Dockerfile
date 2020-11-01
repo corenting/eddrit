@@ -34,8 +34,7 @@ COPY eddrit /app/eddrit
 COPY static /app/static
 COPY templates /app/templates
 
-# Default app config
-ENV DEBUG=false
+# Default log level
 ENV LOG_LEVEL=WARNING
 
 # Expose and run app

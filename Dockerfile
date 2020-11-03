@@ -1,15 +1,11 @@
-# System base
-FROM python:3.9 AS system-base
-
-RUN apt-get update && apt-get install -y dumb-init && rm -rf /var/lib/apt/lists/*
-
-
 # Python base (venv and user)
-FROM system-base AS python-base
+FROM python:3.9-slim AS base
 
-RUN useradd -m eddrit
-RUN mkdir /app/
-RUN chown -R eddrit /app/
+RUN apt-get update && apt-get install -y build-essential curl dumb-init && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m eddrit && \
+    mkdir /app/ && \
+    chown -R eddrit /app/
 USER eddrit
 
 # Install Poetry and dumb-init
@@ -24,10 +20,12 @@ RUN poetry install --no-interaction --no-ansi --no-root --no-dev
 
 
 # Prod image (app and default config)
-FROM python-base as prod
+FROM python:3.9-slim as prod
 
-COPY --from=system-base /usr/bin/dumb-init /usr/bin/
-COPY --from=python-base /app /app
+COPY --from=base /usr/bin/dumb-init /usr/bin/
+COPY --from=base /app /app
+
+WORKDIR /app/
 
 # App
 COPY eddrit /app/eddrit
@@ -39,4 +37,4 @@ ENV LOG_LEVEL=WARNING
 
 # Expose and run app
 EXPOSE 8080
-CMD ["dumb-init", "poetry", "run", "gunicorn", "eddrit.app:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8080", "--log-file=-"]
+CMD ["dumb-init", "/app/.venv/bin/gunicorn", "eddrit.app:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8080", "--log-file=-"]

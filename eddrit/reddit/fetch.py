@@ -27,7 +27,6 @@ async def get_frontpage_posts(
 
 
 async def get_subreddit_informations(subreddit: str) -> models.Subreddit:
-
     if subreddit == "all":
         return models.Subreddit(
             title="All",
@@ -36,6 +35,11 @@ async def get_subreddit_informations(subreddit: str) -> models.Subreddit:
             public_description=None,
             over18=False,
         )
+
+    # If multi subreddit
+    if "+" in subreddit:
+        return await _get_multi_informations(subreddit)
+
     return await _get_subreddit_informations(subreddit)
 
 
@@ -97,4 +101,23 @@ async def _get_subreddit_informations(name: str) -> models.Subreddit:
     if len(res.history) > 0 and res.history[0].status_code != 200:
         raise SubredditNotFound()
 
-    return parser.parse_subreddit_informations(res.json(), name)
+    json = res.json()
+    if json.get("error") == 404:
+        raise SubredditNotFound()
+
+    return parser.parse_subreddit_informations(name, json["data"]["over18"], json)
+
+
+async def _get_multi_informations(name: str) -> models.Subreddit:
+    # Check if there is a redirect to know if it's an NSFW multi
+    async with httpx.AsyncClient() as client:
+        res = await client.head(f"https://old.reddit.com/r/{name}")
+
+    if len(res.history) > 0 and res.history[0].status_code != 200:
+        raise SubredditNotFound()
+
+    over18 = False
+    if res.status_code == 302 and "over18" in res.headers["location"]:
+        over18 = True
+
+    return parser.parse_subreddit_informations(name, over18)

@@ -72,7 +72,7 @@
 }
 
 img.post-img {
-  max-height: 35rem;
+  max-height: 60vh;
   width: auto;
 }
 
@@ -86,7 +86,7 @@ img.post-img {
 }
 
 .comment-item {
-  padding-left: 1.2rem;
+  padding-left: 2.5rem;
   border-left: dotted gray 0.1rem;
 }
 

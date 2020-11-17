@@ -1,6 +1,6 @@
 import datetime
 import html
-from typing import Any, Dict, Hashable, Iterable, List, Tuple, Union
+from typing import Any, Dict, Hashable, Iterable, List, Optional, Tuple, Union
 
 import markdown
 import timeago
@@ -25,15 +25,17 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContent:
         return models.PostContent(content=content, type=models.PostContentType.TEXT)
 
     hint = api_post_data.get("post_hint")
+    has_video_content = post_has_video_content(api_post_data)
     if (
         hint == "image"
         or hint == "hosted:video"
         or hint == "rich:video"
         or (hint == "link" and is_image_or_video_host(api_post_data["domain"]))
+        or has_video_content
     ):
 
         # Check if image has video (then consider video) else consider image
-        if post_has_video_content(api_post_data):
+        if has_video_content:
             return get_post_video_content(api_post_data)
 
         return get_post_image_content(api_post_data)
@@ -128,7 +130,7 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular: bool) -> models.Post:
 
 
 def parse_subreddit_informations(
-    api_response: Dict[Hashable, Any], name: str
+    name: str, over18: bool, api_response: Optional[Dict[Hashable, Any]] = None
 ) -> models.Subreddit:
 
     # Check if multi
@@ -150,7 +152,7 @@ def parse_subreddit_informations(
         show_thumbnails=show_thumbnails,
         public_description=public_description,
         name=name,
-        over18=api_response["data"]["over18"],
+        over18=over18,
     )
 
 

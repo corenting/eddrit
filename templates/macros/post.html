@@ -116,13 +116,13 @@
 {% if post.content.type.value == 'video' %}
 {% if not post.content.is_embed %}
 <div class="post-video" id="video-{{ post.id }}" data-type="{{ post.content.content_type }}"
-    data-autoplay="{{ post.content.is_gif }}" data-src="{{ post.content.content }}"
+    data-autoplay="{{ post.content.is_gif }}" data-src="{{ "https://cors-anywhere.herokuapp.com/" ~ post.content.content }}"
     data-poster="{{ post.content.thumbnail_url_hq }}"
-    style="max-width: {{ post.content.width }}px; max-height: {{ post.content.height }}px;"
+    style="max-width: 60vw; max-height: 60vh; width: {{ post.content.width }}px; height: {{ post.content.height }}px;"
     data-height="{{ post.content.height }}" data-width="{{ post.content.width }}">
 </div>
 {% else %}
-<div style="max-width: {{ post.content.width }}px; max-height: {{ post.content.height }}px;">
+<div style="max-width: 60vw; max-height: 60vh; width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
     {{ post.content.content|safe }}
 </div>
 {% endif %}

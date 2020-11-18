@@ -68,7 +68,7 @@ def get_embed_content(embed_data: Dict[Hashable, Any]) -> models.PostContent:
         content=content,
         type=models.PostContentType.VIDEO,
         width=embed_data["width"],
-        height=embed_data["height"],
+        height=embed_data["height"] + 25,
         is_gif=is_gif,
         is_embed=is_embed,
         content_type=content_type,

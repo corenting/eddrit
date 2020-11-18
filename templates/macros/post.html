@@ -80,7 +80,8 @@
         </div>
 
         {% if post.content.type.value != "link" %}
-        <div class="postcontent-box box" id="content-{{ post.id }}" style="display: {{ 'block' if content_expanded else 'none' }};">
+        <div class="postcontent-box box" id="content-{{ post.id }}"
+            style="display: {{ 'block' if content_expanded else 'none' }};">
             <template id="content-{{ post.id }}-template">
                 <div id="content-{{ post.id }}-preview">
                     {{ render_content(post) }}
@@ -107,22 +108,22 @@
 {% if post.content.type.value == 'image' %}
 <a href="{{ post.url }}">
     <figure class="image">
-        <img class="post-img" src="{{ post.content.content }}"
-            {{ "max-height=" ~ post.content.height if post.content.heigth else '' }}
-            {{ "max-width=" ~ post.content.width if post.content.width else '' }} />
+        <img class="post-img" src="{{ post.content.content }}" />
     </figure>
 </a>
 {% endif %}
 {% if post.content.type.value == 'video' %}
 {% if not post.content.is_embed %}
 <div class="post-video" id="video-{{ post.id }}" data-type="{{ post.content.content_type }}"
-    data-autoplay="{{ post.content.is_gif }}" data-src="{{ "https://cors-anywhere.herokuapp.com/" ~ post.content.content }}"
+    data-autoplay="{{ post.content.is_gif }}"
+    data-src="{{ "https://cors-anywhere.herokuapp.com/" ~ post.content.content }}"
     data-poster="{{ post.content.thumbnail_url_hq }}"
-    style="max-width: 60vw; max-height: 60vh; width: {{ post.content.width }}px; height: {{ post.content.height }}px;"
+    style="max-width: 25vw; max-height: 100%;"
     data-height="{{ post.content.height }}" data-width="{{ post.content.width }}">
 </div>
 {% else %}
-<div style="max-width: 60vw; max-height: 60vh; width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
+<div
+    style="max-width: 60vw; max-height: 35rem; width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
     {{ post.content.content|safe }}
 </div>
 {% endif %}

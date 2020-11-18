@@ -26,6 +26,6 @@ A Docker image is available on [Docker Hub](https://hub.docker.com/r/corentingar
 
 You can run the app with gunicorn directly :
 1. Make sure Python >= 3.8 is installed on your system.
-2. Install [Poetry)(https://python-poetry.org/) which is used to manage dependencies of the project.
+2. Install [Poetry](https://python-poetry.org/) which is used to manage dependencies of the project.
 3. Download the repository and run "make init" to install the dependencies.
 4. You can then run the app through gunicorn, for example with the following command: `poetry run gunicorn eddrit.app:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8080]`

@@ -6,7 +6,7 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-{{ post_macros.render_post_card(post, subreddit.show_thumbnails, True) }}
+{{ post_macros.render_post_card(post, subreddit, True) }}
 <hr />
 {{ comments_macros.render_comments(subreddit.name, post.id, post.comments) }}
 {% endblock %}

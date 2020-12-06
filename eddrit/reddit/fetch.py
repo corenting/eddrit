@@ -35,6 +35,8 @@ async def get_subreddit_informations(subreddit: str) -> models.Subreddit:
             public_description=None,
             over18=False,
         )
+    elif subreddit == "popular":
+        return await get_frontpage_informations()
 
     # If multi subreddit
     if "+" in subreddit:

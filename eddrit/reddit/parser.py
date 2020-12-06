@@ -2,7 +2,6 @@ import datetime
 import html
 from typing import Any, Dict, Hashable, Iterable, List, Optional, Tuple, Union
 
-import markdown
 import timeago
 
 from eddrit import models
@@ -20,7 +19,11 @@ from eddrit.utils.media import is_image_or_video_host
 def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContent:
 
     if api_post_data["is_self"] and api_post_data.get("selftext"):
-        content = markdown.markdown(api_post_data["selftext"], extensions=["tables"])
+        content = (
+            html.unescape(api_post_data.get("selftext_html"))
+            .replace("<!-- SC_ON -->", "")
+            .replace("<!-- SC_OFF -->", "")
+        )
 
         return models.PostContent(content=content, type=models.PostContentType.TEXT)
 

@@ -26,12 +26,12 @@
 {% endif %}
 {% endmacro %}
 
-{% macro render_post_card(post, show_thumbnails, content_expanded) %}
+{% macro render_post_card(post, subreddit, content_expanded) %}
 <article class="media">
-    {% if show_thumbnails %}
+    {% if subreddit.show_thumbnails %}
     <figure class="media-left">
         <p class="image is-64x64">
-            {% if post.over18 and not settings.nsfw_thumbnails %}
+            {% if post.over18 and not settings.nsfw_thumbnails and not subreddit.over18 %}
             <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}">
             {% else %}
             <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='')) }}">

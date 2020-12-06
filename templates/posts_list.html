@@ -23,10 +23,9 @@
 
 {% block main_content %}
 {% for post in posts %}
-{% if subreddit.title != 'Popular' %}
-{{ post_macros.render_post_card(post, subreddit.show_thumbnails, False) }}
-{% elif settings.nsfw_popular_all or (not settings.nsfw_popular_all and not post.over18) %}
-{{ post_macros.render_post_card(post, subreddit.show_thumbnails, False) }}
+{% if (subreddit.title == "Popular" or subreddit.title == "All") and post.over18 and not settings.nsfw_popular_all %}
+{% else %}
+{{ post_macros.render_post_card(post, subreddit, False) }}
 {% endif %}
 {% endfor %}
 {% endblock %}

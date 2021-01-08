@@ -5,6 +5,7 @@ from enum import Enum
 from typing import Iterable, Optional, Union
 
 from eddrit.models.flair import Flair
+from eddrit.models.user import User
 
 
 class PostContentType(Enum):
@@ -30,7 +31,7 @@ class PostComment:
     id: str
     parent_id: str
     is_sticky: bool
-    author: str
+    author: User
     is_submitter: bool
     is_admin: bool
     content: str
@@ -52,7 +53,7 @@ class Post:
     score: int
     human_score: str
     title: str
-    author: str
+    author: User
     subreddit: str
     domain: str
     human_date: str

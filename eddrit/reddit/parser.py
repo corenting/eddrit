@@ -6,7 +6,8 @@ import timeago
 
 from eddrit import models
 from eddrit.models.post import PostComment, PostCommentShowMore, PostContentType
-from eddrit.reddit.content_parser.flair import get_flair
+from eddrit.models.user import User
+from eddrit.reddit.content_parser.flair import get_post_flair, get_user_flair
 from eddrit.reddit.content_parser.media import (
     get_post_image_content,
     get_post_video_content,
@@ -112,7 +113,10 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular: bool) -> models.Post:
         score=post_data["score"],
         human_score=pretty_big_num(post_data["score"]),
         title=html.unescape(post_data["title"]),
-        author=post_data["author"],
+        author=User(
+            name=post_data["author"],
+            flair=get_user_flair(post_data),
+        ),
         subreddit=post_data["subreddit"],
         domain=post_data["domain"],
         human_date=timeago.format(
@@ -121,7 +125,7 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular: bool) -> models.Post:
         ),
         thumbnail_url=thumbnail_url,
         thumbnail_url_hq=thumbnail_url_hq,
-        flair=get_flair(post_data),
+        flair=get_post_flair(post_data),
         content=get_post_content(post_data),
         url=get_post_url(post_data),
         is_sticky=post_data["stickied"] and not is_popular,
@@ -139,7 +143,7 @@ def parse_subreddit_informations(
     # Check if multi
     splitted_name = name.split("+")
     if len(splitted_name) > 1:
-        title = f"Posts from {','.join(splitted_name)}"
+        title = f"Posts from {', '.join(splitted_name)}"
         show_thumbnails = True
         public_description = "<p>Multi subreddits with :</p><ul>"
         for name in splitted_name:
@@ -192,7 +196,10 @@ def parse_comments(
                     .replace("t1_", "")
                     .replace("t3_", ""),
                     is_sticky=data["stickied"],
-                    author=data["author"],
+                    author=User(
+                        name=data["author"],
+                        flair=get_user_flair(data),
+                    ),
                     is_submitter=data["is_submitter"],
                     is_admin=data.get("distinguished", "") == "admin",
                     content=html.unescape(data["body_html"]),

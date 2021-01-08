@@ -1,27 +1,32 @@
+{% import "macros/common.html" as common_macros with context %}
+
 {% macro render_author(comment) %}
+{% set author_tag = '' %}
 {% if comment.is_submitter %}
 <span style="background-color: blue; vertical-align: top" class="post-author-tag">
     <span class="has-text-white">
-        {{ comment.author }}
+        {{ comment.author.name }}
     </span>
 </span>
-[S]
+{% set author_tag = '[S]' %}
 {% elif comment.is_admin %}
 <span style="background-color: red; vertical-align: top" class="post-author-tag">
     <span class="has-text-white">
-        {{ comment.author }}
+        {{ comment.author.name }}
     </span>
 </span>
-[A]
+{% set author_tag = '[A]' %}
 {% else %}
-        {{ comment.author }}
+        {{ comment.author.name }}
 {% endif %}
+{{ common_macros.render_flair(comment.author.flair) }}
+{{ author_tag }}
 {% endmacro %}
 
 {% macro render_comments(subreddit_name, post_id, comments) %}
 <ul>
     {% for comment in comments %}
-    {% if comment.show_more_count %}
+    {% if comment.show_more_count is defined %}
     {% if comment.parent_id != post_id %}
     <li id="comment-{{ comment.parent_id }}-more" class="comment-item comment-show-more">
         <a class="comment-content"

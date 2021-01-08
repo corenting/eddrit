@@ -23,7 +23,7 @@
 
 {% block main_content %}
 {% for post in posts %}
-{% if (subreddit.title == "Popular" or subreddit.title == "All") and post.over18 and not settings.nsfw_popular_all %}
+{% if global.subreddit_is_homepage(subreddit.title) and post.over18 and not settings.nsfw_popular_all %}
 {% else %}
 {{ post_macros.render_post_card(post, subreddit, False) }}
 {% endif %}

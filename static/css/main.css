@@ -92,6 +92,7 @@ img.post-img {
 
 .comment-content {
   margin-bottom: 1.2rem;
+  line-height: 1;
 }
 
 .comment-show-more {
@@ -101,7 +102,7 @@ img.post-img {
 }
 
 span.flair {
-  vertical-align: top;
+  vertical-align: baseline;
 }
 
 span.spoiler-flair {

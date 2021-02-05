@@ -38,5 +38,5 @@ profile = "black"
 omit = ["eddrit/config.py"]
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.1.4"]
 build-backend = "poetry.masonry.api"

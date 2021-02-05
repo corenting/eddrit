@@ -14,7 +14,7 @@ jobs:
     - stage: style & test
       before_install:
         - pip install --upgrade pip
-        - pip install poetry
+        - pip install --upgrade poetry
       install:
         - poetry install
       script:

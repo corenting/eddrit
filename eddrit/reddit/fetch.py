@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 import httpx
 
@@ -82,10 +82,10 @@ async def get_comments(
 
 
 async def _get_posts_for_url(
-    url: str, pagination: models.Pagination, is_popular=False
+    url: str, pagination: models.Pagination, is_popular: bool = False
 ) -> Tuple[List[models.Post], models.Pagination]:
     async with httpx.AsyncClient() as client:
-        params = {}
+        params: Dict[str, Union[str, int]] = {}
         if pagination.before_post_id:
             params = {"before": pagination.before_post_id, "count": 25}
         elif pagination.after_post_id:

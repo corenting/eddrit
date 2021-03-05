@@ -19,9 +19,9 @@ from eddrit.utils.media import is_image_or_video_host
 
 def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContent:
 
-    if api_post_data["is_self"] and api_post_data.get("selftext"):
+    if api_post_data["is_self"] and api_post_data.get("selftext_html"):
         content = (
-            html.unescape(api_post_data.get("selftext_html"))
+            html.unescape(api_post_data.get("selftext_html", ""))
             .replace("<!-- SC_ON -->", "")
             .replace("<!-- SC_OFF -->", "")
         )
@@ -149,10 +149,12 @@ def parse_subreddit_informations(
         for name in splitted_name:
             public_description += f'<li><a href="/r/{name}">r/{name}</a></li>'
         public_description += "</ul>"
-    else:
+    elif api_response:
         title = html.unescape(api_response["data"]["title"])
         show_thumbnails = api_response["data"]["show_media"]
         public_description = api_response["data"]["public_description"]
+    else:
+        raise ValueError("You need a api_response if it's not a multi")
 
     return models.Subreddit(
         title=title,
@@ -167,7 +169,7 @@ def parse_comments(
     comments_data: Dict[Hashable, Any]
 ) -> Iterable[Union[PostComment, PostCommentShowMore]]:
     root_comments = comments_data["children"]
-    ret = []
+    ret: List[Union[PostComment, PostCommentShowMore]] = []
     utc_now = datetime.datetime.utcnow()
 
     for comment in root_comments:

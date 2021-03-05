@@ -7,6 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
+python = "^3.8"
 aiofiles = "^0.6.0"
 environs = "^9.3.0"
 gunicorn = "^20.0.4"
@@ -14,7 +15,6 @@ httpx = "^0.16.1"
 itsdangerous = "^1.1.0"
 Jinja2 = "^2.11.3"
 lxml = "^4.6.2"
-python = "^3.8"
 python-multipart="^0.0.5"
 starlette = "^0.14.2"
 timeago = "^1.0.15"
@@ -38,5 +38,5 @@ profile = "black"
 omit = ["eddrit/config.py"]
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.1.4"]
 build-backend = "poetry.masonry.api"

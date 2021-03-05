@@ -19,7 +19,7 @@ python-multipart="^0.0.5"
 starlette = "^0.14.2"
 timeago = "^1.0.15"
 tldextract = "^3.1.0"
-uvicorn = "^0.13.2"
+uvicorn = {version = "^0.13.2", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"

@@ -1,6 +1,6 @@
 # eddrit
 
-![Build](https://img.shields.io/travis/com/corenting/eddrit/master) ![License](https://img.shields.io/github/license/corenting/eddrit) ![Codecov](https://img.shields.io/codecov/c/github/corenting/eddrit)
+![Build](https://img.shields.io/github/checks-status/corenting/eddrit/master?label=build) ![License](https://img.shields.io/github/license/corenting/eddrit) ![Codecov](https://img.shields.io/codecov/c/github/corenting/eddrit)
 
 An alternative frontend for Reddit, written with Python + [Starlette](https://www.starlette.io/). Inspired by [Nitter](https://github.com/zedeus/nitter), an alternative frontend for Twitter
 
@@ -8,19 +8,24 @@ An alternative frontend for Reddit, written with Python + [Starlette](https://ww
 - No ads
 - Compact design (closer to [old.reddit.com](https://old.reddit.com) than to the redesign)
 - Mobile support (responsive design)
-- Use the old `.json` APIs, no need for OAuth2 identifier
+- Use the old `.json` APIs, no need to register for an OAuth2 identifier
 
 ## Screenshots
 
-![Subreddit view](doc/screenshots/subreddit.png)
+![Subreddit view](https://raw.githubusercontent.com/corenting/eddrit/master/doc/screenshots/subreddit.png)
 
-![Thread view](doc/screenshots/subreddit.png)
+![Thread view](https://raw.githubusercontent.com/corenting/eddrit/master/doc/screenshots/thread.png)
 
 
 ## Installation
 
 ### Docker
+
 A Docker image is available on [Docker Hub](https://hub.docker.com/r/corentingarcia/eddrit).
+There are multiple tags:
+- `latest` for the latest stable tagged release
+- `dev` for the latest commit on the master branch
+- Version tags (like `0.1.1`, `0.1.2`) for specific versions
 
 ### Without Docker
 

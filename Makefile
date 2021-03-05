@@ -15,9 +15,9 @@ format:
 .SILENT: style
 style:
 	$(PYTHON) pyflakes eddrit
-	$(PYTHON) mypy --ignore-missing-imports --disallow-untyped-defs -- .
-	$(PYTHON) black --check .
-	$(PYTHON) isort --check-only  .
+	$(PYTHON) mypy --ignore-missing-imports --disallow-untyped-defs -- eddrit
+	$(PYTHON) black --check eddrit
+	$(PYTHON) isort --check-only  eddrit
 
 .PHONY: test
 .SILENT: test

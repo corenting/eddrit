@@ -50,6 +50,7 @@ def get_post_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
             text_color=text_color,
             items=flair_items,
         )
+    return None
 
 
 def get_user_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]:
@@ -94,3 +95,5 @@ def get_user_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
             text_color=text_color,
             items=flair_items,
         )
+
+    return None

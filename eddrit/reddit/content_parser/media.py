@@ -137,11 +137,11 @@ def get_post_video_content(api_post_data: Dict[Hashable, Any]) -> models.PostCon
             raise Exception("Cannot find video for post")
 
         # Swap external-preview.redd.it with video preview, as the former is blocked by CORS
-        if is_from_external_preview_reddit_domain(ret.content):
+        if ret.content and is_from_external_preview_reddit_domain(ret.content):
             return get_reddit_video_preview(api_post_data, VideoFormat.MP4)
 
         # Special case for preview.redd.it (blocked by CORS, swap with i.redd.it)
-        if is_from_preview_reddit_domain(ret.content):
+        if ret.content and is_from_preview_reddit_domain(ret.content):
             ret.content = urljoin(ret.content, urlparse(ret.content).path).replace(
                 "preview.redd.it", "i.redd.it"
             )

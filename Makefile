@@ -1,4 +1,5 @@
 PYTHON=poetry run
+SRC = eddrit
 
 .PHONY: init
 .SILENT: init
@@ -14,20 +15,20 @@ format:
 .PHONY: style
 .SILENT: style
 style:
-	$(PYTHON) pyflakes eddrit
-	$(PYTHON) mypy --ignore-missing-imports --disallow-untyped-defs -- eddrit
-	$(PYTHON) black --check eddrit
-	$(PYTHON) isort --check-only  eddrit
+	$(PYTHON) pflake8 $(SRC)
+	$(PYTHON) mypy --ignore-missing-imports --disallow-untyped-defs -- $(SRC)
+	$(PYTHON) black --check $(SRC)
+	$(PYTHON) isort --check-only  $(SRC)
 
 .PHONY: test
 .SILENT: test
 test:
-	$(PYTHON) pytest --cov=eddrit
+	$(PYTHON) pytest --cov=$(SRC)
 
 .PHONY: run
 .SILENT: run
 run:
-	$(PYTHON) uvicorn --reload eddrit.app:app
+	$(PYTHON) uvicorn --reload $(SRC).app:app
 
 .PHONY: build
 .SILENT: build

@@ -43,7 +43,7 @@ def get_post_image_content(api_post_data: Dict[Hashable, Any]) -> models.PostCon
             width=api_post_data["preview"]["images"][0]["source"]["width"],
             height=api_post_data["preview"]["images"][0]["source"]["height"],
         )
-    except:
+    except Exception:
         return models.PostContent(
             content=api_post_data["url"],
             type=models.PostContentType.LINK,
@@ -149,7 +149,7 @@ def get_post_video_content(api_post_data: Dict[Hashable, Any]) -> models.PostCon
 
         return ret
 
-    except:
+    except Exception:
         return models.PostContent(
             content=api_post_data["url"],
             type=models.PostContentType.LINK,

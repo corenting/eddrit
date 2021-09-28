@@ -108,7 +108,6 @@ if( document.readyState !== 'loading' ) {
 }
 
 function initPage() {
-
     // Init video players
     var elements = document.getElementsByClassName('post-video');
     for (var i = 0; i < elements.length; ++i) {

@@ -16,7 +16,7 @@ format:
 .SILENT: style
 style:
 	$(PYTHON) pflake8 $(SRC)
-	$(PYTHON) mypy --ignore-missing-imports --disallow-untyped-defs -- $(SRC)
+	$(PYTHON) mypy -- $(SRC)
 	$(PYTHON) black --check $(SRC)
 	$(PYTHON) isort --check-only  $(SRC)
 

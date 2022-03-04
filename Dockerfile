@@ -1,5 +1,5 @@
 # Python base (venv and user)
-FROM python:3.9-slim AS base
+FROM python:3.10-slim AS base
 
 RUN apt-get update && apt-get install -y build-essential curl dumb-init && rm -rf /var/lib/apt/lists/*
 

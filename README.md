@@ -24,7 +24,7 @@ An alternative frontend for Reddit, written with Python + [Starlette](https://ww
 A Docker image is available on [Docker Hub](https://hub.docker.com/r/corentingarcia/eddrit).
 There are multiple tags:
 - `latest` for the latest stable tagged release
-- `dev` for the latest commit on the master branch
+- `master` for the latest commit on the master branch
 - Version tags (like `0.1.1`, `0.1.2`) for specific versions
 
 ### Without Docker

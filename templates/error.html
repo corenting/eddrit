@@ -1,0 +1,12 @@
+{% set title = "Error !" %}
+
+{% extends "base.html" %}
+
+{% block main_content %}
+{% if detail %}
+<p>{{ detail }}.</p>
+{% else %}
+    <p>Error {{ status_code }} when fetching the page.</p>
+{% endif %}
+
+{% endblock %}

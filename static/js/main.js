@@ -35,7 +35,6 @@ function toggleCommentVisibility(commentId) {
     var childrenElement = document.getElementById("comment-" + commentId + "-children");
     var toggleElement = document.getElementById("comment-" + commentId + "-toggle");
 
-    console.log(contentElement)
     if (contentElement.style.display === "none") {
         contentElement.style.display = "block";
         childrenElement.style.display = "block";

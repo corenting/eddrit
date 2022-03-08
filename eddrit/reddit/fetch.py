@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple, Union
 import httpx
 
 from eddrit import models
-from eddrit.exceptions import SubredditNotFound
+from eddrit.exceptions import SubredditIsPrivate, SubredditNotFound
 from eddrit.models.post import PostComment, PostCommentShowMore
 from eddrit.reddit import parser
 
@@ -100,10 +100,15 @@ async def _get_subreddit_informations(name: str) -> models.Subreddit:
     async with httpx.AsyncClient() as client:
         res = await client.get(f"https://www.reddit.com/r/{name}/about/.json")
 
+    json = res.json()
+
+    # Check for private subreddits
+    if res.status_code == 403 and json.get("reason") == "private":
+        raise SubredditIsPrivate()
+
     if len(res.history) > 0 and res.history[0].status_code != 200:
         raise SubredditNotFound()
 
-    json = res.json()
     if json.get("error") == 404:
         raise SubredditNotFound()
 

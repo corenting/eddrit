@@ -18,20 +18,20 @@
             {% if post.over18 and not settings.nsfw_thumbnails and not subreddit.over18 %}
             <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}">
             {% else %}
-            <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='')) }}">
+            <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='' )) }}">
             {% endif %}
         </p>
     </figure>
     {% endif %}
     <div class="media-content">
-        <div class="content is-centered">
-            <a href="{{ post.url }}"><strong
-                    {{ 'class=sticky-title' if post.is_sticky else '' }}>{{ post.title }}</strong></a> <small
-                class="is-size-7">{{ render_warning_flair(post.over18, "NSFW") }}
-                {{ render_warning_flair(post.spoiler, "Spoiler") }} {{ common_macros.render_flair(post.flair) }}</small>
-            <small>({{ post.domain }}) </small>
-            <br>
-
+        <div class="content">
+            <div class="content is-flex is-flex-wrap-wrap is-align-items-center m-0">
+                <a href="{{ post.url }}">
+                    <strong {{ 'class=sticky-title' if post.is_sticky else '' }}>{{ post.title }}</strong>
+                </a>
+                <small class="mx-1">({{ post.domain }}) </small>
+                <small class="mx-1 is-size-7">{{ render_warning_flair(post.over18, "NSFW") }} {{ render_warning_flair(post.spoiler, "Spoiler") }} {{ common_macros.render_flair(post.flair) }}</small>
+            </div>
             <div class="media post-infos">
 
                 {% if post.content.type.value != "link" %}
@@ -44,11 +44,11 @@
                 {% endif %}
 
                 <small class="media-content is-size-7">
-                    <div class="content is-centered">
+                    <div class="content is-flex is-flex-wrap-wrap is-align-items-center">
                         {{ post.human_score }} points - submitted {{ post.human_date }}
                         by
-                        {{ post.author.name }} {{ common_macros.render_flair(post.author.flair) }} to <a
-                        href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{ post.subreddit }}</a>
+                        {{ post.author.name }} <div class="mx-1">{{ common_macros.render_flair(post.author.flair) }}</div> to <a
+                            class="mx-1" href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{ post.subreddit }}</a>
                     </div>
                     <nav class="post-nav level is-mobile">
                         <div class="level-left">
@@ -101,11 +101,9 @@
 {% if post.content.type.value == 'video' %}
 {% if not post.content.is_embed %}
 <div class="post-video" id="video-{{ post.id }}" data-type="{{ post.content.content_type }}"
-    data-autoplay="{{ post.content.is_gif }}"
-    data-src="{{ "https://cors-anywhere.herokuapp.com/" ~ post.content.content }}"
-    data-poster="{{ post.content.thumbnail_url_hq }}"
-    style="max-width: 25vw; max-height: 100%;"
-    data-height="{{ post.content.height }}" data-width="{{ post.content.width }}">
+    data-autoplay="{{ post.content.is_gif }}" data-src="{{ post.content.content }}" data-poster="{{ post.content.thumbnail_url_hq }}"
+    style="max-width: 25vw; max-height: 100%;" data-height="{{ post.content.height }}"
+    data-width="{{ post.content.width }}">
 </div>
 {% else %}
 <div

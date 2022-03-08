@@ -1,8 +1,9 @@
+from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
 
-from eddrit import models
+from eddrit import exceptions, models
 from eddrit.reddit.fetch import (
     get_post,
     get_subreddit_informations,
@@ -33,7 +34,10 @@ async def subreddit_post(request: Request) -> Response:
 
 
 async def subreddit(request: Request) -> Response:
-    subreddit_infos = await get_subreddit_informations(request.path_params["name"])
+    try:
+        subreddit_infos = await get_subreddit_informations(request.path_params["name"])
+    except exceptions.SubredditIsPrivate:
+        raise HTTPException(status_code=403, detail="Subreddit is private")
 
     if should_redirect_to_age_check(request, subreddit_infos.over18):
         return redirect_to_age_check(request)

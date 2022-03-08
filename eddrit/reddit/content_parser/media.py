@@ -18,6 +18,7 @@ class VideoFormat(Enum):
 
 
 def post_has_video_content(api_post_data: Dict[Hashable, Any]) -> bool:
+    """Check if a post is a video."""
     if api_post_data.get("secure_media"):
         return True
 
@@ -35,6 +36,7 @@ def post_has_video_content(api_post_data: Dict[Hashable, Any]) -> bool:
 
 
 def get_post_image_content(api_post_data: Dict[Hashable, Any]) -> models.PostContent:
+    """Get the image content of a post."""
     try:
         content = html.unescape(api_post_data["preview"]["images"][0]["source"]["url"])
         return models.PostContent(

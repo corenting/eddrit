@@ -1,12 +1,22 @@
 import uvicorn
 from starlette.applications import Starlette
+from starlette.exceptions import HTTPException
 from starlette.middleware import Middleware
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
 from eddrit import config
 from eddrit.config import PROXY_ENABLED
-from eddrit.routes import api, index, instance, meta, over18, settings, subreddit
+from eddrit.routes import (
+    api,
+    exception_handlers,
+    index,
+    instance,
+    meta,
+    over18,
+    settings,
+    subreddit,
+)
 from eddrit.utils.middlewares import NoReferrerMiddleware, ProxyHeadersMiddleware
 
 middlewares = [
@@ -14,6 +24,8 @@ middlewares = [
 ]
 if PROXY_ENABLED:
     middlewares.insert(0, Middleware(ProxyHeadersMiddleware))
+
+exceptions_handlers = {HTTPException: exception_handlers.http_exception}
 
 app = Starlette(
     debug=config.DEBUG,
@@ -30,6 +42,7 @@ app = Starlette(
         ),
     ],
     middleware=middlewares,
+    exception_handlers=exceptions_handlers,  # type: ignore
 )
 
 if __name__ == "__main__":

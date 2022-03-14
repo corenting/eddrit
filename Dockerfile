@@ -20,7 +20,7 @@ RUN poetry install --no-interaction --no-ansi --no-root --no-dev
 
 
 # Prod image (app and default config)
-FROM python:3.9-slim as prod
+FROM python:3.10-slim as prod
 
 COPY --from=base /usr/bin/dumb-init /usr/bin/
 COPY --from=base /app /app

@@ -44,19 +44,20 @@
                 <div class="media-content">
                     <div class="content">
                         <p>
-                            <a id="comment-{{ comment.id }}-toggle" class="comment-toggle"
+                            <div class="content is-flex is-flex-wrap-wrap is-align-items-center mb-2">
+                                <a id="comment-{{ comment.id }}-toggle" class="mr-1 comment-toggle"
                                 onclick="toggleCommentVisibility('{{ comment.id }}');">[-]</a>
-                            <strong
-                                {{ 'class=sticky-title' if comment.is_sticky else '' }}>{{ render_author(comment) }}</strong>
-                            <small> {{ comment.human_score }} points</small>
-                            <small> {{ comment.human_date }} </small>
-                            {% if comment.is_sticky %}
-                            <small class="sticky-title"> Stickied comment</small>
-                            {% endif %}
-                            <br>
-                        <div id="comment-{{ comment.id }}-content" class="comment-content">
-                            {{ comment.content | safe }}
-                        </div>
+                                <strong
+                                    class="{{ 'class=sticky-title' if comment.is_sticky else '' }}">{{ render_author(comment) }}</strong>
+                                <small class="mx-1"> {{ comment.human_score }} points</small>
+                                <small> {{ comment.human_date }} </small>
+                                {% if comment.is_sticky %}
+                                <small class="mx-1 sticky-title"> Stickied comment</small>
+                                {% endif %}
+                            </div>
+                            <div id="comment-{{ comment.id }}-content" class="mb-2 comment-content">
+                                {{ comment.content | safe }}
+                            </div>
                         </p>
                     </div>
                 </div>

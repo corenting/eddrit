@@ -91,13 +91,12 @@ img.post-img {
 }
 
 .comment-content {
-  margin-bottom: 1.2rem;
   line-height: 1;
 }
 
 .comment-show-more {
-  margin-top: 0.6rem;
-  margin-bottom: 0.6rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
   border-left: none;
 }
 

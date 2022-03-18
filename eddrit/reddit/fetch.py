@@ -100,15 +100,21 @@ async def _get_subreddit_informations(name: str) -> models.Subreddit:
     async with httpx.AsyncClient() as client:
         res = await client.get(f"https://www.reddit.com/r/{name}/about/.json")
 
+    # If subreddit not found, the API redirects us to search endpoint
+    if res.status_code == 302 and "search" in res.headers["location"]:
+        raise SubredditNotFound()
+
     json = res.json()
 
     # Check for private subreddits
     if res.status_code == 403 and json.get("reason") == "private":
         raise SubredditIsPrivate()
 
+    # Check for subreddit not found
     if len(res.history) > 0 and res.history[0].status_code != 200:
         raise SubredditNotFound()
 
+    # If error, consider we didn't find the subreddit
     if json.get("error") == 404:
         raise SubredditNotFound()
 

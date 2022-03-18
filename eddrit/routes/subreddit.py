@@ -38,6 +38,8 @@ async def subreddit(request: Request) -> Response:
         subreddit_infos = await get_subreddit_informations(request.path_params["name"])
     except exceptions.SubredditIsPrivate:
         raise HTTPException(status_code=403, detail="Subreddit is private")
+    except exceptions.SubredditNotFound:
+        raise HTTPException(status_code=404, detail="Subreddit not found")
 
     if should_redirect_to_age_check(request, subreddit_infos.over18):
         return redirect_to_age_check(request)

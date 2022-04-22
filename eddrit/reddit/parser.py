@@ -5,8 +5,6 @@ from typing import Any, Dict, Hashable, Iterable, List, Optional, Tuple, Union
 import timeago
 
 from eddrit import models
-from eddrit.models.post import PostComment, PostCommentShowMore, PostContentType
-from eddrit.models.user import User
 from eddrit.reddit.content_parser.flair import get_post_flair, get_user_flair
 from eddrit.reddit.content_parser.media import (
     get_post_image_content,
@@ -105,7 +103,7 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular: bool) -> models.Post:
 
     post_image_content = get_post_image_content(post_data)
     thumbnail_url_hq = thumbnail_url
-    if post_image_content.type == PostContentType.IMAGE:
+    if post_image_content.type == models.PostContentType.IMAGE:
         thumbnail_url_hq = post_image_content.content
 
     return models.Post(
@@ -113,7 +111,7 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular: bool) -> models.Post:
         score=post_data["score"],
         human_score=pretty_big_num(post_data["score"]),
         title=html.unescape(post_data["title"]),
-        author=User(
+        author=models.User(
             name=post_data["author"],
             flair=get_user_flair(post_data),
         ),
@@ -167,15 +165,15 @@ def parse_subreddit_informations(
 
 def parse_comments(
     comments_data: Dict[Hashable, Any]
-) -> Iterable[Union[PostComment, PostCommentShowMore]]:
+) -> Iterable[Union[models.PostComment, models.PostCommentShowMore]]:
     root_comments = comments_data["children"]
-    ret: List[Union[PostComment, PostCommentShowMore]] = []
+    ret: List[Union[models.PostComment, models.PostCommentShowMore]] = []
     utc_now = datetime.datetime.utcnow()
 
     for comment in root_comments:
         if comment["kind"] == "more":
             ret.append(
-                PostCommentShowMore(
+                models.PostCommentShowMore(
                     id=comment["data"]["id"],
                     parent_id=comment["data"]["parent_id"]
                     .replace("t1_", "")
@@ -192,18 +190,19 @@ def parse_comments(
                 else parse_comments(data["replies"]["data"])
             )
             ret.append(
-                PostComment(
+                models.PostComment(
                     id=data["id"],
                     parent_id=comment["data"]["parent_id"]
                     .replace("t1_", "")
                     .replace("t3_", ""),
                     is_sticky=data["stickied"],
-                    author=User(
+                    author=models.User(
                         name=data["author"],
                         flair=get_user_flair(data),
                     ),
                     is_submitter=data["is_submitter"],
                     is_admin=data.get("distinguished", "") == "admin",
+                    is_moderator=data.get("distinguished", "") == "moderator",
                     content=html.unescape(data["body_html"]),
                     human_date=timeago.format(
                         datetime.datetime.utcfromtimestamp(data["created_utc"]), utc_now

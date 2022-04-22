@@ -9,14 +9,15 @@ from eddrit import config
 from eddrit.config import PROXY_ENABLED
 from eddrit.routes import (
     api,
-    exception_handlers,
     index,
     instance,
     meta,
     over18,
+    root_files,
     settings,
     subreddit,
 )
+from eddrit.routes.common import exception_handlers
 from eddrit.utils.middlewares import NoReferrerMiddleware, ProxyHeadersMiddleware
 
 middlewares = [
@@ -37,7 +38,12 @@ app = Starlette(
         Mount("/api", routes=api.routes, name="api"),
         Mount(
             "/",
-            routes=[*over18.routes, *index.routes, *settings.routes],
+            routes=[
+                *root_files.routes,
+                *over18.routes,
+                *index.routes,
+                *settings.routes,
+            ],
             name="root",
         ),
     ],

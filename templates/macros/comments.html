@@ -8,19 +8,26 @@
         {{ comment.author.name }}
     </span>
 </span>
-{% set author_tag = '[S]' %}
+{% set author_tag = '<abbr title="Submitter">[S]</abbr>' %}
 {% elif comment.is_admin %}
 <span style="background-color: red; vertical-align: top" class="post-author-tag">
     <span class="has-text-white">
         {{ comment.author.name }}
     </span>
 </span>
-{% set author_tag = '[A]' %}
+{% set author_tag = '<abbr title="Reddit admin">[A]</abbr>' %}
+{% elif comment.is_moderator %}
+<span style="background-color: green; vertical-align: top" class="post-author-tag">
+    <span class="has-text-white">
+        {{ comment.author.name }}
+    </span>
+</span>
+{% set author_tag = '<abbr title="Moderator of /r/' + subreddit.name + ', speaking officially">[M]</abbr>' %}
 {% else %}
         {{ comment.author.name }}
 {% endif %}
 {{ common_macros.render_flair(comment.author.flair) }}
-{{ author_tag }}
+{{ author_tag | safe }}
 {% endmacro %}
 
 {% macro render_comments(subreddit_name, post_id, comments) %}
@@ -44,11 +51,10 @@
                 <div class="media-content">
                     <div class="content">
                         <p>
-                            <div class="content is-flex is-flex-wrap-wrap is-align-items-center mb-2">
+                            <div class="content is-flex is-flex-wrap-wrap is-align-items-baseline mb-2">
                                 <a id="comment-{{ comment.id }}-toggle" class="mr-1 comment-toggle"
                                 onclick="toggleCommentVisibility('{{ comment.id }}');">[-]</a>
-                                <strong
-                                    class="{{ 'class=sticky-title' if comment.is_sticky else '' }}">{{ render_author(comment) }}</strong>
+                                <strong>{{ render_author(comment) }}</strong>
                                 <small class="mx-1"> {{ comment.human_score }} points</small>
                                 <small> {{ comment.human_date }} </small>
                                 {% if comment.is_sticky %}

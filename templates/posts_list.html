@@ -22,24 +22,45 @@
 {% extends "base.html" %}
 
 {% block main_content %}
+<!-- Sorting selection -->
+<nav class="navbar is-white mb-5" role="navigation" aria-label="sorting navigation">
+    <div class="navbar-menu is-active">
+        <div class="navbar-start">
+            {% for sorting_mode in global.sorting_modes %}
+            {% if sorting_mode == 'popular' %}
+            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name) %}
+            {% else %}
+            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name + '/' + sorting_mode) %}
+            {% endif %}
+            <a class="navbar-item {{ 'is-active' if current_sorting_mode.value == sorting_mode else '' }}"
+                href="{{ sorting_mode_url }}">
+                {{ sorting_mode | capitalize }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</nav>
+
+<!-- Posts -->
 {% for post in posts %}
+<!-- Ignore NSFW posts on home pages unless enabled in settings -->
 {% if global.subreddit_is_homepage(subreddit.title) and post.over18 and not settings.nsfw_popular_all %}
 {% else %}
 {{ post_macros.render_post_card(post, subreddit, False) }}
 {% endif %}
 {% endfor %}
+
 {% endblock %}
 
 {% block bottom_content %}
 <nav class="pagination" role="navigation" aria-label="pagination">
-    <a href="{{ previous_url }}" class="pagination-button pagination-previous"
-        {{ 'disabled' if not pagination.before_post_id else '' }}>
+    <a href="{{ previous_url }}" class="pagination-button pagination-previous" {{ 'disabled' if not
+        pagination.before_post_id else '' }}>
         Newer
     </a>
-    <a href="{{ next_url }}" class="pagination-button pagination-next"
-        {{ 'disabled' if not pagination.after_post_id else '' }}>
+    <a href="{{ next_url }}" class="pagination-button pagination-next" {{ 'disabled' if not pagination.after_post_id
+        else '' }}>
         Older
     </a>
 </nav>
 {% endblock %}
-

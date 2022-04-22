@@ -9,6 +9,10 @@ from eddrit.utils import settings
 
 
 async def index(request: Request) -> Response:
+    # Get sorting mode
+    sorting_mode = models.SubredditSortingMode(
+        request.path_params.get("sorting_mode", "popular")
+    )
 
     request_pagination = models.Pagination(
         before_post_id=request.query_params.get("before"),
@@ -26,10 +30,12 @@ async def index(request: Request) -> Response:
             "request": request,
             "settings": settings.get_settings_from_request(request),
             "subreddit": informations,
+            "current_sorting_mode": sorting_mode,
         },
     )
 
 
 routes = [
+    Route("/{sorting_mode:str}", endpoint=index),
     Route("/", endpoint=index),
 ]

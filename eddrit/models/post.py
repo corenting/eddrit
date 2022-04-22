@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Iterable, Optional, Union
 
-from eddrit.models.flair import Flair
-from eddrit.models.user import User
+from eddrit.models.user import Flair, User
 
 
 class PostContentType(Enum):
@@ -29,15 +28,16 @@ class PostContent:
 @dataclass
 class PostComment:
     id: str
-    parent_id: str
-    is_sticky: bool
     author: User
-    is_submitter: bool
-    is_admin: bool
-    content: str
     children: Iterable[Union[PostComment, PostCommentShowMore]]
-    human_score: str
+    content: str
     human_date: str
+    human_score: str
+    is_admin: bool
+    is_moderator: bool
+    is_sticky: bool
+    is_submitter: bool
+    parent_id: str
 
 
 @dataclass

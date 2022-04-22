@@ -5,7 +5,7 @@ from starlette.routing import Route
 from eddrit.templates import templates
 
 
-async def check_page(request: Request) -> Response:
+async def over18_gate_page(request: Request) -> Response:
     can_proceed = request.cookies.get("over18", "0") == "1"
     destination_link = request.query_params.get("dest", None)
 
@@ -24,7 +24,7 @@ async def check_page(request: Request) -> Response:
     )
 
 
-async def check_submit(request: Request) -> Response:
+async def over18_gate_submit(request: Request) -> Response:
     body = await request.form()
     continue_url = body.get("continue", "/")
     res = RedirectResponse(url=continue_url, status_code=302)
@@ -33,6 +33,6 @@ async def check_submit(request: Request) -> Response:
 
 
 routes = [
-    Route("/over18", endpoint=check_page, methods=["GET"]),
-    Route("/over18", endpoint=check_submit, methods=["POST"]),
+    Route("/over18", endpoint=over18_gate_page, methods=["GET"]),
+    Route("/over18", endpoint=over18_gate_submit, methods=["POST"]),
 ]

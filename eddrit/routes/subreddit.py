@@ -34,6 +34,11 @@ async def subreddit_post(request: Request) -> Response:
 
 
 async def subreddit(request: Request) -> Response:
+    # Get sorting mode
+    sorting_mode = models.SubredditSortingMode(
+        request.path_params.get("sorting_mode", "popular")
+    )
+
     try:
         subreddit_infos = await get_subreddit_informations(request.path_params["name"])
     except exceptions.SubredditIsPrivate:
@@ -50,8 +55,7 @@ async def subreddit(request: Request) -> Response:
     )
 
     posts, response_pagination = await get_subreddit_posts(
-        request.path_params["name"],
-        request_pagination,
+        request.path_params["name"], request_pagination, sorting_mode
     )
 
     return templates.TemplateResponse(
@@ -62,12 +66,14 @@ async def subreddit(request: Request) -> Response:
             "request": request,
             "settings": settings.get_settings_from_request(request),
             "subreddit": subreddit_infos,
+            "current_sorting_mode": sorting_mode,
         },
     )
 
 
 routes = [
     Route("/{name:str}", endpoint=subreddit),
+    Route("/{name:str}/{sorting_mode:str}", endpoint=subreddit),
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}", endpoint=subreddit_post
     ),

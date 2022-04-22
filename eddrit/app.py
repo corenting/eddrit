@@ -37,7 +37,7 @@ app = Starlette(
         Mount("/api", routes=api.routes, name="api"),
         Mount(
             "/",
-            routes=[*index.routes, *over18.routes, *settings.routes],
+            routes=[*over18.routes, *index.routes, *settings.routes],
             name="root",
         ),
     ],

@@ -4,7 +4,6 @@ import httpx
 
 from eddrit import models
 from eddrit.exceptions import SubredditIsPrivate, SubredditNotFound
-from eddrit.models.post import PostComment, PostCommentShowMore
 from eddrit.reddit import parser
 
 
@@ -46,11 +45,17 @@ async def get_subreddit_informations(subreddit: str) -> models.Subreddit:
 
 
 async def get_subreddit_posts(
-    subreddit: str, pagination: models.Pagination
+    subreddit: str,
+    pagination: models.Pagination,
+    sorting_mode: models.SubredditSortingMode,
 ) -> Tuple[List[models.Post], models.Pagination]:
-    return await _get_posts_for_url(
-        f"https://www.reddit.com/r/{subreddit}/.json", pagination
+
+    url = (
+        f"https://www.reddit.com/r/{subreddit}/.json"
+        if sorting_mode == models.SubredditSortingMode.POPULAR
+        else f"https://www.reddit.com/r/{subreddit}/{sorting_mode.value}.json"
     )
+    return await _get_posts_for_url(url, pagination)
 
 
 async def get_post(subreddit: str, post_id: str) -> models.PostWithComments:
@@ -70,7 +75,7 @@ async def get_post(subreddit: str, post_id: str) -> models.PostWithComments:
 
 async def get_comments(
     subreddit: str, post_id: str, comment_id: str
-) -> List[Union[PostComment, PostCommentShowMore]]:
+) -> List[Union[models.PostComment, models.PostCommentShowMore]]:
     async with httpx.AsyncClient() as client:
         url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
         params = {"limit": 100}

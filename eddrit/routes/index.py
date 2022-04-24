@@ -1,3 +1,4 @@
+from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
@@ -10,9 +11,14 @@ from eddrit.utils import settings
 
 async def index(request: Request) -> Response:
     # Get sorting mode
-    sorting_mode = models.SubredditSortingMode(
-        request.path_params.get("sorting_mode", "popular")
-    )
+    try:
+        sorting_mode = models.SubredditSortingMode(
+            request.path_params.get("sorting_mode", "popular")
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=400, detail="Invalid sorting mode for index page"
+        )
 
     request_pagination = models.Pagination(
         before_post_id=request.query_params.get("before"),

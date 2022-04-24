@@ -3,7 +3,12 @@ from typing import Dict, List, Tuple, Union
 import httpx
 
 from eddrit import models
-from eddrit.exceptions import SubredditIsPrivate, SubredditNotFound
+from eddrit.exceptions import (
+    SubredditIsBanned,
+    SubredditIsPrivate,
+    SubredditIsQuarantined,
+    SubredditNotFound,
+)
 from eddrit.reddit import parser
 
 
@@ -109,20 +114,9 @@ async def _get_subreddit_informations(name: str) -> models.Subreddit:
     if res.status_code == 302 and "search" in res.headers["location"]:
         raise SubredditNotFound()
 
+    _raise_if_subreddit_is_not_available(res)
+
     json = res.json()
-
-    # Check for private subreddits
-    if res.status_code == 403 and json.get("reason") == "private":
-        raise SubredditIsPrivate()
-
-    # Check for subreddit not found
-    if len(res.history) > 0 and res.history[0].status_code != 200:
-        raise SubredditNotFound()
-
-    # If error, consider we didn't find the subreddit
-    if json.get("error") == 404:
-        raise SubredditNotFound()
-
     return parser.parse_subreddit_informations(name, json["data"]["over18"], json)
 
 
@@ -139,3 +133,29 @@ async def _get_multi_informations(name: str) -> models.Subreddit:
         over18 = True
 
     return parser.parse_subreddit_informations(name, over18)
+
+
+def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:
+    """Raise an exception if the subreddit is not available (banned, private etc.)"""
+
+    json = api_res.json()
+
+    # Check for banned subreddits
+    if api_res.status_code == 404 and json.get("reason") == "banned":
+        raise SubredditIsBanned()
+
+    # Check for quarantined subreddits
+    if api_res.status_code == 403 and json.get("reason") == "quarantined":
+        raise SubredditIsQuarantined()
+
+    # Check for private subreddits
+    if api_res.status_code == 403 and json.get("reason") == "private":
+        raise SubredditIsPrivate()
+
+    # Check for subreddit not found
+    if len(api_res.history) > 0 and api_res.history[0].status_code != 200:
+        raise SubredditNotFound()
+
+    # If error, consider we didn't find the subreddit
+    if json.get("error") == 404:
+        raise SubredditNotFound()

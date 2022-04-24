@@ -30,7 +30,9 @@
                     <strong {{ 'class=sticky-title' if post.is_sticky else '' }}>{{ post.title }}</strong>
                 </a>
                 <small class="mx-1">({{ post.domain }}) </small>
-                <small class="mx-1 is-size-7">{{ render_warning_flair(post.over18, "NSFW") }} {{ render_warning_flair(post.spoiler, "Spoiler") }} {{ common_macros.render_flair(post.flair) }}</small>
+                <small class="mx-1 is-size-7">{{ render_warning_flair(post.over18, "NSFW") }} {{
+                    render_warning_flair(post.spoiler, "Spoiler") }} {{ common_macros.render_flair(post.flair)
+                    }}</small>
             </div>
             <div class="media post-infos">
 
@@ -47,8 +49,9 @@
                     <div class="content is-flex is-flex-wrap-wrap is-align-items-center">
                         {{ post.human_score }} points - submitted {{ post.human_date }}
                         by
-                        {{ post.author.name }} <div class="mx-1">{{ common_macros.render_flair(post.author.flair) }}</div> to <a
-                            class="mx-1" href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{ post.subreddit }}</a>
+                        {{ post.author.name }} <div class="mx-1">{{ common_macros.render_flair(post.author.flair) }}
+                        </div> to <a class="mx-1" href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{
+                            post.subreddit }}</a>
                     </div>
                     <nav class="post-nav level is-mobile">
                         <div class="level-left">
@@ -85,32 +88,44 @@
 {% endmacro %}
 
 {% macro render_content(post) %}
-{% if post.content.content %}
 {% if post.content.type.value == 'text' %}
 <div class="post-text">
-    {{ post.content.content|safe }}
+    {{ post.content.text|safe }}
 </div>
 {% endif %}
-{% if post.content.type.value == 'image' %}
+{% if post.content.type.value == 'picture' %}
 <a href="{{ post.url }}">
     <figure class="image">
-        <img class="post-img" src="{{ post.content.content }}" />
+        <img class="post-img" src="{{ post.content.picture.url }}" />
     </figure>
 </a>
 {% endif %}
 {% if post.content.type.value == 'video' %}
 {% if not post.content.is_embed %}
-<div class="post-video" id="video-{{ post.id }}" data-type="{{ post.content.content_type }}"
-    data-autoplay="{{ post.content.is_gif }}" data-src="{{ post.content.content }}" data-poster="{{ post.content.thumbnail_url_hq }}"
-    style="max-width: 25vw; max-height: 100%;" data-height="{{ post.content.height }}"
-    data-width="{{ post.content.width }}">
+<div
+    style="max-width: 60vw; max-height: 35rem; width: {{ post.content.width }}px; height: {{ post.content.height }}px;"
+>
+    <video
+        class="video-js post-video vjs-fill"
+        id="video-{{ post.id }}"
+        data-width="{{ post.content.width }}"
+        data-height="{{ post.content.height }}"
+        data-is-gif="{{ post.content.is_gif }}"
+        data-url="{{ post.content.url }}"
+        data-video-format="{{ post.content.video_format.value }}"
+        >
+        <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a
+            web browser that
+            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+        </p>
+    </video>
 </div>
 {% else %}
 <div
     style="max-width: 60vw; max-height: 35rem; width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
-    {{ post.content.content|safe }}
+    {{ post.content.url|safe }}
 </div>
-{% endif %}
 {% endif %}
 {% endif %}
 {% endmacro %}

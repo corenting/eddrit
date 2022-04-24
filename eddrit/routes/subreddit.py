@@ -15,7 +15,11 @@ from eddrit.utils.request import redirect_to_age_check, should_redirect_to_age_c
 
 
 async def subreddit_post(request: Request) -> Response:
-    subreddit = await get_subreddit_informations(request.path_params["name"])
+    try:
+        subreddit_infos = await get_subreddit_informations(request.path_params["name"])
+    except exceptions.SubredditUnavailable as e:
+        raise HTTPException(status_code=403, detail=e.message)
+
     post_id = request.path_params["post_id"]
     post = await get_post(request.path_params["name"], post_id)
 
@@ -26,7 +30,7 @@ async def subreddit_post(request: Request) -> Response:
         "post.html",
         {
             "request": request,
-            "subreddit": subreddit,
+            "subreddit": subreddit_infos,
             "post": post,
             "settings": settings.get_settings_from_request(request),
         },
@@ -41,10 +45,8 @@ async def subreddit(request: Request) -> Response:
 
     try:
         subreddit_infos = await get_subreddit_informations(request.path_params["name"])
-    except exceptions.SubredditIsPrivate:
-        raise HTTPException(status_code=403, detail="Subreddit is private")
-    except exceptions.SubredditNotFound:
-        raise HTTPException(status_code=404, detail="Subreddit not found")
+    except exceptions.SubredditUnavailable as e:
+        raise HTTPException(status_code=403, detail=e.message)
 
     if should_redirect_to_age_check(request, subreddit_infos.over18):
         return redirect_to_age_check(request)

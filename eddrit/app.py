@@ -41,8 +41,8 @@ app = Starlette(
             routes=[
                 *root_files.routes,
                 *over18.routes,
-                *index.routes,
                 *settings.routes,
+                *index.routes,
             ],
             name="root",
         ),

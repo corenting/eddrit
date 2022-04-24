@@ -8,21 +8,82 @@ from eddrit.models.user import Flair, User
 
 
 class PostContentType(Enum):
+    GALLERY = "gallery"
+    PICTURE = "picture"
     LINK = "link"
     TEXT = "text"
-    IMAGE = "image"
     VIDEO = "video"
 
 
+class PostVideoFormat(Enum):
+    MP4 = "video/mp4"
+    DASH = "application/dash+xml"
+
+
 @dataclass
-class PostContent:
-    content: Optional[str]
+class PostPicture:
+    """Class representing a post picture."""
+
+    width: int
+    height: int
+    url: str
+
+
+@dataclass(kw_only=True)
+class PostContentBase:
+    """Base class representing a post content."""
+
     type: PostContentType
-    width: Optional[int] = None
-    height: Optional[int] = None
-    is_gif: Optional[bool] = False
-    is_embed: Optional[bool] = False
-    content_type: Optional[str] = None
+
+
+@dataclass(kw_only=True)
+class PicturePostContent(PostContentBase):
+    """Class representing a picture post content."""
+
+    type: PostContentType = PostContentType.PICTURE
+
+    picture: PostPicture
+
+
+@dataclass(kw_only=True)
+class LinkPostContent(PostContentBase):
+    """Class representing a link post content.
+
+    The link is not in the class as it the same as the post link."""
+
+    type: PostContentType = PostContentType.LINK
+
+
+@dataclass(kw_only=True)
+class TextPostContent(PostContentBase):
+    """Class representing a text post content."""
+
+    type: PostContentType = PostContentType.TEXT
+
+    text: str
+
+
+@dataclass(kw_only=True)
+class VideoPostContent(PostContentBase):
+    """Class representing a video post content."""
+
+    type: PostContentType = PostContentType.VIDEO
+
+    url: str
+    is_gif: bool
+    is_embed: bool
+    width: int
+    height: int
+    video_format: Optional[PostVideoFormat] = None
+
+
+@dataclass(kw_only=True)
+class GalleryPostContent(PostContentBase):
+    """Class representing a gallery post content."""
+
+    type: PostContentType = PostContentType.GALLERY
+
+    pictures = Iterable[PostPicture]
 
 
 @dataclass
@@ -60,7 +121,7 @@ class Post:
     thumbnail_url: str
     thumbnail_url_hq: str
     flair: Optional[Flair]
-    content: PostContent
+    content: PostContentBase
     url: str
     is_sticky: bool
     comments_count: int

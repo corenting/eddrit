@@ -15,8 +15,8 @@ from eddrit.utils.math import pretty_big_num
 from eddrit.utils.media import is_image_or_video_host
 
 
-def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContent:
-
+def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBase:
+    # Text posts
     if api_post_data["is_self"] and api_post_data.get("selftext_html"):
         content = (
             html.unescape(api_post_data.get("selftext_html", ""))
@@ -24,8 +24,9 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContent:
             .replace("<!-- SC_OFF -->", "")
         )
 
-        return models.PostContent(content=content, type=models.PostContentType.TEXT)
+        return models.TextPostContent(text=content)
 
+    # Media posts
     hint = api_post_data.get("post_hint")
     has_video_content = post_has_video_content(api_post_data)
     if (
@@ -42,7 +43,8 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContent:
 
         return get_post_image_content(api_post_data)
 
-    return models.PostContent(content=None, type=models.PostContentType.LINK)
+    # Default case: link posts
+    return models.LinkPostContent()
 
 
 def get_thumbnail_url(data: Dict[Hashable, Any]) -> str:
@@ -99,12 +101,13 @@ def parse_posts(
 def parse_post(post_data: Dict[Hashable, Any], is_popular: bool) -> models.Post:
     utc_now = datetime.datetime.utcnow()
 
-    thumbnail_url = get_thumbnail_url(post_data)
-
     post_image_content = get_post_image_content(post_data)
+
+    # Get post thumbnail
+    thumbnail_url = get_thumbnail_url(post_data)
     thumbnail_url_hq = thumbnail_url
-    if post_image_content.type == models.PostContentType.IMAGE:
-        thumbnail_url_hq = post_image_content.content
+    if type(post_image_content) == models.PicturePostContent:
+        thumbnail_url_hq = post_image_content.picture.url
 
     return models.Post(
         id=post_data["id"],

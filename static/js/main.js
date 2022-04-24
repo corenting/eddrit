@@ -15,10 +15,7 @@ function togglePostVisibility(postId) {
         const content = contentTemplate.content.cloneNode(true);
         rootElement.appendChild(content);
 
-        // Refresh video player setup
         setupVideo(document.getElementById("video-" + postId));
-
-
     } else {
         rootElement.style.display = "none";
         buttonImg.src = buttonImg.src.replace("dash", "plus");
@@ -60,41 +57,25 @@ function fetchCommentsChildren(subredditName, postId, parentId, commentId) {
     });
 }
 
-// Indigo player setup
+// Video player setup
 function setupVideo(videoElement) {
-    if (videoElement) {
-
-        // Get video config
-        const src = videoElement.getAttribute("data-src");
-        const type = videoElement.getAttribute("data-type");
-        const width = parseInt(videoElement.getAttribute("data-width"));
-        const height = parseInt(videoElement.getAttribute("data-height"));
-        const poster = videoElement.getAttribute("data-poster");
-        const autoplay = videoElement.getAttribute("data-autoplay") === "True";
-
-        // Setup player
-        const config = {
-            autoplay: autoplay,
-            volume: autoplay ? 0 : 1,
-            aspectRatio: width/height,
-            ui: { image: poster },
-            sources: [
-              {
-                type: type,
-                src: src,
-              }
-            ],
-        };
-
-        IndigoPlayer.setChunksPath(window.location.origin + "/static/vendors/indigo-player/");
-        player = IndigoPlayer.init(videoElement, config);
-
-        // If autoplay, loop too
-        player.on(IndigoPlayer.Events.STATE_ENDED, () => {
-            player.seekTo(0);
-            player.play();
-        });
+    if (!videoElement) {
+        return;
     }
+
+    let width = parseInt(videoElement.getAttribute('data-width'))
+    let height = parseInt(videoElement.getAttribute('data-height'))
+    let isGif = videoElement.getAttribute('data-is-gif') == 'True';
+    videojs(videoElement,  {
+        'width': width,
+        'height': height,
+        'controls': !isGif,
+        'autoplay': isGif,
+        'sources': [{
+            'type': videoElement.getAttribute('data-video-format'),
+            'src': videoElement.getAttribute('data-url')
+        }]
+    });
 }
 
 // Init

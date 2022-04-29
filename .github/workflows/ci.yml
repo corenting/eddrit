@@ -58,7 +58,6 @@ jobs:
         with:
           images: |
             corentingarcia/eddrit
-            ghcr.io/corentingarcia/eddrit
           tags: |
             type=ref,event=branch
             type=ref,event=pr

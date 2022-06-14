@@ -48,7 +48,7 @@ function fetchCommentsChildren(subredditName, postId, parentId, commentId) {
     var parentElt = document.getElementById("comment-" + parentId);
 
     var commentIdParam = postId == parentId ? commentId : parentId
-    fetch("/api/comments/xhr?subreddit=" + subredditName  + "&post_id=" + postId + "&comment_id=" + commentIdParam)
+    fetch("/xhr/comments/xhr?subreddit=" + subredditName  + "&post_id=" + postId + "&comment_id=" + commentIdParam)
     .then(function(response) {
       return response.text();
     })

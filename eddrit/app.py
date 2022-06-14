@@ -7,8 +7,8 @@ from starlette.staticfiles import StaticFiles
 
 from eddrit import config
 from eddrit.config import PROXY_ENABLED
-from eddrit.routes import (
-    api,
+from eddrit.routes.common import exception_handlers
+from eddrit.routes.pages import (
     index,
     instance,
     meta,
@@ -17,7 +17,7 @@ from eddrit.routes import (
     settings,
     subreddit,
 )
-from eddrit.routes.common import exception_handlers
+from eddrit.routes.xhr import routes
 from eddrit.utils.middlewares import NoReferrerMiddleware, ProxyHeadersMiddleware
 
 middlewares = [
@@ -35,7 +35,7 @@ app = Starlette(
         Mount("/instance", routes=instance.routes),
         Mount("/meta", routes=meta.routes, name="meta"),
         Mount("/r", routes=subreddit.routes, name="subreddit"),
-        Mount("/api", routes=api.routes, name="api"),
+        Mount("/xhr", routes=routes, name="api"),
         Mount(
             "/",
             routes=[

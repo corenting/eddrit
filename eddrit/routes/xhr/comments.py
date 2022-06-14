@@ -7,7 +7,9 @@ from eddrit.templates import templates
 
 
 async def comments(request: Request) -> Response:
-
+    """
+    Return the comments tree as HTML starting at the given comment for the given post.
+    """
     # Check parameters
     post_id = request.query_params.get("post_id")
     subreddit_name = request.query_params.get("subreddit")

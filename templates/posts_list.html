@@ -23,23 +23,42 @@
 
 {% block main_content %}
 <!-- Sorting selection -->
-<nav class="navbar is-white mb-5" role="navigation" aria-label="sorting navigation">
-    <div class="navbar-menu is-active">
-        <div class="navbar-start">
-            {% for sorting_mode in global.sorting_modes %}
-            {% if sorting_mode == 'popular' %}
-            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name) %}
-            {% else %}
-            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name + '/' + sorting_mode) %}
-            {% endif %}
-            <a class="navbar-item {{ 'is-active' if current_sorting_mode.value == sorting_mode else '' }}"
-                href="{{ sorting_mode_url }}">
-                {{ sorting_mode | capitalize }}
+<div class="tabs is-toggle is-small">
+    <ul>
+        {% for sorting_mode in global.sorting_modes %}
+        {% if sorting_mode == 'popular' %}
+        {% set sorting_mode_url = url_for('subreddit', path=subreddit.name) %}
+        {% else %}
+        {% set sorting_mode_url = url_for('subreddit', path=subreddit.name + '/' + sorting_mode) %}
+        {% endif %}
+        <li class="{{ 'is-active' if current_sorting_mode.value == sorting_mode else '' }}">
+            <a href="{{ sorting_mode_url }}">
+                <span>{{ sorting_mode | capitalize }}</span>
             </a>
-            {% endfor %}
-        </div>
-    </div>
-</nav>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- Sorting period selection  -->
+{% if has_sorting_period %}
+<div class="tabs is-toggle is-small">
+    <ul>
+        {% for sorting_period in global.sorting_periods %}
+        {% if sorting_mode == 'day' %}
+        {% set sorting_period_url = url_for('subreddit', path=subreddit.name + '/' + current_sorting_mode.value) + "t=" + sorting_period %}
+        {% else %}
+        {% set sorting_period_url = url_for('subreddit', path=subreddit.name + '/' + current_sorting_mode.value) + "/?t=" + sorting_period %}
+        {% endif %}
+        <li class="{{ 'is-active' if current_sorting_period.value == sorting_period else '' }}">
+            <a href="{{ sorting_period_url }}">
+                <span>{{ sorting_period | capitalize }}</span>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 
 <!-- Posts -->
 {% for post in posts %}

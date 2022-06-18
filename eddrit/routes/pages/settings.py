@@ -3,19 +3,16 @@ from starlette.responses import Response
 from starlette.routing import Route
 
 from eddrit import models
+from eddrit.routes.common.context import get_templates_common_context
 from eddrit.templates import templates
 from eddrit.utils.cookies import cookie_is_secure, get_cookie_value_from_bool
 from eddrit.utils.request import get_checkbox_from_form
-from eddrit.utils.settings import get_settings_from_request
 
 
 async def settings_page(request: Request) -> Response:
     return templates.TemplateResponse(
         "settings.html",
-        {
-            "request": request,
-            "settings": get_settings_from_request(request),
-        },
+        get_templates_common_context(request),
     )
 
 

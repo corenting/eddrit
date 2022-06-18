@@ -53,12 +53,14 @@ async def get_subreddit_posts(
     subreddit: str,
     pagination: models.Pagination,
     sorting_mode: models.SubredditSortingMode,
+    sorting_period: models.SubredditSortingPeriod,
 ) -> Tuple[List[models.Post], models.Pagination]:
-
+    # Always add sorting period as it is ignored
+    # when not needed
     url = (
-        f"https://www.reddit.com/r/{subreddit}/.json"
+        f"https://www.reddit.com/r/{subreddit}/.json?t={sorting_period.value}"
         if sorting_mode == models.SubredditSortingMode.POPULAR
-        else f"https://www.reddit.com/r/{subreddit}/{sorting_mode.value}.json"
+        else f"https://www.reddit.com/r/{subreddit}/{sorting_mode.value}.json?t={sorting_period.value}"
     )
     return await _get_posts_for_url(url, pagination)
 

@@ -9,8 +9,11 @@ from eddrit.reddit.fetch import (
     get_subreddit_informations,
     get_subreddit_posts,
 )
+from eddrit.routes.common.context import (
+    get_subreddits_and_frontpage_common_context,
+    get_templates_common_context,
+)
 from eddrit.templates import templates
-from eddrit.utils import settings
 from eddrit.utils.request import redirect_to_age_check, should_redirect_to_age_check
 
 
@@ -29,10 +32,9 @@ async def subreddit_post(request: Request) -> Response:
     return templates.TemplateResponse(
         "post.html",
         {
-            "request": request,
             "subreddit": subreddit_infos,
             "post": post,
-            "settings": settings.get_settings_from_request(request),
+            **get_templates_common_context(request),
         },
     )
 
@@ -42,6 +44,9 @@ async def subreddit(request: Request) -> Response:
     sorting_mode = models.SubredditSortingMode(
         request.path_params.get("sorting_mode", "popular")
     )
+
+    # Get sorting period
+    sorting_period = models.SubredditSortingPeriod(request.query_params.get("t", "day"))
 
     try:
         subreddit_infos = await get_subreddit_informations(request.path_params["name"])
@@ -57,18 +62,20 @@ async def subreddit(request: Request) -> Response:
     )
 
     posts, response_pagination = await get_subreddit_posts(
-        request.path_params["name"], request_pagination, sorting_mode
+        request.path_params["name"], request_pagination, sorting_mode, sorting_period
     )
 
     return templates.TemplateResponse(
         "posts_list.html",
         {
-            "pagination": response_pagination,
-            "posts": posts,
-            "request": request,
-            "settings": settings.get_settings_from_request(request),
-            "subreddit": subreddit_infos,
-            "current_sorting_mode": sorting_mode,
+            **get_subreddits_and_frontpage_common_context(
+                response_pagination,
+                posts,
+                subreddit_infos,
+                sorting_mode,
+                sorting_period,
+            ),
+            **get_templates_common_context(request),
         },
     )
 

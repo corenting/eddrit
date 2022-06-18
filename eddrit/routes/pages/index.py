@@ -5,8 +5,11 @@ from starlette.routing import Route
 
 from eddrit import models
 from eddrit.reddit.fetch import get_frontpage_informations, get_frontpage_posts
+from eddrit.routes.common.context import (
+    get_subreddits_and_frontpage_common_context,
+    get_templates_common_context,
+)
 from eddrit.templates import templates
-from eddrit.utils import settings
 
 
 async def index(request: Request) -> Response:
@@ -20,6 +23,16 @@ async def index(request: Request) -> Response:
             status_code=400, detail="Invalid sorting mode for index page"
         )
 
+    # Get sorting period
+    try:
+        sorting_period = models.SubredditSortingPeriod(
+            request.query_params.get("t", "day")
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=400, detail="Invalid sorting period for index page"
+        )
+
     request_pagination = models.Pagination(
         before_post_id=request.query_params.get("before"),
         after_post_id=request.query_params.get("after"),
@@ -31,12 +44,10 @@ async def index(request: Request) -> Response:
     return templates.TemplateResponse(
         "posts_list.html",
         {
-            "pagination": response_pagination,
-            "posts": posts,
-            "request": request,
-            "settings": settings.get_settings_from_request(request),
-            "subreddit": informations,
-            "current_sorting_mode": sorting_mode,
+            **get_subreddits_and_frontpage_common_context(
+                response_pagination, posts, informations, sorting_mode, sorting_period
+            ),
+            **get_templates_common_context(request),
         },
     )
 

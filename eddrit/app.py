@@ -6,7 +6,6 @@ from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
 from eddrit import config
-from eddrit.config import PROXY_ENABLED
 from eddrit.routes.common import exception_handlers
 from eddrit.routes.pages import (
     index,
@@ -18,13 +17,11 @@ from eddrit.routes.pages import (
     subreddit,
 )
 from eddrit.routes.xhr import routes
-from eddrit.utils.middlewares import NoReferrerMiddleware, ProxyHeadersMiddleware
+from eddrit.utils.middlewares import NoReferrerMiddleware
 
 middlewares = [
     Middleware(NoReferrerMiddleware),
 ]
-if PROXY_ENABLED:
-    middlewares.insert(0, Middleware(ProxyHeadersMiddleware))
 
 exceptions_handlers = {HTTPException: exception_handlers.http_exception}
 

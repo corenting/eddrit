@@ -3,28 +3,30 @@
 {% macro render_author(comment) %}
 {% set author_tag = '' %}
 {% if comment.is_submitter %}
-<span style="background-color: blue; vertical-align: top" class="post-author-tag">
-    <span class="has-text-white">
+<span style="background-color: blue;" class="post-author-tag">
+    <span class="has-text-white has-text-weight-medium">
         {{ comment.author.name }}
     </span>
 </span>
 {% set author_tag = '<abbr title="Submitter">[S]</abbr>' %}
 {% elif comment.is_admin %}
-<span style="background-color: red; vertical-align: top" class="post-author-tag">
-    <span class="has-text-white">
+<span style="background-color: red;" class="post-author-tag">
+    <span class="has-text-white has-text-weight-medium">
         {{ comment.author.name }}
     </span>
 </span>
 {% set author_tag = '<abbr title="Reddit admin">[A]</abbr>' %}
 {% elif comment.is_moderator %}
-<span style="background-color: green; vertical-align: top" class="post-author-tag">
-    <span class="has-text-white">
+<span style="background-color: green;" class="post-author-tag">
+    <span class="has-text-white has-text-weight-medium">
         {{ comment.author.name }}
     </span>
 </span>
 {% set author_tag = '<abbr title="Moderator of /r/' + subreddit.name + ', speaking officially">[M]</abbr>' %}
 {% else %}
-        {{ comment.author.name }}
+<span class="has-text-weight-medium">
+    {{ comment.author.name }}
+</span>
 {% endif %}
 {{ common_macros.render_flair(comment.author.flair) }}
 {{ author_tag | safe }}
@@ -54,7 +56,7 @@
                             <div class="content is-flex is-flex-wrap-wrap is-align-items-baseline mb-2">
                                 <a id="comment-{{ comment.id }}-toggle" class="mr-1 comment-toggle"
                                 onclick="toggleCommentVisibility('{{ comment.id }}');">[-]</a>
-                                <strong>{{ render_author(comment) }}</strong>
+                                {{ render_author(comment) }}
                                 <small class="mx-1"> {{ comment.human_score }} points</small>
                                 <small> {{ comment.human_date }} </small>
                                 {% if comment.is_sticky %}

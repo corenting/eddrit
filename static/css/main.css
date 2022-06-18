@@ -101,11 +101,12 @@ img.post-img {
 }
 
 span.flair {
-  vertical-align: baseline;
+  margin: 0.2rem;
 }
 
 span.spoiler-flair {
   border: solid red 0.1rem;
   color: red;
   background: none;
+
 }

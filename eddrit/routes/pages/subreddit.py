@@ -34,6 +34,7 @@ async def subreddit_post(request: Request) -> Response:
         {
             "subreddit": subreddit_infos,
             "post": post,
+            "title_link": request.url_for("subreddit", path=post.subreddit),
             **get_templates_common_context(request),
         },
     )

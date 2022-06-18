@@ -2,7 +2,7 @@
 
 {% macro render_warning_flair(is_enabled, text) %}
 {% if is_enabled %}
-<span class="spoiler-flair flair tag">
+<span class="tag flair spoiler-flair">
     <span class="has-text-red">
         {{ text }}
     </span>
@@ -27,12 +27,14 @@
         <div class="content">
             <div class="content is-flex is-flex-wrap-wrap is-align-items-center m-0">
                 <a href="{{ post.url }}">
-                    <strong {{ 'class=sticky-title' if post.is_sticky else '' }}>{{ post.title }}</strong>
+                    <strong {{ 'class=has-text-weight-bold sticky-title' if post.is_sticky else 'has-text-weight-bold' }}>{{ post.title }}</strong>
                 </a>
                 <small class="mx-1">({{ post.domain }}) </small>
-                <small class="mx-1 is-size-7">{{ render_warning_flair(post.over18, "NSFW") }} {{
-                    render_warning_flair(post.spoiler, "Spoiler") }} {{ common_macros.render_flair(post.flair)
-                    }}</small>
+                <small class="mx-1 is-size-7 is-flex is-flex-wrap-wrap is-align-items-center">
+                    {{ render_warning_flair(post.over18, "NSFW") }}
+                    {{ render_warning_flair(post.spoiler, "Spoiler") }}
+                    {{ common_macros.render_flair(post.flair) }}
+                </small>
             </div>
             <div class="media post-infos">
 
@@ -103,17 +105,10 @@
 {% if post.content.type.value == 'video' %}
 {% if not post.content.is_embed %}
 <div
-    style="max-width: 60vw; max-height: 35rem; width: {{ post.content.width }}px; height: {{ post.content.height }}px;"
->
-    <video
-        class="video-js post-video vjs-fill"
-        id="video-{{ post.id }}"
-        data-width="{{ post.content.width }}"
-        data-height="{{ post.content.height }}"
-        data-is-gif="{{ post.content.is_gif }}"
-        data-url="{{ post.content.url }}"
-        data-video-format="{{ post.content.video_format.value }}"
-        >
+    style="max-width: 60vw; max-height: 35rem; width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
+    <video class="video-js post-video vjs-fill" id="video-{{ post.id }}" data-width="{{ post.content.width }}"
+        data-height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}"
+        data-url="{{ post.content.url }}" data-video-format="{{ post.content.video_format.value }}">
         <p class="vjs-no-js">
             To view this video please enable JavaScript, and consider upgrading to a
             web browser that

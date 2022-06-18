@@ -4,7 +4,7 @@
     {% for item in flair.items %}
     {% if item.item_type.value == 'text' %}
     <span class="has-text-{{ flair.text_color }}">
-        {{ item.content }}
+        {{ item.content | safe }}
     </span>
     {% elif item.item_type.value == 'emoji' %}
     <span class="icon">

@@ -19,6 +19,7 @@ async def get_frontpage_informations() -> models.Subreddit:
         public_description=None,
         name="popular",
         over18=False,
+        icon_url=None,
     )
 
 
@@ -26,8 +27,31 @@ async def get_frontpage_posts(
     pagination: models.Pagination,
 ) -> Tuple[List[models.Post], models.Pagination]:
     return await _get_posts_for_url(
-        "https://www.reddit.com/.json", pagination, is_popular=True
+        "https://www.reddit.com/.json", pagination, is_popular_or_all=True
     )
+
+
+async def search_posts(input_text: str) -> list[models.Post]:
+    async with httpx.AsyncClient() as client:
+        res = await client.get(f"https://old.reddit.com/search.json?q={input_text}")
+
+    posts, _ = parser.parse_posts(res.json(), False)
+    return posts
+
+
+async def search_subreddits(input_text: str) -> list[models.Subreddit]:
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            f"https://www.reddit.com/subreddits/search.json?q={input_text}"
+        )
+
+    results = res.json()["data"]["children"]
+    return [
+        parser.parse_subreddit_informations(
+            item["data"]["display_name"], item["data"]["over18"], item
+        )
+        for item in results
+    ]
 
 
 async def get_subreddit_informations(subreddit: str) -> models.Subreddit:
@@ -38,6 +62,7 @@ async def get_subreddit_informations(subreddit: str) -> models.Subreddit:
             show_thumbnails=True,
             public_description=None,
             over18=False,
+            icon_url=None,
         )
     elif subreddit == "popular":
         return await get_frontpage_informations()
@@ -72,7 +97,7 @@ async def get_post(subreddit: str, post_id: str) -> models.PostWithComments:
         res = await client.get(url, params=params)
 
     post = parser.parse_post(
-        res.json()[0]["data"]["children"][0]["data"], is_popular=False
+        res.json()[0]["data"]["children"][0]["data"], is_popular_or_all=False
     )
 
     post.comments = parser.parse_comments(res.json()[1]["data"])
@@ -94,7 +119,7 @@ async def get_comments(
 
 
 async def _get_posts_for_url(
-    url: str, pagination: models.Pagination, is_popular: bool = False
+    url: str, pagination: models.Pagination, is_popular_or_all: bool = False
 ) -> Tuple[List[models.Post], models.Pagination]:
     async with httpx.AsyncClient() as client:
         params: Dict[str, Union[str, int]] = {}
@@ -105,7 +130,7 @@ async def _get_posts_for_url(
 
         res = await client.get(url, params=params)
 
-    return parser.parse_posts(res.json(), is_popular)
+    return parser.parse_posts(res.json(), is_popular_or_all)
 
 
 async def _get_subreddit_informations(name: str) -> models.Subreddit:
@@ -130,10 +155,7 @@ async def _get_multi_informations(name: str) -> models.Subreddit:
     if len(res.history) > 0 and res.history[0].status_code != 200:
         raise SubredditNotFound()
 
-    over18 = False
-    if res.status_code == 302 and "over18" in res.headers["location"]:
-        over18 = True
-
+    over18 = res.status_code == 302 and "over18" in res.headers["location"]
     return parser.parse_subreddit_informations(name, over18)
 
 

@@ -1,15 +1,13 @@
 {% macro render_flair(flair) %}
 {% if flair %}
-<span style="background-color: {{ flair.background_color }};" class="tag flair">
+<span class="post-flair" style="background-color: {{ flair.background_color }};">
     {% for item in flair.items %}
     {% if item.item_type.value == 'text' %}
-    <span class="has-text-{{ flair.text_color }}">
+    <span class="post-flair-text">
         {{ item.content | safe }}
     </span>
     {% elif item.item_type.value == 'emoji' %}
-    <span class="icon">
-        <img class="flair-icon" src="{{ item.content }}" />
-    </span>
+    <img class="post-flair-icon" src="{{ item.content }}" />
     {% endif %}
     {% endfor %}
 </span>

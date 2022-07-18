@@ -23,63 +23,80 @@
 
 {% block main_content %}
 <!-- Sorting selection -->
-<div class="tabs is-toggle is-small">
-    <ul>
-        {% for sorting_mode in global.sorting_modes %}
-        {% if sorting_mode == 'popular' %}
-        {% set sorting_mode_url = url_for('subreddit', path=subreddit.name) %}
-        {% else %}
-        {% set sorting_mode_url = url_for('subreddit', path=subreddit.name + '/' + sorting_mode) %}
-        {% endif %}
-        <li class="{{ 'is-active' if current_sorting_mode.value == sorting_mode else '' }}">
-            <a href="{{ sorting_mode_url }}">
-                <span>{{ sorting_mode | capitalize }}</span>
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+<details>
+    <summary>Sorting</summary>
+    <nav>
+        <ul class="row">
+            {% for sorting_mode in global.sorting_modes %}
+            {% if sorting_mode == 'popular' %}
+            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name) %}
+            {% else %}
+            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name + '/' + sorting_mode) %}
+            {% endif %}
+            <li class="col">
+                <a role="button"
+                    class="post-sorting-button {{ 'secondary' if current_sorting_mode.value != sorting_mode else '' }}"
+                    href="{{ sorting_mode_url }}">
+                    {{ sorting_mode | capitalize }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
 
-<!-- Sorting period selection  -->
-{% if has_sorting_period %}
-<div class="tabs is-toggle is-small">
-    <ul>
-        {% for sorting_period in global.sorting_periods %}
-        {% if sorting_mode == 'day' %}
-        {% set sorting_period_url = url_for('subreddit', path=subreddit.name + '/' + current_sorting_mode.value) + "t=" + sorting_period %}
-        {% else %}
-        {% set sorting_period_url = url_for('subreddit', path=subreddit.name + '/' + current_sorting_mode.value) + "/?t=" + sorting_period %}
-        {% endif %}
-        <li class="{{ 'is-active' if current_sorting_period.value == sorting_period else '' }}">
-            <a href="{{ sorting_period_url }}">
-                <span>{{ sorting_period | capitalize }}</span>
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+
+    <!-- Sorting period selection  -->
+    {% if has_sorting_period %}
+    <nav>
+        <ul class="row">
+            {% for sorting_period in global.sorting_periods %}
+            {% if sorting_mode == 'day' %}
+            {% set sorting_period_url = url_for('subreddit', path=subreddit.name + '/' + current_sorting_mode.value)
+            +
+            "t="
+            + sorting_period %}
+            {% else %}
+            {% set sorting_period_url = url_for('subreddit', path=subreddit.name + '/' + current_sorting_mode.value)
+            +
+            "/?t=" + sorting_period %}
+            {% endif %}
+            <li class="col">
+                <a role="button"
+                    class="post-sorting-button {{ 'secondary' if current_sorting_period.value != sorting_period else '' }}"
+                    href="{{ sorting_period_url }}">
+                    {{ sorting_period | capitalize }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</details>
 
 <!-- Posts -->
 {% for post in posts %}
+
 <!-- Ignore NSFW posts on home pages unless enabled in settings -->
 {% if global.subreddit_is_homepage(subreddit.title) and post.over18 and not settings.nsfw_popular_all %}
 {% else %}
-{{ post_macros.render_post_card(post, subreddit, False) }}
+{{ post_macros.render_post_card(post, subreddit.show_thumbnails, subreddit.over18, False) }}
 {% endif %}
 {% endfor %}
 
 {% endblock %}
 
 {% block bottom_content %}
-<nav class="pagination" role="navigation" aria-label="pagination">
-    <a href="{{ previous_url }}" class="pagination-button pagination-previous" {{ 'disabled' if not
-        pagination.before_post_id else '' }}>
+<div class="row posts-list-pagination">
+    <a href="{{ previous_url }}" class="col-3 posts-list-pagination-button contrast outline" role="button" {{ 'disabled'
+        if not pagination.before_post_id else '' }}>
         Newer
     </a>
-    <a href="{{ next_url }}" class="pagination-button pagination-next" {{ 'disabled' if not pagination.after_post_id
-        else '' }}>
+    <a href="{{ next_url }}" class="col-3 posts-list-pagination-button contrast outline" role="button" {{ 'disabled' if
+        not pagination.after_post_id else '' }}>
         Older
     </a>
-</nav>
+</div>
+
+
 {% endblock %}

@@ -10,6 +10,7 @@ class Subreddit:
     show_thumbnails: bool
     public_description: Optional[str]
     over18: bool
+    icon_url: Optional[str]
 
 
 class SubredditSortingMode(Enum):

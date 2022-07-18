@@ -34,3 +34,10 @@ You can run the app with gunicorn directly :
 2. Install [Poetry](https://python-poetry.org/) which is used to manage dependencies of the project.
 3. Download the repository and run "make init" to install the dependencies.
 4. You can then run the app through gunicorn, for example with the following command: `poetry run gunicorn eddrit.app:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8080]`
+
+## Credits
+
+- [Bootstrap Icons](https://icons.getbootstrap.com/) for the icons used
+- [dash.js](https://github.com/Dash-Industry-Forum/dash.js) for playing videos
+- [Pico.css](https://picocss.com/) for the CSS framework used
+- [Video.js](https://videojs.com/) for playing videos

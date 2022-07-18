@@ -1,0 +1,25 @@
+{% import "macros/search_results.html" as search_results_macros with context %}
+
+{% set title = "Search" %}
+
+{% extends "base.html" %}
+
+{% block main_content %}
+
+<!-- Subreddits -->
+<h2>Subreddits</h2>
+{% if subreddits|length > 1 %}
+{{ search_results_macros.render_subreddits_search_results(subreddits) }}
+{% else %}
+<p>No subreddits found for this search.</p>
+{% endif %}
+
+<!-- Posts -->
+<h2>Posts</h2>
+{% if posts|length > 1 %}
+{{ search_results_macros.render_posts_search_results(posts) }}
+{% else %}
+<p>No posts found for this search.</p>
+{% endif %}
+
+{% endblock %}

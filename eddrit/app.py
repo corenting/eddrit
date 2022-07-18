@@ -13,6 +13,7 @@ from eddrit.routes.pages import (
     meta,
     over18,
     root_files,
+    search,
     settings,
     subreddit,
 )
@@ -36,6 +37,7 @@ app = Starlette(
         Mount(
             "/",
             routes=[
+                *search.routes,
                 *root_files.routes,
                 *over18.routes,
                 *settings.routes,

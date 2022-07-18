@@ -1,112 +1,132 @@
-@media screen and (max-width: 1023px) {
-  /* show mavbar-menu on screen less than 1024px */
-  #menu-toggle:checked ~ #main-nav { display: block; }
+@import url('pico-bootstrap-grid.min.css');
 
-  /* make navbar-burger become cross on screen less than 1024px */
-  #menu-toggle:checked + .navbar-brand > label > span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
-  #menu-toggle:checked + .navbar-brand > label > span:nth-child(2) { opacity: 0; }
-  #menu-toggle:checked + .navbar-brand > label > span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+/* Base */
 
-  /* show columns reversed on <tablet */
-  .reverse-row-order{
-    display: flex;
-    flex-flow: column-reverse;
-  }
+:root {
+  --line-height: 1.15;
+  --font-size: 16px;
 }
 
-.main {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
+.container-fluid {
+  --block-spacing-vertical: 1rem;
 }
 
-.section {
-  flex: 1;
+.align-items-baseline {
+  align-items: baseline;
 }
 
-.footer {
-  padding: 1rem 1rem 1rem;
-}
-
-.flair-icon {
-  height: 16px;
-  width: 16px;
-}
-
-.post-content {
-  width: max-content;
-  max-width: 80vw;
-}
-
-.post-text p:not(:last-of-type) {
-  margin-bottom: 1rem;
-}
-
-.post-nav {
-  padding-top: 0.3rem;
-}
-
-.postcontent-box {
-  width: fit-content;
-}
-
-.media .post-infos {
-  border-top: unset;
-  padding-top: unset;
+.align-items-center {
   align-items: center;
 }
 
-.post-comments-text {
-  margin-left: 0.5rem;
+.main-title {
+  margin-bottom: calc(var(--typography-spacing-vertical) / 2);
 }
 
-.post-author-tag {
-  border-radius: 4px;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
-  margin-right: 0.25rem;
+footer {
+  margin-bottom: calc(var(--block-spacing-vertical) * 1);
+  margin-top: calc(var(--block-spacing-vertical) * 1);
 }
 
-.sticky-title {
-  color: green;
+/* Nav */
+.nav-search {
+  margin-bottom: 0;
 }
 
-img.post-img {
-  max-height: 35rem;
-  width: auto;
+/* Posts */
+
+.post-title {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
 }
 
-.pagination {
-  display: block;
-  margin-top: 1rem;
+.posts-list-pagination-button {
+  margin-left: var(--spacing);
+  margin-right: var(--spacing);
 }
 
-.pagination-button {
-  width: 7rem;
+.posts-list-pagination {
+  justify-content: center;
 }
 
-.comment-item {
-  padding-left: 2.5rem;
-  border-left: dotted gray 0.1rem;
+.post-sorting-button {
+  width: 10rem;
 }
 
-.comment-content {
-  line-height: 1;
+.post-infos {
+  line-height: calc(var(--line-height) * 1.30);
 }
 
-.comment-show-more {
-  margin-top: 0.2rem;
-  margin-bottom: 0.2rem;
-  border-left: none;
+.post-flair {
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding-left: calc(var(--spacing) / 4);
+  padding-right: calc(var(--spacing) / 4);
+  padding-top: calc(var(--spacing) / 6);
+  padding-bottom: calc(var(--spacing) / 6);
+  margin: calc(var(--spacing) / 4);
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
 }
 
-span.flair {
-  margin: 0.2rem;
+.post-flair-spoiler {
+  background-color: darkred;
 }
 
-span.spoiler-flair {
-  border: solid red 0.1rem;
-  color: red;
-  background: none;
+.post-flair-text {
+  mix-blend-mode: difference;
+}
 
+.post-flair-icon {
+  width: var(--spacing);
+  height: var(--spacing);
+  margin-left: calc(var(--spacing) / 4);
+  margin-right: calc(var(--spacing) / 4);
+}
+
+.post-image-preview {
+  object-fit: contain;
+  max-width: calc(var(--spacing) * 4);
+  max-height: calc(var(--spacing) * 4);
+}
+
+.post-preview-button {
+  height: calc(var(--spacing) * 1.5);
+  width: calc(var(--spacing) * 1.5);
+  padding: 0px;
+  line-height: var(--line-height);
+}
+
+.post-image {
+  max-width: 35rem;
+}
+
+.post-text {
+  margin-bottom: calc(var(--block-spacing-vertical) * 1);
+  margin-top: calc(var(--block-spacing-vertical) * 1);
+}
+
+.post-comment-title {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: calc(var(--spacing) / 4);
+}
+
+.post-comment-title-item {
+  margin-left: calc(var(--spacing) / 4);
+  margin-right: calc(var(--spacing) / 4);
+}
+
+.post-comment-list-item {
+  list-style-type: none;
+}
+
+/* Settings */
+
+.settings-item {
+  justify-content: left !important;
 }

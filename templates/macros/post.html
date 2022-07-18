@@ -2,77 +2,78 @@
 
 {% macro render_warning_flair(is_enabled, text) %}
 {% if is_enabled %}
-<span class="tag flair spoiler-flair">
-    <span class="has-text-red">
+<span class="post-flair post-flair-spoiler">
+    <span>
         {{ text }}
     </span>
 </span>
 {% endif %}
 {% endmacro %}
 
-{% macro render_post_card(post, subreddit, content_expanded) %}
-<article class="media">
-    {% if subreddit.show_thumbnails %}
-    <figure class="media-left">
-        <p class="image is-64x64">
-            {% if post.over18 and not settings.nsfw_thumbnails and not subreddit.over18 %}
-            <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}">
+{% macro render_post_card(post, show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
+<article class="container-fluid">
+    <div class="row">
+        <!-- Thumbnail (first column) -->
+        {% if show_thumbnails %}
+        <span class="col-auto">
+            {% if post.over18 and not settings.nsfw_thumbnails and not always_show_over18_thumbnail %}
+            <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}" height="60" width="60">
             {% else %}
-            <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='' )) }}">
+            <img class="post-image-preview" src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static',
+                path='' )) }}" height="60" width="60">
             {% endif %}
-        </p>
-    </figure>
-    {% endif %}
-    <div class="media-content">
-        <div class="content">
-            <div class="content is-flex is-flex-wrap-wrap is-align-items-center m-0">
+        </span>
+        {% endif %}
+
+        <!-- Content (second column) -->
+        <div class="col">
+            <!-- Title + flairs -->
+            <div class="col post-title">
                 <a href="{{ post.url }}">
-                    <strong {{ 'class=has-text-weight-bold sticky-title' if post.is_sticky else 'has-text-weight-bold' }}>{{ post.title }}</strong>
+                    <strong>{{ post.title }}</strong>
                 </a>
-                <small class="mx-1">({{ post.domain }}) </small>
-                <small class="mx-1 is-size-7 is-flex is-flex-wrap-wrap is-align-items-center">
+                <small>({{ post.domain }}) </small>
+                <small>
                     {{ render_warning_flair(post.over18, "NSFW") }}
                     {{ render_warning_flair(post.spoiler, "Spoiler") }}
                     {{ common_macros.render_flair(post.flair) }}
                 </small>
             </div>
-            <div class="media post-infos">
 
-                {% if post.content.type.value != "link" %}
-                <a class="media-left button is-size-7" onclick="togglePostVisibility('{{ post.id }}');">
-                    <span class="icon is-small">
-                        <img id="toggle-{{ post.id }}" loading="lazy"
-                            src="{{ request.url_for('static', path='images/icons/' ~ ('dash' if content_expanded else 'plus')  ~ '.svg') }}" />
+            <!-- Infos -->
+            <span class="col">
+                <span class="row align-items-center">
+                    <!-- Open/close preview button -->
+                    {% if post.content.type.value != "link" %}
+                    <span class="col col-2 col-md-auto">
+                        <a class="outline post-preview-button" role="button" href="javascript:void(0)"
+                            class="post-preview-button outline" onclick="togglePostVisibility('{{ post.id }}');">+</a>
                     </span>
-                </a>
-                {% endif %}
+                    {% endif %}
 
-                <small class="media-content is-size-7">
-                    <div class="content is-flex is-flex-wrap-wrap is-align-items-center">
-                        {{ post.human_score }} points - submitted {{ post.human_date }}
-                        by
-                        {{ post.author.name }} <div class="mx-1">{{ common_macros.render_flair(post.author.flair) }}
-                        </div> to <a class="mx-1" href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{
-                            post.subreddit }}</a>
-                    </div>
-                    <nav class="post-nav level is-mobile">
-                        <div class="level-left">
-                            <a class="level-item" href="{{ post.comments_url_path }}">
-                                <span class="icon is-small"><img id="toggle-{{ post.id }}"
-                                        src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
-                                </span>
-                                <small class="post-comments-text is-size-7">{{ post.comments_count }} comments</small>
-                            </a>
+                    <!-- Author / subreddit etc. -->
+                    <small class="col">
+                        <div class="post-infos">
+                            {{ post.human_score }} points - submitted {{ post.human_date }} by {{ post.author.name }} {{
+                            common_macros.render_flair(post.author.flair) }} to <a
+                                href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{ post.subreddit }}</a>
                         </div>
-                    </nav>
-                </small>
-            </div>
-
+                        <a href="{{ post.comments_url_path }}">
+                            <span><img id="toggle-{{ post.id }}"
+                                    src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
+                            </span>
+                            <small>{{ post.comments_count }} comments</small>
+                        </a>
+                    </small>
+                </span>
+            </span>
         </div>
+    </div>
 
+
+    <div>
         {% if post.content.type.value != "link" %}
-        <div class="postcontent-box box" id="content-{{ post.id }}"
-            style="display: {{ 'block' if content_expanded else 'none' }};">
+        <div class="" id="content-{{ post.id }}" style="display: {{ 'inline-block' if content_expanded else 'none' }};">
             <template id="content-{{ post.id }}-template">
                 <div id="content-{{ post.id }}-preview">
                     {{ render_content(post) }}
@@ -97,15 +98,12 @@
 {% endif %}
 {% if post.content.type.value == 'picture' %}
 <a href="{{ post.url }}">
-    <figure class="image">
-        <img class="post-img" src="{{ post.content.picture.url }}" />
-    </figure>
+    <img class="post-image" src="{{ post.content.picture.url }}" />
 </a>
 {% endif %}
 {% if post.content.type.value == 'video' %}
 {% if not post.content.is_embed %}
-<div
-    style="max-width: 60vw; max-height: 35rem; width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
+<div style="width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
     <video class="video-js post-video vjs-fill" id="video-{{ post.id }}" data-width="{{ post.content.width }}"
         data-height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}"
         data-url="{{ post.content.url }}" data-video-format="{{ post.content.video_format.value }}">
@@ -117,8 +115,7 @@
     </video>
 </div>
 {% else %}
-<div
-    style="max-width: 60vw; max-height: 35rem; width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
+<div style="width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
     {{ post.content.url|safe }}
 </div>
 {% endif %}

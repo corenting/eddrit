@@ -5,6 +5,7 @@ from typing import Any, Dict, Hashable, Iterable, List, Optional, Tuple, Union
 import timeago
 
 from eddrit import models
+from eddrit.const import STATIC_RES_PATH_REPLACEMENT
 from eddrit.reddit.content_parser.flair import get_post_flair, get_user_flair
 from eddrit.reddit.content_parser.media import (
     get_post_image_content,
@@ -49,18 +50,19 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBa
 
 def get_thumbnail_url(data: Dict[Hashable, Any]) -> str:
     thumbnail_url = data.get("thumbnail")
-    static_replacement = "$STATIC_RES_PATH"
 
     if thumbnail_url == "self":
-        thumbnail_url = f"{static_replacement}images/icons/card-list.svg"
+        thumbnail_url = f"{STATIC_RES_PATH_REPLACEMENT}images/icons/card-list.svg"
     elif thumbnail_url == "default":
-        thumbnail_url = f"{static_replacement}images/icons/link.svg"
+        thumbnail_url = f"{STATIC_RES_PATH_REPLACEMENT}images/icons/link.svg"
     elif thumbnail_url == "nsfw":
-        thumbnail_url = f"{static_replacement}images/icons/slash-circle.svg"
+        thumbnail_url = f"{STATIC_RES_PATH_REPLACEMENT}images/icons/slash-circle.svg"
     elif thumbnail_url == "spoiler":
-        thumbnail_url = f"{static_replacement}images/icons/exclamation-circle.svg"
+        thumbnail_url = (
+            f"{STATIC_RES_PATH_REPLACEMENT}images/icons/exclamation-circle.svg"
+        )
     elif thumbnail_url == "image":
-        thumbnail_url = f"{static_replacement}images/icons/image.svg"
+        thumbnail_url = f"{STATIC_RES_PATH_REPLACEMENT}images/icons/image.svg"
     elif (
         (not thumbnail_url or thumbnail_url == "image")
         and data.get("media", None)
@@ -69,25 +71,23 @@ def get_thumbnail_url(data: Dict[Hashable, Any]) -> str:
     ):
         thumbnail_url = data["media"]["oembed"]["thumbnail_url"]
     elif thumbnail_url is None or len(thumbnail_url) == 0:
-        thumbnail_url = f"{static_replacement}images/icons/globe.svg"
+        thumbnail_url = f"{STATIC_RES_PATH_REPLACEMENT}images/icons/globe.svg"
 
     return thumbnail_url
 
 
 def get_post_url(data: Dict[Hashable, Any]) -> str:
-    if data["is_self"]:
-        return data["permalink"]
-    return data["url"]
+    return data["permalink"] if data["is_self"] else data["url"]
 
 
 def parse_posts(
-    api_response: Dict[Hashable, Any], is_popular: bool
+    api_response: Dict[Hashable, Any], is_popular_or_all: bool
 ) -> Tuple[List[models.Post], models.Pagination]:
     res = []
     for item in api_response["data"]["children"]:
         data = item["data"]
 
-        res.append(parse_post(data, is_popular))
+        res.append(parse_post(data, is_popular_or_all))
 
     return (
         res,
@@ -98,7 +98,7 @@ def parse_posts(
     )
 
 
-def parse_post(post_data: Dict[Hashable, Any], is_popular: bool) -> models.Post:
+def parse_post(post_data: Dict[Hashable, Any], is_popular_or_all: bool) -> models.Post:
     utc_now = datetime.datetime.utcnow()
 
     post_image_content = get_post_image_content(post_data)
@@ -129,7 +129,7 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular: bool) -> models.Post:
         flair=get_post_flair(post_data),
         content=get_post_content(post_data),
         url=get_post_url(post_data),
-        is_sticky=post_data["stickied"] and not is_popular,
+        is_sticky=post_data["stickied"] and not is_popular_or_all,
         comments_count=post_data["num_comments"],
         comments_url_path=post_data["permalink"],
         spoiler=post_data["spoiler"],
@@ -150,10 +150,16 @@ def parse_subreddit_informations(
         for name in splitted_name:
             public_description += f'<li><a href="/r/{name}">r/{name}</a></li>'
         public_description += "</ul>"
+        icon_url = None
     elif api_response:
         title = html.unescape(api_response["data"]["title"])
         show_thumbnails = api_response["data"]["show_media"]
         public_description = api_response["data"]["public_description"]
+        icon_url = (
+            api_response["data"]["icon_img"]
+            if len(api_response["data"]["icon_img"]) > 1
+            else None
+        )
     else:
         raise ValueError("You need a api_response if it's not a multi")
 
@@ -163,6 +169,7 @@ def parse_subreddit_informations(
         public_description=public_description,
         name=name,
         over18=over18,
+        icon_url=icon_url,
     )
 
 

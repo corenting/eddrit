@@ -1,0 +1,46 @@
+{% import "macros/post.html" as post_macros with context %}
+
+{% macro render_subreddits_search_results(subreddits) %}
+{% for subreddit in subreddits %}
+<article class="container-fluid">
+    <div class="row">
+        <!-- Thumbnail (first column) -->
+        <span class="col-auto">
+            {% if not subreddit.icon_url %}
+            <img src="{{ url_for('static', path='images/icons/globe.svg') }}" height="60" width="60">
+            {% else %}
+            <img class="post-image-preview" src="{{ subreddit.icon_url }}" height="60" width="60">
+            {% endif %}
+        </span>
+
+        <!-- Content (second column) -->
+        <div class="col">
+            <!-- Title + flairs -->
+            <div class="col post-title">
+                <a href="{{ subreddit.url }}">
+                    <strong>{{ subreddit.title }}</strong>
+                </a>
+            </div>
+
+            <!-- Infos -->
+            <span class="col">
+                <span class="row align-items-center">
+                    <!-- Author / subreddit etc. -->
+                    <small class="col">
+                        <div class="post-infos">
+                            {{ subreddit.public_description }}
+                        </div>
+                    </small>
+                </span>
+            </span>
+        </div>
+    </div>
+</article>
+{% endfor %}
+{% endmacro %}
+
+{% macro render_posts_search_results(posts) %}
+{% for post in posts %}
+{{ post_macros.render_post_card(post, True, False, False) }}
+{% endfor %}
+{% endmacro %}

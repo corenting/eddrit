@@ -3,28 +3,28 @@
 {% macro render_author(comment) %}
 {% set author_tag = '' %}
 {% if comment.is_submitter %}
-<span style="background-color: blue;" class="post-author-tag">
-    <span class="has-text-white has-text-weight-medium">
+<span class="post-flair post-comment-title-item" style="background-color: blue;">
+    <span>
         {{ comment.author.name }}
     </span>
 </span>
 {% set author_tag = '<abbr title="Submitter">[S]</abbr>' %}
 {% elif comment.is_admin %}
-<span style="background-color: red;" class="post-author-tag">
-    <span class="has-text-white has-text-weight-medium">
+<span class="post-flair post-comment-title-item" style="background-color: red;">
+    <span>
         {{ comment.author.name }}
     </span>
 </span>
 {% set author_tag = '<abbr title="Reddit admin">[A]</abbr>' %}
 {% elif comment.is_moderator %}
-<span style="background-color: green;" class="post-author-tag">
-    <span class="has-text-white has-text-weight-medium">
+<span class="post-flair post-comment-title-item" style="background-color: green;">
+    <span>
         {{ comment.author.name }}
     </span>
 </span>
 {% set author_tag = '<abbr title="Moderator of /r/' + subreddit.name + ', speaking officially">[M]</abbr>' %}
 {% else %}
-<span class="has-text-weight-medium">
+<span class="post-comment-title-item">
     {{ comment.author.name }}
 </span>
 {% endif %}
@@ -33,48 +33,39 @@
 {% endmacro %}
 
 {% macro render_comments(subreddit_name, post_id, comments) %}
-<ul>
+<ul class="post-comments-tree">
     {% for comment in comments %}
     {% if comment.show_more_count is defined %}
     {% if comment.parent_id != post_id %}
-    <li id="comment-{{ comment.parent_id }}-more" class="comment-item comment-show-more">
-        <a class="comment-content"
+    <li class="post-comment-list-item" id="comment-{{ comment.parent_id }}-more">
+        <a
             onclick="fetchCommentsChildren('{{ subreddit_name }}', '{{ post_id }}', '{{ comment.parent_id }}', '{{ comment.id }}');">Show
-            more ( {{ comment.show_more_count }} hidden ) ...</a>
+            more ( {{ comment.show_more_count }} hidden )...</a>
     </li>
     {% else %}
-    <a class="comment-show-more" href="https://old.reddit.com/r{{ request.path }}">{{ comment.show_more_count }} more
-        comments cannot be displayed, click here to see them on old.reddit.com</a>
+    <li class="post-comment-list-item">
+        <a href="https://old.reddit.com/r{{ request.path }}">{{ comment.show_more_count }} more
+            comments cannot be displayed, click here to see them on old.reddit.com</a>
+    </li>
     {% endif %}
     {% else %}
-    <div id="comment-{{ comment.id }}">
-        <li class="comment-item">
-            <div class="media">
-                <div class="media-content">
-                    <div class="content">
-                        <p>
-                            <div class="content is-flex is-flex-wrap-wrap is-align-items-baseline mb-2">
-                                <a id="comment-{{ comment.id }}-toggle" class="mr-1 comment-toggle"
-                                onclick="toggleCommentVisibility('{{ comment.id }}');">[-]</a>
-                                {{ render_author(comment) }}
-                                <small class="mx-1"> {{ comment.human_score }} points</small>
-                                <small> {{ comment.human_date }} </small>
-                                {% if comment.is_sticky %}
-                                <small class="mx-1 sticky-title"> Stickied comment</small>
-                                {% endif %}
-                            </div>
-                            <div id="comment-{{ comment.id }}-content" class="mb-2 comment-content">
-                                {{ comment.content | safe }}
-                            </div>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <ul id="comment-{{ comment.id }}-children">
-                {{ render_comments(subreddit_name, post_id, comment.children) }}
-            </ul>
-        </li>
-    </div>
+    <li id="comment-{{ comment.id }}" class="post-comment-list-item">
+        <div class="post-comment-title">
+            <a id="comment-{{ comment.id }}-toggle" onclick="toggleCommentVisibility('{{ comment.id }}');">[-]</a>
+            {{ render_author(comment) }}
+            <small class="post-comment-title-item">{{ comment.human_score }} points</small>
+            <small class="post-comment-title-item">{{ comment.human_date }}</small>
+            {% if comment.is_sticky %}
+            <small class="post-comment-title-item">Stickied comment</small>
+            {% endif %}
+        </div>
+        <div id="comment-{{ comment.id }}-content">
+            {{ comment.content | safe }}
+        </div>
+        <div id="comment-{{ comment.id }}-children">
+            {{ render_comments(subreddit_name, post_id, comment.children) }}
+        </div>
+    </li>
     {% endif %}
     {% endfor %}
 </ul>

@@ -48,13 +48,13 @@ function fetchCommentsChildren(subredditName, postId, parentId, commentId) {
     var parentElt = document.getElementById("comment-" + parentId);
 
     var commentIdParam = postId == parentId ? commentId : parentId
-    fetch("/xhr/comments/xhr?subreddit=" + subredditName  + "&post_id=" + postId + "&comment_id=" + commentIdParam)
-    .then(function(response) {
-      return response.text();
-    })
-    .then(function(text) {
-        parentElt.innerHTML = text
-    });
+    fetch("/xhr/comments/xhr?subreddit=" + subredditName + "&post_id=" + postId + "&comment_id=" + commentIdParam)
+        .then(function (response) {
+            return response.text();
+        })
+        .then(function (text) {
+            parentElt.innerHTML = text
+        });
 }
 
 // Video player setup
@@ -63,10 +63,10 @@ function setupVideo(videoElement) {
         return;
     }
 
-    let width = parseInt(videoElement.getAttribute('data-width'))
-    let height = parseInt(videoElement.getAttribute('data-height'))
+    let width = parseInt(videoElement.getAttribute('data-width'));
+    let height = parseInt(videoElement.getAttribute('data-height'));
     let isGif = videoElement.getAttribute('data-is-gif') == 'True';
-    videojs(videoElement,  {
+    videojs(videoElement, {
         'width': width,
         'height': height,
         'controls': !isGif,
@@ -78,20 +78,21 @@ function setupVideo(videoElement) {
     });
 }
 
-// Init
-if( document.readyState !== 'loading' ) {
-    initPage();
-} else {
-    document.addEventListener('DOMContentLoaded', function () {
-        initPage();
-    });
-}
-
 function initPage() {
     // Init video players
     var elements = document.getElementsByClassName('post-video');
     for (var i = 0; i < elements.length; ++i) {
         var video = elements[i];
-        setupVideo(video)
+        setupVideo(video);
     }
+}
+
+
+// Init
+if (document.readyState !== 'loading') {
+    initPage();
+} else {
+    document.addEventListener('DOMContentLoaded', function () {
+        initPage();
+    });
 }

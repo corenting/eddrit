@@ -18,7 +18,7 @@ style:
 	$(PYTHON) pflake8 $(SRC)
 	$(PYTHON) mypy -- $(SRC)
 	$(PYTHON) black --check $(SRC)
-	$(PYTHON) isort --check-only  $(SRC)
+	$(PYTHON) isort --check-only $(SRC)
 
 .PHONY: test
 .SILENT: test

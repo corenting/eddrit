@@ -1,34 +1,47 @@
-<nav class="navbar is-light has-shadow" role="navigation" aria-label="main navigation">
-    <input type="checkbox" id="menu-toggle" class="is-hidden">
-    <div class="navbar-brand">
-        <a class="navbar-item" href="{{ url_for('root', path='') }}">
-            <img src="{{ url_for('static', path='images/logo.svg') }}" width="132" height="28">
-        </a>
+<nav>
+    <ul>
+        <!-- Logo  -->
+        <li>
+            <a href="{{ url_for('root', path='') }}">
+                <img src="{{ url_for('static', path='images/logo.svg') }}" width="132" height="28">
+            </a>
+        </li>
 
-        <label for="menu-toggle" class="navbar-burger burger" aria-label="menu" aria-expanded="false">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-        </label>
-    </div>
-
-    <div id="main-nav" class="navbar-menu">
-        <div class="navbar-start is-active">
-            <a href="/" class="navbar-item">
+        <!-- Main links  -->
+        <li>
+            <a href="/">
                 Popular
             </a>
-            <a href="/r/all" class="navbar-item">
+        </li>
+        <li>
+            <a href="/r/all">
                 All
             </a>
-        </div>
+        </li>
+    </ul>
 
-        <div class="navbar-end">
-            <a href="/settings" class="navbar-item">
-                Settings
-            </a>
-            <a href="/meta/about" class="navbar-item">
-                About
-            </a>
-        </div>
-    </div>
+    <ul>
+        <li>
+            <form class="nav-search" action="/search" method="get">
+                <input type="search" id="search" name="q" placeholder="Search">
+            </form>
+        </li>
+        <li>
+            <details role="list" dir="rtl">
+                <summary aria-haspopup="listbox" role="link">eddrit</summary>
+                <ul role="listbox">
+                    <li>
+                        <a href="/settings">
+                            Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/meta/about">
+                            About
+                        </a>
+                    </li>
+                </ul>
+            </details>
+        </li>
+    </ul>
 </nav>

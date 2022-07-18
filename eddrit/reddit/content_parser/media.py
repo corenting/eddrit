@@ -132,14 +132,12 @@ def _get_reddit_video_preview(
     api_post_data: Dict[Hashable, Any], format: Optional[models.PostVideoFormat] = None
 ) -> models.VideoPostContent:
     reddit_video = api_post_data["preview"]["reddit_video_preview"]
-    video_url = reddit_video["dash_url" if not format else "fallback_url"]
+    video_url = reddit_video["fallback_url" if format else "dash_url"]
     return models.VideoPostContent(
         url=video_url,
         width=reddit_video["width"],
         height=reddit_video["height"],
         is_gif=reddit_video["is_gif"],
         is_embed=False,
-        video_format=format
-        if format
-        else models.PostVideoFormat.DASH,  # TODO: check rule
+        video_format=format or models.PostVideoFormat.DASH,
     )

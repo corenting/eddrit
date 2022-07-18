@@ -6,35 +6,43 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }} | eddrit</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/bulma.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='vendors/videojs/video-js.css') }}">
     {% endblock %}
 </head>
 
-<body class="main">
-    {% include 'header.html' %}
+<body>
+    <header class="container-fluid">
+        <div>
+            {% include 'header.html' %}
+        </div>
+    </header>
 
-    <section class="section">
-        <div class="">
-            <h1 class="title">
-                {% if title_link is defined %}
-                <a href="{{ title_link }}">{{ title }}</a>
-                {% else %}
-                {{ title }}
-                {% endif %}
-            </h1>
+    <main class="container-fluid">
+        <h1 class="main-title">
+            {% if title_link is defined %}
+            <a href="{{ title_link }}">{{ title }}</a>
+            {% else %}
+            {{ title }}
+            {% endif %}
+        </h1>
 
-            <div>
-                {% block main_content %}{% endblock %}
-            </div>
+        <div>
+            {% block main_content %}{% endblock %}
+        </div>
+
+        <div>
             {% block bottom_content %}{% endblock %}
         </div>
-    </section>
 
-    {% include 'footer.html' %}
+    </main>
+
+    <div class="container-fluid">
+        {% include 'footer.html' %}
+    </div>
 </body>
 <script type="text/javascript" src="{{ url_for('static', path='js/main.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', path='js/theme.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', path='vendors/dashjs/dash.all.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', path='vendors/videojs/video.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', path='vendors/videojs/videojs-dash.min.js') }}"></script>

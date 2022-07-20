@@ -9,7 +9,7 @@
             {% if not subreddit.icon_url %}
             <img src="{{ url_for('static', path='images/icons/globe.svg') }}" height="60" width="60">
             {% else %}
-            <img class="post-image-preview" src="{{ subreddit.icon_url }}" height="60" width="60">
+            <img class="post-image-thumbnail" src="{{ subreddit.icon_url }}" height="60" width="60">
             {% endif %}
         </span>
 
@@ -17,7 +17,7 @@
         <div class="col">
             <!-- Title + flairs -->
             <div class="col post-title">
-                <a href="{{ subreddit.url }}">
+                <a href="{{ url_for('subreddit', path=subreddit.name) }}">
                     <strong>{{ subreddit.title }}</strong>
                 </a>
             </div>

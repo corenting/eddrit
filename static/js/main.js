@@ -69,6 +69,7 @@ function setupVideo(videoElement) {
     videojs(videoElement, {
         'width': width,
         'height': height,
+        'aspectRatio': width > height ? `${width}:${height}` : `${height}:${width}`,
         'controls': !isGif,
         'autoplay': isGif,
         'sources': [{
@@ -80,7 +81,7 @@ function setupVideo(videoElement) {
 
 function initPage() {
     // Init video players
-    var elements = document.getElementsByClassName('post-video');
+    var elements = document.getElementsByClassName('video-js');
     for (var i = 0; i < elements.length; ++i) {
         var video = elements[i];
         setupVideo(video);

@@ -3,25 +3,20 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-<div class="columns is-mobile is-centered">
-    <div class='column card is-half'>
-        <div class="card-image has-text-centered">
-                <img class='image is-inline-block is-128x128' src="{{ url_for('static', path='images/icons/slash-circle.svg') }}">
-        </div>
-        <div class='card-content'>
-            <p class="has-text-centered">You must be over 18 to see this content.</p>
-            <p class="has-text-centered">Are you over 18 and willing to see adult (NSFW) content?</p>
-            <hr />
-            <div class="is-centered buttons">
-                <a class="button is-link is-large" href="{{ url_for('root', path='') }}">
-                    Go back
-                </a>
-                <form action="/over18" method="post">
-                    <button type="submit" name="continue" value="{{ destination_link }}" class="button is-link is-large">Continue</button>
-                </form>
-            </div>
-        </div>
+<article>
+    <header>
+        Do you want to continue?
+    </header>
+    <p>You must be over 18 to see this content.</p>
+    <p >Are you over 18 and willing to see adult (NSFW) content?</p>
+    <div class="over18-buttons">
+        <a role="button" class="over18-button secondary" href="{{ url_for('root', path='') }}">
+            Go back
+        </a>
+        <form action="/over18" method="post">
+            <button class="over18-button" role="button" type="submit" name="continue" value="{{ destination_link }}">Continue</button>
+        </form>
     </div>
-</div>
+</article>
 
 {% endblock %}

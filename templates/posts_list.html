@@ -87,7 +87,7 @@
 {% endblock %}
 
 {% block bottom_content %}
-<div class="row posts-list-pagination">
+<div class="row justify-content-center">
     <a href="{{ previous_url }}" class="col-3 posts-list-pagination-button contrast outline" role="button" {{ 'disabled'
         if not pagination.before_post_id else '' }}>
         Newer

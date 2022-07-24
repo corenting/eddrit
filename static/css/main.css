@@ -19,6 +19,10 @@
   align-items: center;
 }
 
+.justify-content-center {
+  justify-content: center;
+}
+
 .main-title {
   margin-bottom: calc(var(--typography-spacing-vertical) / 2);
 }
@@ -44,10 +48,6 @@ footer {
 .posts-list-pagination-button {
   margin-left: var(--spacing);
   margin-right: var(--spacing);
-}
-
-.posts-list-pagination {
-  justify-content: center;
 }
 
 .post-sorting-button {
@@ -86,7 +86,7 @@ footer {
   margin-right: calc(var(--spacing) / 4);
 }
 
-.post-image-preview {
+.post-image-thumbnail {
   object-fit: contain;
   max-width: calc(var(--spacing) * 4);
   max-height: calc(var(--spacing) * 4);
@@ -99,13 +99,25 @@ footer {
   line-height: var(--line-height);
 }
 
-.post-image {
-  max-width: 35rem;
+.post-content {
+  height: 100%;
+  max-height: 100%;
+  max-width: 100%;
+  margin-bottom: var(--block-spacing-vertical);
+  margin-top: var(--block-spacing-vertical);
 }
 
-.post-text {
-  margin-bottom: calc(var(--block-spacing-vertical) * 1);
-  margin-top: calc(var(--block-spacing-vertical) * 1);
+.post-content-image {
+  max-height: 35rem;
+  object-position: left;
+  object-fit: contain;
+}
+
+.post-content-video {
+  width: 80vw;
+  height: fit-content;
+  max-height: 100%;
+  max-width: 60vh;
 }
 
 .post-comment-title {
@@ -129,4 +141,20 @@ footer {
 
 .settings-item {
   justify-content: left !important;
+}
+
+/* Over 18 page */
+.over18-button {
+  height: fit-content;
+  margin-bottom: 0;
+  width: 25rem;
+  margin-top: var(--spacing);
+  border: 0;
+  max-width: 100%;
+}
+
+.over18-buttons {
+  width: fit-content;
+  margin: 0 auto;
+  max-width: 100%;
 }

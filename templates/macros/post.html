@@ -19,8 +19,8 @@
             {% if post.over18 and not settings.nsfw_thumbnails and not always_show_over18_thumbnail %}
             <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}" height="60" width="60">
             {% else %}
-            <img class="post-image-preview" src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static',
-                path='' )) }}" height="60" width="60">
+            <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='' )) }}"
+                class="post-image-thumbnail" height="60" width="60">
             {% endif %}
         </span>
         {% endif %}
@@ -91,33 +91,35 @@
 {% endmacro %}
 
 {% macro render_content(post) %}
-{% if post.content.type.value == 'text' %}
-<div class="post-text">
-    {{ post.content.text|safe }}
+<div class="post-content">
+    {% if post.content.type.value == 'text' %}
+    <div class="post-text">
+        {{ post.content.text|safe }}
+    </div>
+    {% endif %}
+    {% if post.content.type.value == 'picture' %}
+    <a href="{{ post.url }}">
+        <img height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}" class="post-content-image" src="{{ post.content.picture.url }}" />
+    </a>
+    {% endif %}
+    {% if post.content.type.value == 'video' %}
+    {% if not post.content.is_embed %}
+    <div class="post-content-video">
+        <video class="video-js vjs-fluid" id="video-{{ post.id }}" data-width="{{ post.content.width }}"
+            data-height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}"
+            data-url="{{ post.content.url }}" data-video-format="{{ post.content.video_format.value }}">
+            <p class="vjs-no-js">
+                To view this video please enable JavaScript, and consider upgrading to a
+                web browser that
+                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+            </p>
+        </video>
+    </div>
+    {% else %}
+    <div class="post-content-video">
+        {{ post.content.url|safe }}
+    </div>
+    {% endif %}
+    {% endif %}
 </div>
-{% endif %}
-{% if post.content.type.value == 'picture' %}
-<a href="{{ post.url }}">
-    <img class="post-image" src="{{ post.content.picture.url }}" />
-</a>
-{% endif %}
-{% if post.content.type.value == 'video' %}
-{% if not post.content.is_embed %}
-<div style="width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
-    <video class="video-js post-video vjs-fill" id="video-{{ post.id }}" data-width="{{ post.content.width }}"
-        data-height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}"
-        data-url="{{ post.content.url }}" data-video-format="{{ post.content.video_format.value }}">
-        <p class="vjs-no-js">
-            To view this video please enable JavaScript, and consider upgrading to a
-            web browser that
-            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-        </p>
-    </video>
-</div>
-{% else %}
-<div style="width: {{ post.content.width }}px; height: {{ post.content.height }}px;">
-    {{ post.content.url|safe }}
-</div>
-{% endif %}
-{% endif %}
 {% endmacro %}

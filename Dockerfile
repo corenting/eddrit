@@ -27,6 +27,11 @@ COPY --from=base /app /app
 
 WORKDIR /app/
 
+# User
+RUN useradd -m eddrit && \
+    chown -R eddrit /app/
+USER eddrit
+
 # App
 COPY eddrit /app/eddrit
 COPY static /app/static

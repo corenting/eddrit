@@ -26,7 +26,7 @@ async def over18_gate_page(request: Request) -> Response:
 
 async def over18_gate_submit(request: Request) -> Response:
     body = await request.form()
-    continue_url = body.get("continue", "/")
+    continue_url = str(body.get("continue", "/"))
     res = RedirectResponse(url=continue_url, status_code=302)
     res.set_cookie("over18", "1", secure=True, httponly=True)
     return res

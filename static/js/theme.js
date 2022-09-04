@@ -40,8 +40,6 @@ function setupSettingsPage() {
 
     // Add listener for theme change
     selectElement.addEventListener('change', function () {
-        console.log('change');
-        console.log(selectElement.value);
         let selectedTheme = selectElement.value.toLowerCase();
         // handle system theme choice
         if (selectedTheme == '') {

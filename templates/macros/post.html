@@ -20,7 +20,7 @@
             <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}" height="60" width="60">
             {% else %}
             <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='' )) }}"
-                class="post-image-thumbnail" height="60" width="60">
+                class="post-image-thumbnail post-image-thumbnail-default" height="60" width="60">
             {% endif %}
         </span>
         {% endif %}

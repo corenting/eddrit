@@ -24,7 +24,7 @@
 {% block main_content %}
 <!-- Sorting selection -->
 <details>
-    <summary>Sorting</summary>
+    <summary>Sorting mode</summary>
     <nav>
         <ul class="row">
             {% for sorting_mode in global.sorting_modes %}
@@ -43,10 +43,13 @@
             {% endfor %}
         </ul>
     </nav>
+</details>
 
-
+{% if has_sorting_period %}
+<details>
+    <summary>Sorting period</summary>
     <!-- Sorting period selection  -->
-    {% if has_sorting_period %}
+
     <nav>
         <ul class="row">
             {% for sorting_period in global.sorting_periods %}

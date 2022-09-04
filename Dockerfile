@@ -1,6 +1,7 @@
 # Python base (venv and user)
 FROM python:3.10-slim AS base
 
+# Install dependencies and dumb-init
 RUN apt-get update && apt-get install -y build-essential curl dumb-init && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m eddrit && \
@@ -8,15 +9,15 @@ RUN useradd -m eddrit && \
     chown -R eddrit /app/
 USER eddrit
 
-# Install Poetry and dumb-init
-ENV PATH="${PATH}:/home/eddrit/.poetry/bin"
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python && \
+# Install Poetry
+ENV PATH="${PATH}:/home/eddrit/.local/bin"
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
     poetry config virtualenvs.in-project true
 
 # Dependencies
 WORKDIR /app/
 COPY ./pyproject.toml ./poetry.lock /app/
-RUN poetry install --no-interaction --no-ansi --no-root --no-dev
+RUN poetry install --no-interaction --no-ansi --no-root --only main
 
 
 # Prod image (app and default config)

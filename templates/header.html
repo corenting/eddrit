@@ -1,7 +1,11 @@
+<a class="phone-only" href="{{ url_for('root', path='') }}">
+    <img src="{{ url_for('static', path='images/logo.svg') }}" width="132" height="28">
+</a>
+
 <nav>
     <ul>
         <!-- Logo  -->
-        <li>
+        <li class="desktop-only">
             <a href="{{ url_for('root', path='') }}">
                 <img src="{{ url_for('static', path='images/logo.svg') }}" width="132" height="28">
             </a>
@@ -28,7 +32,7 @@
         </li>
         <li>
             <details role="list" dir="rtl">
-                <summary aria-haspopup="listbox" role="link">eddrit</summary>
+                <summary aria-haspopup="listbox" role="link">⚙️</summary>
                 <ul role="listbox">
                     <li>
                         <a href="/settings">

@@ -32,7 +32,28 @@ footer {
   margin-top: calc(var(--block-spacing-vertical) * 1);
 }
 
+@media all and (min-width: 1200px) {
+  .desktop-only {
+    display: block;
+  }
+
+  .phone-only {
+    display: none;
+  }
+}
+
+@media all and (max-width: 1199px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .phone-only {
+    display: block;
+  }
+}
+
 /* Nav */
+
 .nav-search {
   margin-bottom: 0;
 }
@@ -126,6 +147,11 @@ footer {
   flex-wrap: wrap;
   width: 100%;
   margin-bottom: calc(var(--spacing) / 4);
+}
+
+.post-comment-title-separator{
+  margin-top: 0;
+  border-style: dotted;
 }
 
 .post-comment-title-item {

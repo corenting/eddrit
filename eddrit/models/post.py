@@ -119,7 +119,7 @@ class Post:
     domain: str
     human_date: str
     thumbnail_url: str
-    thumbnail_url_hq: str
+    thumbnail_is_icon: bool
     flair: Optional[Flair]
     content: PostContentBase
     url: str

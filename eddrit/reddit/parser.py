@@ -48,7 +48,8 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBa
     return models.LinkPostContent()
 
 
-def get_thumbnail_url(data: Dict[Hashable, Any]) -> str:
+def get_post_thumbnail(data: Dict[Hashable, Any]) -> tuple[str, bool]:
+    """Return a tuple with the post thumbnail URL and a boolean indicating if the thumbnail is an icon or not."""
     thumbnail_url = data.get("thumbnail")
 
     if thumbnail_url == "self":
@@ -73,7 +74,7 @@ def get_thumbnail_url(data: Dict[Hashable, Any]) -> str:
     elif thumbnail_url is None or len(thumbnail_url) == 0:
         thumbnail_url = f"{STATIC_RES_PATH_REPLACEMENT}images/icons/globe.svg"
 
-    return thumbnail_url
+    return thumbnail_url, STATIC_RES_PATH_REPLACEMENT in thumbnail_url
 
 
 def get_post_url(data: Dict[Hashable, Any]) -> str:
@@ -101,13 +102,8 @@ def parse_posts(
 def parse_post(post_data: Dict[Hashable, Any], is_popular_or_all: bool) -> models.Post:
     utc_now = datetime.datetime.utcnow()
 
-    post_image_content = get_post_image_content(post_data)
-
     # Get post thumbnail
-    thumbnail_url = get_thumbnail_url(post_data)
-    thumbnail_url_hq = thumbnail_url
-    if type(post_image_content) == models.PicturePostContent:
-        thumbnail_url_hq = post_image_content.picture.url
+    thumbnail_url, thumbnail_is_icon = get_post_thumbnail(post_data)
 
     return models.Post(
         id=post_data["id"],
@@ -125,7 +121,7 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular_or_all: bool) -> model
             utc_now,
         ),
         thumbnail_url=thumbnail_url,
-        thumbnail_url_hq=thumbnail_url_hq,
+        thumbnail_is_icon=thumbnail_is_icon,
         flair=get_post_flair(post_data),
         content=get_post_content(post_data),
         url=get_post_url(post_data),

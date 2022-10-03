@@ -1,17 +1,20 @@
 const THEME_SYSTEM = "system";
-const THEME_LIGHT = "system";
-const THEME_DARK = "system";
+const THEME_LIGHT = "light";
+const THEME_DARK = "dark";
 
 const DARK_MODE_MEDIA_QUERY = window.matchMedia('(prefers-color-scheme: dark)');
 const THEME_LOCAL_STORAGE_KEY = 'theme';
 
 function setTheme(theme) {
     window.localStorage.setItem(THEME_LOCAL_STORAGE_KEY, theme);
+
+    // If not system theme, set theme directly
     if (theme != THEME_SYSTEM) {
         document.getElementsByTagName('html')[0].setAttribute('data-theme', theme);
     }
+    // Else, set the theme corresponding to matching dark mode media query
     else {
-        document.getElementsByTagName('html')[0].removeAttribute('data-theme');
+        document.getElementsByTagName('html')[0].setAttribute('data-theme', DARK_MODE_MEDIA_QUERY.matches ? THEME_DARK : THEME_LIGHT);
     }
 };
 

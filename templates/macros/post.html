@@ -18,9 +18,11 @@
         <span class="col-auto">
             {% if post.over18 and not settings.nsfw_thumbnails and not always_show_over18_thumbnail %}
             <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}" height="60" width="60">
-            {% else %}
+            {% elif post.thumbnail_is_icon %}
             <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='' )) }}"
                 class="post-image-thumbnail post-image-thumbnail-default" height="60" width="60">
+            {% else %}
+            <img src="{{ post.thumbnail_url }}" class="post-image-thumbnail" height="60" width="60">
             {% endif %}
         </span>
         {% endif %}
@@ -99,7 +101,8 @@
     {% endif %}
     {% if post.content.type.value == 'picture' %}
     <a href="{{ post.url }}">
-        <img height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}" class="post-content-image" src="{{ post.content.picture.url }}" />
+        <img height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}"
+            class="post-content-image" src="{{ post.content.picture.url }}" />
     </a>
     {% endif %}
     {% if post.content.type.value == 'video' %}

@@ -47,9 +47,9 @@
                 <span class="row align-items-center">
                     <!-- Open/close preview button -->
                     {% if post.content.type.value != "link" %}
-                    <span class="col col-2 col-md-auto">
-                        <a class="outline post-preview-button" role="button" href="javascript:void(0)"
-                            class="post-preview-button outline" onclick="togglePostVisibility('{{ post.id }}');">+</a>
+                    <span class="col col-2 col-md-auto js-only">
+                        <a id="post-preview-button-{{ post.id }}" class="outline post-preview-button" role="button" href="javascript:void(0)"
+                            class="post-preview-button outline" onclick="togglePostVisibility('{{ post.id }}');"> {{ '-' if content_expanded else '+' }}</a>
                     </span>
                     {% endif %}
 
@@ -61,8 +61,7 @@
                                 href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{ post.subreddit }}</a>
                         </div>
                         <a href="{{ post.comments_url_path }}">
-                            <span><img id="toggle-{{ post.id }}"
-                                    src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
+                            <span><img src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
                             </span>
                             <small>{{ post.comments_count }} comments</small>
                         </a>
@@ -107,19 +106,17 @@
     {% endif %}
     {% if post.content.type.value == 'video' %}
     {% if not post.content.is_embed %}
-    <div class="post-content-image-or-video" style="width: {{ post.content.width }}px; height: {{ post.content.height }}px">
+    <div class="post-content-image-or-video js-only" style="width: {{ post.content.width }}px; height: {{ post.content.height }}px">
         <video class="video-js" id="video-{{ post.id }}" width="{{ post.content.width }}" height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}"
             data-url="{{ post.content.url }}" data-video-format="{{ post.content.video_format.value }}">
-            <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a
-                web browser that
-                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-            </p>
         </video>
+    </div>
+    <div class="post-text no-js-only">
+        <p>Cannot display the video because Javascript is not enabled :(</p>
     </div>
     {% else %}
     <div class="post-content-image-or-video">
-        {{ post.content.url|safe }}
+        {{ post.url|safe }}
     </div>
     {% endif %}
     {% endif %}

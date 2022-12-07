@@ -2,14 +2,14 @@
 function togglePostVisibility(postId) {
     // Get root elements
     var rootElement = document.getElementById("content-" + postId);
-    var buttonImg = document.getElementById("toggle-" + postId);
+    var buttonLink = document.getElementById("post-preview-button-" + postId);
 
     // Get content HTML from attribute
     var contentTemplate = document.getElementById("content-" + postId + "-template");
 
     if (rootElement.style.display === "none") {
-        rootElement.style.display = "block";
-        buttonImg.src = buttonImg.src.replace("plus", "dash");
+        rootElement.style.display = "inherit";
+        buttonLink.innerText = "-";
 
         // Copy template and append it
         const content = contentTemplate.content.cloneNode(true);
@@ -18,7 +18,7 @@ function togglePostVisibility(postId) {
         setupVideo(document.getElementById("video-" + postId));
     } else {
         rootElement.style.display = "none";
-        buttonImg.src = buttonImg.src.replace("dash", "plus");
+        buttonLink.innerText = "+";
 
         // Destroy content
         var content = document.getElementById("content-" + postId + "-preview");
@@ -33,8 +33,8 @@ function toggleCommentVisibility(commentId) {
     var toggleElement = document.getElementById("comment-" + commentId + "-toggle");
 
     if (contentElement.style.display === "none") {
-        contentElement.style.display = "block";
-        childrenElement.style.display = "block";
+        contentElement.style.display = "inherit";
+        childrenElement.style.display = "inherit";
         toggleElement.innerText = "[-]"
     } else {
         contentElement.style.display = "none";
@@ -65,9 +65,8 @@ function setupVideo(videoElement) {
 
     let isGif = videoElement.getAttribute('data-is-gif') == 'True';
     videojs(videoElement, {
-        'controls': !isGif,
+        'controls': true,
         'fill': true,
-        'responsive': true,
         'autoplay': isGif,
         'sources': [{
             'type': videoElement.getAttribute('data-video-format'),
@@ -78,11 +77,26 @@ function setupVideo(videoElement) {
 
 function initPage() {
     // Init video players
-    var elements = document.getElementsByClassName('video-js');
-    for (var i = 0; i < elements.length; ++i) {
-        var video = elements[i];
+    var videoElements = document.getElementsByClassName('video-js');
+    for (var i = 0; i < videoElements.length; ++i) {
+        var video = videoElements[i];
         setupVideo(video);
     }
+
+    // Show js-only elements
+    var jsOnlyElements = document.getElementsByClassName('js-only');
+    for (var i = 0; i < jsOnlyElements.length; ++i) {
+        var element = jsOnlyElements[i];
+        element.style.display = "unset";
+    }
+
+    // Hide no-js-only elements
+    var noJsOnlyElements = document.getElementsByClassName('js-only');
+    for (var i = 0; i < noJsOnlyElements.length; ++i) {
+        var element = noJsOnlyElements[i];
+        element.style.display = "none";
+    }
+
 }
 
 

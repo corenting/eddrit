@@ -1,4 +1,5 @@
-from typing import Dict, List, Tuple, Union
+from dataclasses import asdict
+from typing import Dict, Iterable, List, Tuple, Union
 
 import httpx
 
@@ -100,22 +101,20 @@ async def get_post(subreddit: str, post_id: str) -> models.PostWithComments:
         res.json()[0]["data"]["children"][0]["data"], is_popular_or_all=False
     )
 
-    post.comments = parser.parse_comments(res.json()[1]["data"])
-
-    return post
+    return models.PostWithComments(
+        **asdict(post), comments=parser.parse_comments(res.json()[1]["data"])
+    )
 
 
 async def get_comments(
     subreddit: str, post_id: str, comment_id: str
-) -> List[Union[models.PostComment, models.PostCommentShowMore]]:
+) -> Iterable[Union[models.PostComment, models.PostCommentShowMore]]:
     async with httpx.AsyncClient() as client:
         url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
         params = {"limit": 100}
         res = await client.get(url, params=params)
 
-    comments = parser.parse_comments(res.json()[1]["data"])
-
-    return comments
+    return parser.parse_comments(res.json()[1]["data"])
 
 
 async def _get_posts_for_url(

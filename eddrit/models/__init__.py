@@ -13,6 +13,7 @@ from eddrit.models.post import (
     PostWithComments,
     TextPostContent,
     VideoPostContent,
+    GalleryPostContent,
 )
 from eddrit.models.settings import Settings
 from eddrit.models.subreddit import (

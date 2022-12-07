@@ -7,42 +7,37 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-aiofiles = "^0.8.0"
+python = "^3.11"
+aiofiles = "^22.1.0"
 environs = "^9.5.0"
 gunicorn = "^20.1.0"
-httpx = "^0.23.0"
+httpx = "^0.23.1"
 Jinja2 = "^3.1.2"
 lxml = "^4.9.1"
 python-multipart = "^0.0.5"
-starlette = "^0.20.4"
+starlette = "^0.23.0"
 timeago = "^1.0.16"
-tldextract = "^3.3.1"
-uvicorn = {version = "^0.18.3", extras = ["standard"]}
+tldextract = "^3.4.0"
+uvicorn = {version = "^0.20.0", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
 black = "*"
 coverage = {version = "*", extras = ["toml"]}
-flake8 = "*"
-isort = "*"
 mypy = "*"
-pdbpp = "*"
-pyproject-flake8 = "*"
 pytest = "*"
 pytest-cov = "*"
+ruff = "*"
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
+[tool.ruff]
+line-length = 88
+ignore = ["E501"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
 
 [tool.mypy]
 ignore_missing_imports = true
 disallow_untyped_defs = true
-
-[tool.flake8]
-max_line_length = 88
-extend-ignore = "E501"
-per-file-ignores = ["__init__.py:F401"]
 
 [tool.coverage.run]
 omit = ["eddrit/config.py"]

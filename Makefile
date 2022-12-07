@@ -7,18 +7,15 @@ init:
 	poetry install
 
 .PHONY: format
-.SILENT: format
 format:
-	$(PYTHON) black .
-	$(PYTHON) isort .
+	$(PYTHON) black $(SRC)
+	$(PYTHON) ruff --fix $(SRC)
 
 .PHONY: style
-.SILENT: style
 style:
-	$(PYTHON) pflake8 $(SRC)
-	$(PYTHON) mypy -- $(SRC)
 	$(PYTHON) black --check $(SRC)
-	$(PYTHON) isort --check-only $(SRC)
+	$(PYTHON) ruff $(SRC)
+	$(PYTHON) mypy -- $(SRC)
 
 .PHONY: test
 .SILENT: test

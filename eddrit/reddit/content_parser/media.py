@@ -1,5 +1,6 @@
 import html
 from typing import Any, Dict, Hashable, Optional
+from urllib.parse import urlparse
 
 import lxml.html
 
@@ -47,6 +48,24 @@ def get_post_image_content(
         return models.LinkPostContent()
 
 
+def get_post_gallery_content(
+    api_post_data: Dict[Hashable, Any]
+) -> models.LinkPostContent | models.GalleryPostContent:
+    """
+    Get the gallery content of a post.
+    """
+    try:
+        # Get pictures
+        pictures = [
+            _get_gallery_picture(item)
+            for item in api_post_data["media_metadata"].values()
+        ]
+
+        return models.GalleryPostContent(pictures=pictures)
+    except Exception:
+        return models.LinkPostContent()
+
+
 def get_post_video_content(
     api_post_data: Dict[Hashable, Any]
 ) -> models.VideoPostContent | models.PicturePostContent | models.LinkPostContent:
@@ -88,7 +107,10 @@ def _get_embed_content(embed_data: Dict[Hashable, Any]) -> models.VideoPostConte
     # Cleanup embed html
     content_parsed = lxml.html.fromstring(content)
     for elt in content_parsed.iter("iframe"):
-        elt.attrib["style"] = "max-width: 100%; max-height: 100%;"
+        elt.attrib["class"] = "post-content-iframe"
+        del elt.attrib["width"]
+        del elt.attrib["height"]
+        del elt.attrib["style"]
     content = lxml.html.tostring(content_parsed).decode("utf-8")
 
     return models.VideoPostContent(
@@ -141,3 +163,15 @@ def _get_reddit_video_preview(
         is_embed=False,
         video_format=format or models.PostVideoFormat.DASH,
     )
+
+
+def _get_gallery_picture(picture_api_data: dict[str, Any]) -> models.PostPicture:
+    # Get width and height
+    width = picture_api_data["s"]["y"]
+    height = picture_api_data["s"]["x"]
+
+    # Get direct URL by switching domain and removing query parameters
+    old_url = urlparse(picture_api_data["s"]["u"])
+    new_url = f"{old_url.scheme}://i.redd.it{old_url.path}"
+
+    return models.PostPicture(width=width, height=height, url=new_url)

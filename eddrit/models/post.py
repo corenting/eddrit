@@ -83,7 +83,7 @@ class GalleryPostContent(PostContentBase):
 
     type: PostContentType = PostContentType.GALLERY
 
-    pictures = Iterable[PostPicture]
+    pictures: Iterable[PostPicture]
 
 
 @dataclass

@@ -8,6 +8,7 @@ from eddrit import models
 from eddrit.const import STATIC_RES_PATH_REPLACEMENT
 from eddrit.reddit.content_parser.flair import get_post_flair, get_user_flair
 from eddrit.reddit.content_parser.media import (
+    get_post_gallery_content,
     get_post_image_content,
     get_post_video_content,
     post_has_video_content,
@@ -26,6 +27,10 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBa
         )
 
         return models.TextPostContent(text=content)
+
+    # Gallery posts
+    if "gallery_data" in api_post_data:
+        return get_post_gallery_content(api_post_data)
 
     # Media posts
     hint = api_post_data.get("post_hint")

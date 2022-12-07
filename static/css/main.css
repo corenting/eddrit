@@ -52,6 +52,20 @@ footer {
   }
 }
 
+.js-only {
+  display: none;
+}
+
+.no-js-only {
+  display: unset;
+}
+
+/* Dark theme stuff */
+
+html[data-theme='dark'] .post-image-thumbnail-default {
+  filter: invert(100%);
+}
+
 /* Nav */
 
 .nav-search {
@@ -64,6 +78,7 @@ footer {
   display: inline-flex;
   align-items: baseline;
   flex-wrap: wrap;
+  gap: var(--nav-link-spacing-horizontal);
 }
 
 .posts-list-pagination-button {
@@ -113,10 +128,6 @@ footer {
   max-height: calc(var(--spacing) * 4);
 }
 
-html[data-theme='dark'] .post-image-thumbnail-default {
-  filter: invert(100%);
-}
-
 .post-preview-button {
   height: calc(var(--spacing) * 1.5);
   width: calc(var(--spacing) * 1.5);
@@ -132,17 +143,26 @@ html[data-theme='dark'] .post-image-thumbnail-default {
   margin-top: var(--block-spacing-vertical);
 }
 
-.post-content-image {
+.post-content-image-or-video {
   max-height: 35rem;
-  object-position: left;
+  max-width: 100%;
+  object-position: top left;
   object-fit: contain;
 }
 
-.post-content-video {
-  width: 80vw;
-  height: fit-content;
-  max-height: 100%;
-  max-width: 60vh;
+.post-content-iframe {
+  height: 35rem;
+}
+
+/* Remove black bars in fill mode in video post content */
+.video-js {
+  background: transparent !important;
+}
+
+/* Align video to the top left in video post content */
+.vjs-tech {
+  object-position: top left;
+  position: relative !important;
 }
 
 .post-comment-title {

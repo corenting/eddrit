@@ -75,7 +75,7 @@
 
     <div>
         {% if post.content.type.value != "link" %}
-        <div class="" id="content-{{ post.id }}" style="display: {{ 'inline-block' if content_expanded else 'none' }};">
+        <div class="" id="content-{{ post.id }}" style="display: {{ 'inherit' if content_expanded else 'none' }};">
             <template id="content-{{ post.id }}-template">
                 <div id="content-{{ post.id }}-preview">
                     {{ render_content(post) }}
@@ -102,14 +102,13 @@
     {% if post.content.type.value == 'picture' %}
     <a href="{{ post.url }}">
         <img height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}"
-            class="post-content-image" src="{{ post.content.picture.url }}" />
+            class="post-content-image-or-video" src="{{ post.content.picture.url }}" />
     </a>
     {% endif %}
     {% if post.content.type.value == 'video' %}
     {% if not post.content.is_embed %}
-    <div class="post-content-video">
-        <video class="video-js vjs-fluid" id="video-{{ post.id }}" data-width="{{ post.content.width }}"
-            data-height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}"
+    <div class="post-content-image-or-video" style="width: {{ post.content.width }}px; height: {{ post.content.height }}px">
+        <video class="video-js" id="video-{{ post.id }}" width="{{ post.content.width }}" height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}"
             data-url="{{ post.content.url }}" data-video-format="{{ post.content.video_format.value }}">
             <p class="vjs-no-js">
                 To view this video please enable JavaScript, and consider upgrading to a
@@ -119,7 +118,7 @@
         </video>
     </div>
     {% else %}
-    <div class="post-content-video">
+    <div class="post-content-image-or-video">
         {{ post.content.url|safe }}
     </div>
     {% endif %}

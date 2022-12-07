@@ -88,7 +88,10 @@ def _get_embed_content(embed_data: Dict[Hashable, Any]) -> models.VideoPostConte
     # Cleanup embed html
     content_parsed = lxml.html.fromstring(content)
     for elt in content_parsed.iter("iframe"):
-        elt.attrib["style"] = "max-width: 100%; max-height: 100%;"
+        elt.attrib["class"] = "post-content-iframe"
+        del elt.attrib["width"]
+        del elt.attrib["height"]
+        del elt.attrib["style"]
     content = lxml.html.tostring(content_parsed).decode("utf-8")
 
     return models.VideoPostContent(

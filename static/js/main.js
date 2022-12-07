@@ -63,14 +63,11 @@ function setupVideo(videoElement) {
         return;
     }
 
-    let width = parseInt(videoElement.getAttribute('data-width'));
-    let height = parseInt(videoElement.getAttribute('data-height'));
     let isGif = videoElement.getAttribute('data-is-gif') == 'True';
     videojs(videoElement, {
-        'width': width,
-        'height': height,
-        'aspectRatio': width > height ? `${width}:${height}` : `${height}:${width}`,
         'controls': !isGif,
+        'fill': true,
+        'responsive': true,
         'autoplay': isGif,
         'sources': [{
             'type': videoElement.getAttribute('data-video-format'),

@@ -132,17 +132,26 @@ html[data-theme='dark'] .post-image-thumbnail-default {
   margin-top: var(--block-spacing-vertical);
 }
 
-.post-content-image {
+.post-content-image-or-video {
   max-height: 35rem;
-  object-position: left;
+  max-width: 100%;
+  object-position: top left;
   object-fit: contain;
 }
 
-.post-content-video {
-  width: 80vw;
-  height: fit-content;
-  max-height: 100%;
-  max-width: 60vh;
+.post-content-iframe {
+  height: 35rem;
+}
+
+/* Remove black bars in fill mode */
+.video-js {
+  background: transparent !important;
+}
+
+/* Align video to the left */
+.vjs-tech {
+  object-position: top left;
+  position: relative !important;
 }
 
 .post-comment-title {

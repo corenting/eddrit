@@ -24,7 +24,10 @@ middlewares = [
     Middleware(NoReferrerMiddleware),
 ]
 
-exceptions_handlers = {HTTPException: exception_handlers.http_exception}
+exceptions_handlers = {
+    HTTPException: exception_handlers.http_exception,
+    500: exception_handlers.http_exception,  # 500 are handled separately by starlette
+}
 
 app = Starlette(
     debug=config.DEBUG,

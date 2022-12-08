@@ -3,19 +3,19 @@ from enum import Enum
 from typing import List
 
 
-class FlairType(Enum):
+class FlairComponentType(Enum):
     EMOJI = "emoji"
     TEXT = "text"
 
 
 @dataclass
-class FlairItem:
+class FlairComponent:
     content: str
-    item_type: FlairType
+    type: FlairComponentType
 
 
 @dataclass
 class Flair:
     background_color: str
     text_color: str
-    items: List[FlairItem]
+    components: List[FlairComponent]

@@ -24,6 +24,8 @@ function togglePostVisibility(postId) {
         var content = document.getElementById("content-" + postId + "-preview");
         rootElement.removeChild(content);
     }
+
+    setupGallery(document.getElementById("gallery-" + postId));
 }
 
 // Toggle logic for comment
@@ -75,6 +77,63 @@ function setupVideo(videoElement) {
     });
 }
 
+// Gallery setup
+function setupGallery(galleryElement) {
+    if (!galleryElement) {
+        return;
+    }
+
+    // Hide all elements except first
+    var picturesElements = galleryElement.getElementsByClassName('post-content-gallery-picture');
+    for (var i = 1; i < picturesElements.length; ++i) {
+        picturesElements[i].style.display = "none";
+    }
+
+    // Mask previous button
+    var previousButton = galleryElement.getElementsByClassName("post-content-gallery-previous-button")[0];
+    previousButton.removeAttribute("href");
+}
+
+// On gallery button click
+function onGalleryButtonClick(postId, move) {
+    var parentElement =  document.getElementById("gallery-" + postId);
+    var picturesElements = [...parentElement.getElementsByClassName('post-content-gallery-picture')];
+
+    // Get current displayed and current index
+    var currentDisplayedElement = picturesElements.find(element => {
+        return element.style.display !== "none";
+    });
+    var currentIndex = parseInt(currentDisplayedElement.id);
+    var newIndex = currentIndex + move;
+
+    // Update text
+    var textElement = parentElement.getElementsByClassName("post-content-gallery-numbers")[0];
+    textElement.innerHTML = `${newIndex + 1} / ${picturesElements.length}`;
+
+    // Display correct picture
+    for (var i = 0; i < picturesElements.length; ++i) {
+        picturesElements[i].style.display = i === newIndex ? "unset" : "none";
+    }
+
+    // Previous button
+    var previousButton = parentElement.getElementsByClassName("post-content-gallery-previous-button")[0];
+    if (newIndex === 0) {
+        previousButton.removeAttribute("href");
+    }
+    else {
+        previousButton.setAttribute("href", "#!")
+    }
+
+    // Next button
+    var nextButton = parentElement.getElementsByClassName("post-content-gallery-next-button")[0];
+    if (newIndex === picturesElements.length - 1) {
+        nextButton.removeAttribute("href");
+    }
+    else {
+        nextButton.setAttribute("href", "#!")
+    }
+}
+
 function initPage() {
     // Init video players
     var videoElements = document.getElementsByClassName('video-js');
@@ -83,22 +142,13 @@ function initPage() {
         setupVideo(video);
     }
 
-    // Show js-only elements
-    var jsOnlyElements = document.getElementsByClassName('js-only');
-    for (var i = 0; i < jsOnlyElements.length; ++i) {
-        var element = jsOnlyElements[i];
-        element.style.display = "unset";
+    // Init gallery posts
+    var galleryElements = document.getElementsByClassName('post-content-gallery');
+    for (var i = 0; i < galleryElements.length; ++i) {
+        var gallery = galleryElements[i];
+        setupGallery(gallery);
     }
-
-    // Hide no-js-only elements
-    var noJsOnlyElements = document.getElementsByClassName('js-only');
-    for (var i = 0; i < noJsOnlyElements.length; ++i) {
-        var element = noJsOnlyElements[i];
-        element.style.display = "none";
-    }
-
 }
-
 
 // Init
 if (document.readyState !== 'loading') {

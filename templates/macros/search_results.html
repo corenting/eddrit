@@ -7,9 +7,9 @@
         <!-- Thumbnail (first column) -->
         <span class="col-auto">
             {% if not subreddit.icon_url %}
-            <img src="{{ url_for('static', path='images/icons/globe.svg') }}" height="60" width="60">
+            <img class="post-image-thumbnail-default" src="{{ url_for('static', path='images/icons/globe.svg') }}" height="60" width="60">
             {% else %}
-            <img class="post-image-thumbnail post-image-thumbnail-default" src="{{ subreddit.icon_url }}" height="60" width="60">
+            <img class="post-image-thumbnail" src="{{ subreddit.icon_url }}" height="60" width="60">
             {% endif %}
         </span>
 

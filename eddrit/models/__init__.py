@@ -1,4 +1,4 @@
-from eddrit.models.flair import Flair, FlairItem, FlairType
+from eddrit.models.flair import Flair, FlairComponent, FlairComponentType
 from eddrit.models.pagination import Pagination
 from eddrit.models.post import (
     LinkPostContent,

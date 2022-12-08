@@ -4,7 +4,7 @@ from eddrit import models
 
 
 def get_post_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]:
-    flair_items = []
+    flair_components = []
 
     # Background color
     bg_color = api_post_data["link_flair_background_color"]
@@ -17,8 +17,8 @@ def get_post_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
         text_color = "#ffffff"
 
     if api_post_data.get("is_original_content", False):
-        flair_items.append(
-            models.FlairItem(content="OC", item_type=models.FlairType.TEXT)
+        flair_components.append(
+            models.FlairComponent(content="OC", type=models.FlairComponentType.TEXT)
         )
 
     if api_post_data.get("link_flair_richtext"):
@@ -26,35 +26,37 @@ def get_post_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
             part_type = part["e"]
 
             if part_type == "text":
-                flair_items.append(
-                    models.FlairItem(content=part["t"], item_type=models.FlairType.TEXT)
+                flair_components.append(
+                    models.FlairComponent(
+                        content=part["t"], type=models.FlairComponentType.TEXT
+                    )
                 )
             elif part_type == "emoji":
-                flair_items.append(
-                    models.FlairItem(
-                        content=part["u"], item_type=models.FlairType.EMOJI
+                flair_components.append(
+                    models.FlairComponent(
+                        content=part["u"], type=models.FlairComponentType.EMOJI
                     )
                 )
 
     elif api_post_data.get("link_flair_text"):
-        flair_items.append(
-            models.FlairItem(
+        flair_components.append(
+            models.FlairComponent(
                 content=api_post_data["link_flair_text"],
-                item_type=models.FlairType.TEXT,
+                type=models.FlairComponentType.TEXT,
             )
         )
 
-    if len(flair_items) != 0:
+    if len(flair_components) != 0:
         return models.Flair(
             background_color=bg_color,
             text_color=text_color,
-            items=flair_items,
+            components=flair_components,
         )
     return None
 
 
 def get_user_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]:
-    flair_items = []
+    flair_components = []
 
     # Background color
     bg_color = api_post_data["author_flair_background_color"]
@@ -71,29 +73,31 @@ def get_user_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
             part_type = part["e"]
 
             if part_type == "text":
-                flair_items.append(
-                    models.FlairItem(content=part["t"], item_type=models.FlairType.TEXT)
+                flair_components.append(
+                    models.FlairComponent(
+                        content=part["t"], type=models.FlairComponentType.TEXT
+                    )
                 )
             elif part_type == "emoji":
-                flair_items.append(
-                    models.FlairItem(
-                        content=part["u"], item_type=models.FlairType.EMOJI
+                flair_components.append(
+                    models.FlairComponent(
+                        content=part["u"], type=models.FlairComponentType.EMOJI
                     )
                 )
 
     elif api_post_data.get("author_flair_text"):
-        flair_items.append(
-            models.FlairItem(
+        flair_components.append(
+            models.FlairComponent(
                 content=api_post_data["author_flair_text"],
-                item_type=models.FlairType.TEXT,
+                type=models.FlairComponentType.TEXT,
             )
         )
 
-    if len(flair_items) != 0:
+    if len(flair_components) != 0:
         return models.Flair(
             background_color=bg_color,
             text_color=text_color,
-            items=flair_items,
+            components=flair_components,
         )
 
     return None

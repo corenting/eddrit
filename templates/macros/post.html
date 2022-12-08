@@ -47,9 +47,10 @@
                 <span class="row align-items-center">
                     <!-- Open/close preview button -->
                     {% if post.content.type.value != "link" %}
-                    <span class="col col-2 col-md-auto js-only">
-                        <a id="post-preview-button-{{ post.id }}" class="outline post-preview-button" role="button" href="javascript:void(0)"
-                            class="post-preview-button outline" onclick="togglePostVisibility('{{ post.id }}');"> {{ '-' if content_expanded else '+' }}</a>
+                    <span class="col col-2 col-md-auto">
+                        <a id="post-preview-button-{{ post.id }}" class="outline post-preview-button" role="button"
+                            href="javascript:void(0)" class="post-preview-button outline"
+                            onclick="togglePostVisibility('{{ post.id }}');"> {{ '-' if content_expanded else '+' }}</a>
                     </span>
                     {% endif %}
 
@@ -94,29 +95,46 @@
 {% macro render_content(post) %}
 <div class="post-content">
     {% if post.content.type.value == 'text' %}
-    <div class="post-text">
+    <div class="post-content-text">
         {{ post.content.text|safe }}
     </div>
     {% endif %}
     {% if post.content.type.value == 'picture' %}
     <a href="{{ post.url }}">
         <img height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}"
+            style="{{ 'width: fit-content' if post.content.picture.width < post.content.picture.height else 'height: fit-content;'}}"
             class="post-content-image-or-video" src="{{ post.content.picture.url }}" />
     </a>
     {% endif %}
+    {% if post.content.type.value == 'gallery' %}
+    <div id="gallery-{{ post.id }}" class="post-content-gallery">
+        <div class="post-content-gallery-buttons">
+            <a class="post-content-gallery-button  post-content-gallery-previous-button" href="#!"
+                onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button">Previous</a>
+            <div class="post-content-gallery-numbers">1 / {{ post.content.pictures | length }}</div>
+            <a class="post-content-gallery-button  post-content-gallery-next-button" href="#!" onclick="onGalleryButtonClick('{{ post.id }}', 1);"
+                role="button">Next</a>
+        </div>
+        {% for picture in post.content.pictures %}
+        <a href="{{ post.url }}">
+            <img id="{{ loop.index0 }}" class="post-content-image-or-video post-content-gallery-picture"
+                height="{{ picture.height }}" width="{{ picture.width }}" src="{{ picture.url }}" />
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
     {% if post.content.type.value == 'video' %}
     {% if not post.content.is_embed %}
-    <div class="post-content-image-or-video js-only" style="width: {{ post.content.width }}px; height: {{ post.content.height }}px">
-        <video class="video-js" id="video-{{ post.id }}" width="{{ post.content.width }}" height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}"
-            data-url="{{ post.content.url }}" data-video-format="{{ post.content.video_format.value }}">
+    <div class="post-content-image-or-video post-content-video"
+        style="{{ 'width: fit-content' if post.content.width < post.content.height else 'height: fit-content;'}} ">
+        <video class="video-js" id="video-{{ post.id }}" width="{{ post.content.width }}"
+            height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}" data-url="{{ post.content.url }}"
+            data-video-format="{{ post.content.video_format.value }}">
         </video>
-    </div>
-    <div class="post-text no-js-only">
-        <p>Cannot display the video because Javascript is not enabled :(</p>
     </div>
     {% else %}
     <div class="post-content-image-or-video">
-        {{ post.url|safe }}
+        {{ post.content.url|safe }}
     </div>
     {% endif %}
     {% endif %}

@@ -2,9 +2,17 @@
 
 /* Base */
 
+/* For sticky footer per MDN recommendations */
+body {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
 :root {
   --line-height: 1.15;
   --font-size: 16px;
+  --post-content: 35rem;
 }
 
 .container-fluid {
@@ -50,14 +58,6 @@ footer {
   .phone-only {
     display: block;
   }
-}
-
-.js-only {
-  display: none;
-}
-
-.no-js-only {
-  display: unset;
 }
 
 /* Dark theme stuff */
@@ -136,22 +136,39 @@ html[data-theme='dark'] .post-image-thumbnail-default {
 }
 
 .post-content {
-  height: 100%;
-  max-height: 100%;
-  max-width: 100%;
   margin-bottom: var(--block-spacing-vertical);
   margin-top: var(--block-spacing-vertical);
+  max-width: min(var(--post-content), 100%);
+  max-height: min(var(--post-content), 100%);
 }
 
 .post-content-image-or-video {
-  max-height: 35rem;
-  max-width: 100%;
+  /* Use a fixed height for media and contain the object */
+  height: var(--post-content);
   object-position: top left;
   object-fit: contain;
 }
 
 .post-content-iframe {
-  height: 35rem;
+  height: var(--post-content);
+  width: 100%;
+}
+
+.post-content-gallery-buttons {
+  margin-right: calc(var(--spacing) / 2);
+  margin-bottom: calc(var(--spacing) / 2);
+  display: flex;
+  align-items: baseline;
+  flex-flow: row wrap;
+}
+
+.post-content-gallery-numbers {
+  margin: calc(var(--spacing) / 2);
+}
+
+.post-content-gallery-button {
+  width: 6rem;
+  max-width: 100%;
 }
 
 /* Remove black bars in fill mode in video post content */

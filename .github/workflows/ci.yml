@@ -31,11 +31,7 @@ jobs:
     - name: Test
       run: make test
   docker:
-    name: Build and push Docker image
-    strategy:
-      fail-fast: false
-      matrix:
-        platforms: [linux/arm/v7, linux/arm64/v8, linux/amd64, linux/ppc64le]
+    name: Build and push Docker images
     needs: ci
     runs-on: ubuntu-latest
     steps:
@@ -72,7 +68,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          platforms: ${{ matrix.platform }}
+          platforms: linux/arm64/v8, linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

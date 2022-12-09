@@ -16,13 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install Poetry
       run: pipx install poetry
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.11"
+        python-version: "3.10"
         cache: 'poetry'
     - name: Install dependencies
       run: poetry install
@@ -31,12 +31,16 @@ jobs:
     - name: Test
       run: make test
   docker:
-    name: Build and push Docker images
+    name: Build and push Docker image
+    strategy:
+      fail-fast: false
+      matrix:
+        platforms: [linux/arm/v7, linux/arm64/v8, linux/amd64, linux/ppc64le]
     needs: ci
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -68,7 +72,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          platforms: linux/amd64
+          platforms: ${{ matrix.platform }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -9,12 +9,12 @@
     </header>
     <p>You must be over 18 to see this content.</p>
     <p >Are you over 18 and willing to see adult (NSFW) content?</p>
-    <div class="over18-buttons">
-        <a role="button" class="over18-button secondary" href="{{ url_for('root', path='') }}">
+    <div class="over18-buttons ">
+        <a role="button" class="secondary over18-button " href="{{ url_for('root', path='') }}">
             Go back
         </a>
         <form action="/over18" method="post">
-            <button class="over18-button" role="button" type="submit" name="continue" value="{{ destination_link }}">Continue</button>
+            <button role="button"  class="over18-button " type="submit" name="continue" value="{{ destination_link }}">Continue</button>
         </form>
     </div>
 </article>

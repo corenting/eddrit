@@ -46,11 +46,11 @@ function toggleCommentVisibility(commentId) {
 }
 
 // Logic for fetching more comments
-function fetchCommentsChildren(subredditName, postId, parentId, commentId) {
+function fetchCommentsChildren(subredditName, postId, parentId, commentId, depth) {
     var parentElt = document.getElementById("comment-" + parentId);
 
     var commentIdParam = postId == parentId ? commentId : parentId
-    fetch("/xhr/comments/xhr?subreddit=" + subredditName + "&post_id=" + postId + "&comment_id=" + commentIdParam)
+    fetch("/xhr/comments/xhr?subreddit=" + subredditName + "&post_id=" + postId + "&comment_id=" + commentIdParam + "&depth=" + depth)
         .then(function (response) {
             return response.text();
         })

@@ -171,17 +171,6 @@ html[data-theme='dark'] .post-image-thumbnail-default {
   max-width: 100%;
 }
 
-/* Remove black bars in fill mode in video post content */
-.video-js {
-  background: transparent !important;
-}
-
-/* Align video to the top left in video post content */
-.vjs-tech {
-  object-position: top left;
-  position: relative !important;
-}
-
 .post-comment-title {
   display: inline-flex;
   align-items: baseline;
@@ -202,6 +191,23 @@ html[data-theme='dark'] .post-image-thumbnail-default {
 
 .post-comment-list-item {
   list-style-type: none;
+}
+
+.post-comment-list-item-inverse {
+  background-color: var(--card-background-color);
+}
+
+/* VideoJS */
+
+/* Remove black bars in fill mode in video post content */
+.video-js {
+  background: transparent !important;
+}
+
+/* Align video to the top left in video post content */
+.vjs-tech {
+  object-position: top left;
+  position: relative !important;
 }
 
 /* Settings */

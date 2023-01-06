@@ -14,6 +14,9 @@ async def comments(request: Request) -> Response:
     post_id = request.query_params.get("post_id")
     subreddit_name = request.query_params.get("subreddit")
     comment_id = request.query_params.get("comment_id")
+    depth = request.query_params.get(
+        "depth", "0"
+    )  # for the alternating background color
     if not comment_id or not subreddit_name or not post_id:
         return PlainTextResponse(None, status_code=400)
 
@@ -26,6 +29,7 @@ async def comments(request: Request) -> Response:
             "request": request,
             "comments": comments,
             "post_id": post_id,
+            "depth": int(depth),
         },
     )
 

@@ -1,5 +1,5 @@
 # Python base (venv and user)
-FROM python:3.10-slim AS base
+FROM python:3.11-slim AS base
 
 # Install dependencies and dumb-init
 RUN apt-get update && apt-get install -y build-essential curl dumb-init && rm -rf /var/lib/apt/lists/*
@@ -21,7 +21,7 @@ RUN poetry install --no-interaction --no-ansi --no-root --only main
 
 
 # Prod image (app and default config)
-FROM python:3.10-slim as prod
+FROM python:3.11-slim as prod
 
 COPY --from=base /usr/bin/dumb-init /usr/bin/
 COPY --from=base /app /app

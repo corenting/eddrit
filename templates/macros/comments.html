@@ -32,14 +32,17 @@
 {{ author_tag | safe }}
 {% endmacro %}
 
-{% macro render_comments(subreddit_name, post_id, comments) %}
+{% macro render_comments(subreddit_name, post_id, comments, depth = 0) %}
 <ul class="post-comments-tree">
     {% for comment in comments %}
+
+    <!-- Case for show more button -->
     {% if comment.show_more_count is defined %}
     {% if comment.parent_id != post_id %}
-    <li class="post-comment-list-item" id="comment-{{ comment.parent_id }}-more">
+    <li class="post-comment-list-item"
+        id="comment-{{ comment.parent_id }}-more">
         <a
-            onclick="fetchCommentsChildren('{{ subreddit_name }}', '{{ post_id }}', '{{ comment.parent_id }}', '{{ comment.id }}');">Show
+            onclick="fetchCommentsChildren('{{ subreddit_name }}', '{{ post_id }}', '{{ comment.parent_id }}', '{{ comment.id }}', '{{ depth }}');">Show
             more ( {{ comment.show_more_count }} hidden )...</a>
     </li>
     {% else %}
@@ -48,6 +51,8 @@
             comments cannot be displayed, click here to see them on old.reddit.com</a>
     </li>
     {% endif %}
+
+    <!-- Normal comment -->
     {% else %}
     <li id="comment-{{ comment.id }}" class="post-comment-list-item">
         <div class="post-comment-title">
@@ -59,12 +64,12 @@
             <small class="post-comment-title-item">Stickied comment</small>
             {% endif %}
         </div>
-        <hr class="post-comment-title-separator"/>
+        <hr class="post-comment-title-separator" />
         <div id="comment-{{ comment.id }}-content">
-            {{ comment.content | safe }}
+            {{ depth }} - {{ comment.content | safe }}
         </div>
         <div id="comment-{{ comment.id }}-children">
-            {{ render_comments(subreddit_name, post_id, comment.children) }}
+            {{ render_comments(subreddit_name, post_id, comment.children, depth + 1) }}
         </div>
     </li>
     {% endif %}

@@ -47,7 +47,9 @@ function toggleCommentVisibility(commentId) {
 
 // Logic for fetching more comments
 function fetchCommentsChildren(subredditName, postId, parentId, commentId, depth) {
-    var parentElt = document.getElementById("comment-" + parentId);
+    // We get the parent element, but the XHR return the <ul> so get the parent ul element
+    var parentElt = document.getElementById("comment-" + parentId).parentNode;
+
 
     var commentIdParam = postId == parentId ? commentId : parentId
     fetch("/xhr/comments/xhr?subreddit=" + subredditName + "&post_id=" + postId + "&comment_id=" + commentIdParam + "&depth=" + depth)
@@ -55,7 +57,7 @@ function fetchCommentsChildren(subredditName, postId, parentId, commentId, depth
             return response.text();
         })
         .then(function (text) {
-            parentElt.innerHTML = text
+            parentElt.outerHTML = text
         });
 }
 

@@ -97,11 +97,11 @@ html[data-theme='dark'] .post-image-thumbnail-default {
 .post-flair {
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--border-radius);
-  padding-left: calc(var(--spacing) / 4);
-  padding-right: calc(var(--spacing) / 4);
+  padding-left: var(--border-radius);
+  padding-right: var(--border-radius);
   padding-top: calc(var(--spacing) / 6);
   padding-bottom: calc(var(--spacing) / 6);
-  margin: calc(var(--spacing) / 4);
+  margin: var(--border-radius);
   display: inline-flex;
   align-items: center;
   width: fit-content;
@@ -118,8 +118,8 @@ html[data-theme='dark'] .post-image-thumbnail-default {
 .post-flair-icon {
   width: var(--spacing);
   height: var(--spacing);
-  margin-left: calc(var(--spacing) / 4);
-  margin-right: calc(var(--spacing) / 4);
+  margin-left: var(--border-radius);
+  margin-right: var(--border-radius);
 }
 
 .post-image-thumbnail {
@@ -176,7 +176,7 @@ html[data-theme='dark'] .post-image-thumbnail-default {
   align-items: baseline;
   flex-wrap: wrap;
   width: 100%;
-  margin-bottom: calc(var(--spacing) / 4);
+  margin-bottom: var(--border-radius);
 }
 
 .post-comment-title-separator {
@@ -185,15 +185,21 @@ html[data-theme='dark'] .post-image-thumbnail-default {
 }
 
 .post-comment-title-item {
-  margin-left: calc(var(--spacing) / 4);
-  margin-right: calc(var(--spacing) / 4);
+  margin-left: var(--border-radius);
+  margin-right: var(--border-radius);
 }
 
 .post-comment-list-item {
   list-style-type: none;
 }
 
-.post-comment-list-item-inverse {
+.post-comment-content {
+  background-color: var(--table-row-stripped-background-color);
+  padding-top: var(--border-radius);
+  padding-bottom: var(--border-radius);
+}
+
+.post-comment-content-inverse {
   background-color: var(--card-background-color);
 }
 

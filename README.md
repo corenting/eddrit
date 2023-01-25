@@ -1,6 +1,6 @@
 # eddrit
 
-![Build](https://img.shields.io/github/checks-status/corenting/eddrit/master?label=build) ![License](https://img.shields.io/github/license/corenting/eddrit) ![Codecov](https://img.shields.io/codecov/c/github/corenting/eddrit)
+![Build](https://img.shields.io/github/actions/workflow/status/corenting/eddrit/ci.yml?branch=master) ![License](https://img.shields.io/github/license/corenting/eddrit) ![Codecov](https://img.shields.io/codecov/c/github/corenting/eddrit)
 
 An alternative frontend for Reddit, written with Python + [Starlette](https://www.starlette.io/). Inspired by [Nitter](https://github.com/zedeus/nitter), an alternative frontend for Twitter
 
@@ -15,7 +15,6 @@ An alternative frontend for Reddit, written with Python + [Starlette](https://ww
 ![Subreddit view](https://raw.githubusercontent.com/corenting/eddrit/master/doc/screenshots/subreddit.png)
 
 ![Thread view](https://raw.githubusercontent.com/corenting/eddrit/master/doc/screenshots/thread.png)
-
 
 ## Installation
 

@@ -203,6 +203,11 @@ html[data-theme='dark'] .post-image-thumbnail-default {
   background-color: var(--card-background-color);
 }
 
+.post-comment-list-item table {
+  /*  Prevent 100% width */
+  width: auto;
+}
+
 /* VideoJS */
 
 /* Remove black bars in fill mode in video post content */

@@ -48,16 +48,20 @@ function toggleCommentVisibility(commentId) {
 // Logic for fetching more comments
 function fetchCommentsChildren(subredditName, postId, parentId, commentId, depth) {
     // We get the parent element, but the XHR return the <ul> so get the parent ul element
-    var parentElt = document.getElementById("comment-" + parentId).parentNode;
-
-
+    var commentElt = document.getElementById("comment-" + parentId);
     var commentIdParam = postId == parentId ? commentId : parentId
+
     fetch("/xhr/comments/xhr?subreddit=" + subredditName + "&post_id=" + postId + "&comment_id=" + commentIdParam + "&depth=" + depth)
         .then(function (response) {
             return response.text();
         })
         .then(function (text) {
-            parentElt.outerHTML = text
+
+            // Parse new content
+            var parser = new DOMParser();
+            var newCommentElement = parser.parseFromString(text, 'text/html').getElementsByTagName('li')[0];
+
+            commentElt.replaceWith(newCommentElement)
         });
 }
 
@@ -98,7 +102,7 @@ function setupGallery(galleryElement) {
 
 // On gallery button click
 function onGalleryButtonClick(postId, move) {
-    var parentElement =  document.getElementById("gallery-" + postId);
+    var parentElement = document.getElementById("gallery-" + postId);
     var picturesElements = [...parentElement.getElementsByClassName('post-content-gallery-picture')];
 
     // Get current displayed and current index

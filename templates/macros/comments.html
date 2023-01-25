@@ -1,6 +1,6 @@
 {% import "macros/common.html" as common_macros with context %}
 
-{% macro render_author(comment) %}
+{% macro render_author(comment, subreddit_name) %}
 {% set author_tag = '' %}
 {% if comment.is_submitter %}
 <span class="post-flair post-comment-title-item" style="background-color: blue;">
@@ -22,7 +22,7 @@
         {{ comment.author.name }}
     </span>
 </span>
-{% set author_tag = '<abbr title="Moderator of /r/' + subreddit.name + ', speaking officially">[M]</abbr>' %}
+{% set author_tag = '<abbr title="Moderator of /r/' + subreddit_name + ', speaking officially">[M]</abbr>' %}
 {% else %}
 <span class="post-comment-title-item">
     {{ comment.author.name }}
@@ -32,8 +32,10 @@
 {{ author_tag | safe }}
 {% endmacro %}
 
-{% macro render_comments(subreddit_name, post_id, comments, depth = 0) %}
+{% macro render_comments(subreddit_name, post_id, comments, depth = 0, render_root_ul = true) %}
+{% if render_root_ul %}
 <ul class="post-comments-tree">
+{% endif %}
     {% for comment in comments %}
 
     <!-- Case for show more button -->
@@ -61,7 +63,7 @@
         <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
             <div class="post-comment-title">
                 <a id="comment-{{ comment.id }}-toggle" onclick="toggleCommentVisibility('{{ comment.id }}');">[-]</a>
-                {{ render_author(comment) }}
+                {{ render_author(comment, subreddit_name) }}
                 <small class="post-comment-title-item">{{ comment.human_score }} points</small>
                 <small class="post-comment-title-item">{{ comment.human_date }}</small>
                 {% if comment.is_sticky %}
@@ -79,5 +81,7 @@
     </li>
     {% endif %}
     {% endfor %}
-</ul>
+    {% if render_root_ul %}
+    </ul>
+    {% endif %}
 {% endmacro %}

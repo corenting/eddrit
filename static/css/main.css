@@ -72,6 +72,10 @@ html[data-theme='dark'] .post-image-thumbnail-default {
   margin-bottom: 0;
 }
 
+.sorting-item {
+  flex-grow: 0;
+}
+
 /* Posts */
 
 .post-title {

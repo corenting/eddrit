@@ -33,7 +33,7 @@
             {% else %}
             {% set sorting_mode_url = url_for('subreddit', path=subreddit.name + '/' + sorting_mode) %}
             {% endif %}
-            <li class="col">
+            <li class="sorting-item col">
                 <a role="button"
                     class="post-sorting-button {{ 'secondary' if current_sorting_mode.value != sorting_mode else '' }}"
                     href="{{ sorting_mode_url }}">
@@ -63,7 +63,7 @@
             +
             "/?t=" + sorting_period %}
             {% endif %}
-            <li class="col">
+            <li class="sorting-item col">
                 <a role="button"
                     class="post-sorting-button {{ 'secondary' if current_sorting_period.value != sorting_period else '' }}"
                     href="{{ sorting_period_url }}">

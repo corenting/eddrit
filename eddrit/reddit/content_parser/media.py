@@ -1,12 +1,15 @@
 import html
-from typing import Any, Dict, Hashable, Optional
+from typing import Any, Dict, Hashable
 from urllib.parse import urlparse
 
-import lxml.html
 
 from eddrit import models
-from eddrit.utils.media import is_from_external_preview_reddit_domain, is_imgur_domain
+from eddrit.utils.media import (
+    post_is_from_domain,
+)
 from loguru import logger
+
+from eddrit.reddit.content_parser import video_parsers
 
 
 def post_has_video_content(api_post_data: Dict[Hashable, Any]) -> bool:
@@ -54,6 +57,7 @@ def get_post_gallery_content(
 ) -> models.LinkPostContent | models.GalleryPostContent:
     """
     Get the gallery content of a post.
+    Fallback to link post if errors encountered in pictures.
     """
     try:
         # Get pictures
@@ -67,136 +71,6 @@ def get_post_gallery_content(
         return models.LinkPostContent()
 
 
-def get_post_video_content(
-    api_post_data: Dict[Hashable, Any]
-) -> models.VideoPostContent | models.PicturePostContent | models.LinkPostContent:
-    """
-    Get the video content of a post.
-    Fallback to image or link post if errors encountered in pictures.
-    """
-    try:
-
-        # Special case for imgur gif/gifv
-        if is_imgur_domain(api_post_data["domain"]) and ".gif" in api_post_data["url"]:
-            return _get_imgur_gif(api_post_data)
-
-        if api_post_data.get("secure_media"):
-            if api_post_data["secure_media"].get("oembed"):
-                ret = _get_embed_content(api_post_data["secure_media"]["oembed"])
-            else:
-                ret = _get_secure_media_reddit_video(api_post_data)
-        elif (
-            "variants" in api_post_data["preview"]["images"][0]
-            and "mp4" in api_post_data["preview"]["images"][0]["variants"]
-        ):
-            ret = _get_external_video(api_post_data)
-        elif "reddit_video_preview" in api_post_data["preview"]:
-            ret = _get_reddit_video_preview(api_post_data)
-        else:
-            raise Exception("Cannot find video for post")
-
-        # Swap external-preview.redd.it with video preview, as the former is blocked by CORS
-        if is_from_external_preview_reddit_domain(ret.url):
-            logger.warning(
-                f"Post \"{api_post_data['title']}\": video found is from external-preview, replacing it due to CORS..."
-            )
-            return _get_reddit_video_preview(api_post_data, models.PostVideoFormat.MP4)
-
-        return ret
-
-    except Exception:
-        return models.LinkPostContent()
-
-
-def _get_imgur_gif(api_post_data: Dict[Hashable, Any]) -> models.VideoPostContent:
-    """Fetch gif from imgur."""
-
-    # Get item as we still need it for width/height
-    video_item = api_post_data["preview"]["images"][0]["source"]
-
-    url = api_post_data["url"]
-    url = url.replace(".gifv", ".mp4")
-    url = url.replace(".gif", ".mp4")
-
-    return models.VideoPostContent(
-        url=url,
-        width=video_item["width"],
-        height=video_item["height"],
-        is_gif=True,
-        is_embed=False,
-        video_format=models.PostVideoFormat.MP4,
-    )
-
-
-def _get_embed_content(embed_data: Dict[Hashable, Any]) -> models.VideoPostContent:
-    content = html.unescape(embed_data["html"])
-    is_gif = False
-    is_embed = True
-
-    # Cleanup embed html
-    content_parsed = lxml.html.fromstring(content)
-    for elt in content_parsed.iter("iframe"):
-        elt.attrib["class"] = "post-content-iframe"
-        del elt.attrib["width"]
-        del elt.attrib["height"]
-        del elt.attrib["style"]
-    content = lxml.html.tostring(content_parsed).decode("utf-8")
-
-    return models.VideoPostContent(
-        url=content,
-        width=embed_data["width"],
-        height=embed_data["height"] + 25,
-        is_gif=is_gif,
-        is_embed=is_embed,
-    )
-
-
-def _get_secure_media_reddit_video(
-    api_post_data: Dict[Hashable, Any]
-) -> models.VideoPostContent:
-    """Get 'secure media' reddit video."""
-    reddit_video = api_post_data["secure_media"]["reddit_video"]
-    return models.VideoPostContent(
-        url=html.unescape(reddit_video["dash_url"]),
-        width=reddit_video["width"],
-        height=reddit_video["height"],
-        is_gif=reddit_video["is_gif"],
-        is_embed=False,
-        video_format=models.PostVideoFormat.DASH,
-    )
-
-
-def _get_external_video(api_post_data: Dict[Hashable, Any]) -> models.VideoPostContent:
-    """Get external video."""
-    video = api_post_data["preview"]["images"][0]["variants"]["mp4"]["source"]
-
-    return models.VideoPostContent(
-        url=html.unescape(video["url"]),
-        width=video["width"],
-        height=video["height"],
-        is_gif="gif" in api_post_data["preview"]["images"][0]["variants"],
-        is_embed=False,
-        video_format=models.PostVideoFormat.MP4,
-    )
-
-
-def _get_reddit_video_preview(
-    api_post_data: Dict[Hashable, Any], format: Optional[models.PostVideoFormat] = None
-) -> models.VideoPostContent:
-    """Get reddit video."""
-    reddit_video = api_post_data["preview"]["reddit_video_preview"]
-    video_url = reddit_video["fallback_url" if format else "dash_url"]
-
-    return models.VideoPostContent(
-        url=video_url,
-        width=reddit_video["width"],
-        height=reddit_video["height"],
-        is_gif=reddit_video["is_gif"],
-        is_embed=False,
-        video_format=format or models.PostVideoFormat.DASH,
-    )
-
-
 def _get_gallery_picture(picture_api_data: dict[str, Any]) -> models.PostPicture:
     # Get width and height
     width = picture_api_data["s"]["y"]
@@ -207,3 +81,52 @@ def _get_gallery_picture(picture_api_data: dict[str, Any]) -> models.PostPicture
     new_url = f"{old_url.scheme}://i.redd.it{old_url.path}"
 
     return models.PostPicture(width=width, height=height, url=new_url)
+
+
+def get_post_video_content(
+    api_post_data: Dict[Hashable, Any]
+) -> models.VideoPostContent | models.PicturePostContent | models.LinkPostContent:
+    """
+    Get the video content of a post.
+    Fallback to image or link post if errors encountered in videos.
+    """
+    try:
+        # Check all parsers
+        parsers = [
+            video_parsers.get_embed_content,
+            video_parsers.get_external_video,
+            video_parsers.get_secure_media_reddit_video,
+            video_parsers.get_reddit_video_preview,
+        ]
+
+        # Special case for imgur gif/gifv, it's easier to get the mp4 directly from the URL
+        if (
+            post_is_from_domain(api_post_data["domain"], "imgur.com")
+            and ".gif" in api_post_data["url"]
+        ):
+            parsers.append(video_parsers.get_imgur_gif)
+
+        # Special case for gfycats, some old links are not embed
+        if post_is_from_domain(api_post_data["domain"], "gfycat.com"):
+            parsers.append(video_parsers.get_gfycat_embed)
+
+        parsed_results = []
+        for parser in parsers:
+            try:
+                parsed_item = parser(api_post_data)
+                parsed_results.append(parsed_item)
+            except Exception:
+                continue
+
+        # Sort: best resolution + embed first
+        parsed_results.sort(key=lambda x: x.width + x.height, reverse=True)
+        parsed_results.sort(key=lambda x: x.is_embed, reverse=True)
+
+        # Pick best content
+        return parsed_results[0]
+
+    except Exception:
+        logger.exception(
+            f"Post \"{api_post_data['title']}\": could not parse video content, falling back to link"
+        )
+        return models.LinkPostContent()

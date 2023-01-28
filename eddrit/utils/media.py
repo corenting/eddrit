@@ -13,6 +13,7 @@ def is_from_external_preview_reddit_domain(url: str) -> bool:
     return f"{domain}.{suffix}" == "redd.it" and "external-preview" in subdomain
 
 
-def is_imgur_domain(post_domain: str) -> bool:
-    subdomain, domain, suffix = tldextract.extract(post_domain)
-    return f"{domain}.{suffix}" == "imgur.com"
+def post_is_from_domain(post_domain: str, domain_to_check: str) -> bool:
+    """Check if a post is from a given domain"""
+    _, domain, suffix = tldextract.extract(post_domain)
+    return f"{domain}.{suffix}" == domain_to_check

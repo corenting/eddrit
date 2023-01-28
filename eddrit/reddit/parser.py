@@ -156,11 +156,7 @@ def parse_subreddit_informations(
         title = html.unescape(api_response["data"]["title"])
         show_thumbnails = api_response["data"]["show_media"]
         public_description = api_response["data"]["public_description"]
-        icon_url = (
-            api_response["data"]["icon_img"]
-            if len(api_response["data"]["icon_img"]) > 1
-            else None
-        )
+        icon_url = api_response["data"].get("icon_img")
     else:
         raise ValueError("You need a api_response if it's not a multi")
 

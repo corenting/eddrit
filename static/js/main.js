@@ -76,6 +76,7 @@ function setupVideo(videoElement) {
         'controls': true,
         'fill': true,
         'autoplay': isGif,
+        'loop': isGif,
         'sources': [{
             'type': videoElement.getAttribute('data-video-format'),
             'src': videoElement.getAttribute('data-url')

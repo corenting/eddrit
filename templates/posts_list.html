@@ -2,22 +2,22 @@
 
 {% set title = subreddit.title %}
 
-{% if subreddit.title == 'Popular' %}
+<!-- Compute older/newer links -->
 {% if pagination.before_post_id %}
-{% set previous_url = url_for('root', path='') ~ "?count=25&before=" ~ pagination.before_post_id %}
+{% set newer_url = request.raw_path.decode('utf-8') ~ "?count=25&before=" ~ pagination.before_post_id %}
 {% endif %}
 {% if pagination.after_post_id %}
-{% set next_url = url_for('root', path='') ~ "?count=25&after=" ~ pagination.after_post_id %}
+{% set older_url = request.raw_path.decode('utf-8') ~ "?count=25&after=" ~ pagination.after_post_id %}
 {% endif %}
-{% else %}
-{% if pagination.before_post_id %}
-{% set previous_url = url_for('subreddit', path=subreddit.name) ~ "?count=25&before=" ~ pagination.before_post_id %}
-{% endif %}
+<!-- Keep sorting period query parameter if needed  -->
+{% if request.query_params['t'] %}
 {% if pagination.after_post_id %}
-{% set next_url = url_for('subreddit', path=subreddit.name) ~ "?count=25&after=" ~ pagination.after_post_id %}
+{% set older_url = older_url ~ "&t=" ~ request.query_params['t'] %}
+{% endif %}
+{% if pagination.before_post_id %}
+{% set newer_url = newer_url ~ "&t=" ~ request.query_params['t'] %}
 {% endif %}
 {% endif %}
-
 
 {% extends "base.html" %}
 
@@ -77,6 +77,11 @@
 
 </details>
 
+<!-- No posts message if end of lists (in sorting mode for example) -->
+{% if posts | length == 0 %}
+<h2>No posts :(</h2>
+{% endif %}
+
 <!-- Posts -->
 {% for post in posts %}
 
@@ -91,11 +96,11 @@
 
 {% block bottom_content %}
 <div class="row justify-content-center">
-    <a href="{{ previous_url }}" class="col-3 posts-list-pagination-button contrast outline" role="button" {{ 'disabled'
-        if not pagination.before_post_id else '' }}>
+    <a href="{{ newer_url }}" class="col-3 posts-list-pagination-button contrast outline" role="button" {{ 'disabled' if
+        not pagination.before_post_id else '' }}>
         Newer
     </a>
-    <a href="{{ next_url }}" class="col-3 posts-list-pagination-button contrast outline" role="button" {{ 'disabled' if
+    <a href="{{ older_url }}" class="col-3 posts-list-pagination-button contrast outline" role="button" {{ 'disabled' if
         not pagination.after_post_id else '' }}>
         Older
     </a>

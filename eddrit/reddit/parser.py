@@ -42,7 +42,6 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBa
         or (hint == "link" and is_image_or_video_host(api_post_data["domain"]))
         or has_video_content
     ):
-
         # Check if image has video (then consider video) else consider image
         if has_video_content:
             return get_post_video_content(api_post_data)

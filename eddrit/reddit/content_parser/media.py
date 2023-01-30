@@ -12,8 +12,21 @@ from loguru import logger
 from eddrit.reddit.content_parser import video_parsers
 
 
+def _post_is_an_imgur_gif(api_post_data: Dict[Hashable, Any]) -> bool:
+    """Check if a post is an imgur gif by checking domain and url file extension."""
+    return (
+        post_is_from_domain(api_post_data["domain"], "imgur.com")
+        and ".gif" in api_post_data["url"]
+    )
+
+
 def post_has_video_content(api_post_data: Dict[Hashable, Any]) -> bool:
     """Check if a post is a video."""
+
+    # Special case for imgur.com images as links
+    if _post_is_an_imgur_gif(api_post_data):
+        return True
+
     if api_post_data.get("secure_media"):
         return True
 
@@ -100,10 +113,7 @@ def get_post_video_content(
         ]
 
         # Special case for imgur gif/gifv, it's easier to get the mp4 directly from the URL
-        if (
-            post_is_from_domain(api_post_data["domain"], "imgur.com")
-            and ".gif" in api_post_data["url"]
-        ):
+        if _post_is_an_imgur_gif(api_post_data):
             parsers.append(video_parsers.get_imgur_gif)
 
         # Special case for gfycats, some old links are not embed

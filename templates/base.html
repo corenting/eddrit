@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }} | eddrit</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='vendors/videojs/video-js.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='vendors/videojs/video-js-min.css') }}">
     {% endblock %}
 </head>
 
@@ -45,6 +45,4 @@
 <script type="text/javascript" src="{{ url_for('static', path='js/theme.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', path='vendors/dashjs/dash.all.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', path='vendors/videojs/video.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', path='vendors/videojs/videojs-dash.min.js') }}"></script>
-
 </html>

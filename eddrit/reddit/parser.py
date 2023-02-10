@@ -140,7 +140,6 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular_or_all: bool) -> model
 def parse_subreddit_informations(
     name: str, over18: bool, api_response: Optional[Dict[Hashable, Any]] = None
 ) -> models.Subreddit:
-
     # Check if multi
     splitted_name = name.split("+")
     if len(splitted_name) > 1:

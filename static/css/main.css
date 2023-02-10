@@ -212,6 +212,11 @@ html[data-theme='dark'] .post-image-thumbnail-default {
   width: auto;
 }
 
+.post-comments-tree {
+  /* Override padding left to reduce nested comments width */
+  padding-left: calc(var(--spacing) / 3);
+}
+
 /* VideoJS */
 
 /* Remove black bars in fill mode in video post content */

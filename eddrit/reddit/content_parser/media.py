@@ -31,7 +31,6 @@ def post_has_video_content(api_post_data: Dict[Hashable, Any]) -> bool:
         return True
 
     if "preview" in api_post_data:
-
         if api_post_data["preview"].get("reddit_video_preview"):
             return True
 

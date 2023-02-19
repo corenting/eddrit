@@ -41,13 +41,22 @@
     <!-- Case for show more button -->
     {% if comment.show_more_count is defined %}
     {% if comment.parent_id != post_id %}
-    <li class="post-comment-list-item" id="comment-{{ comment.parent_id }}-more">
+    <noscript>
+        <li class="post-comment-list-item">
+            <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
+                <a href="https://old.reddit.com/r{{ request.path }}">{{ comment.show_more_count }} more
+                    comments cannot be displayed, click here to see them on old.reddit.com</a>
+            </div>
+        </li>
+    </noscript>
+    <li class="needs-js post-comment-list-item" id="comment-{{ comment.parent_id }}-more">
         <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
             <a
                 onclick="fetchCommentsChildren('{{ subreddit_name }}', '{{ post_id }}', '{{ comment.parent_id }}', '{{ comment.id }}', '{{ depth }}');">Show
                 more ( {{ comment.show_more_count }} hidden )...</a>
         </div>
     </li>
+
     {% else %}
     <li class="post-comment-list-item">
         <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">

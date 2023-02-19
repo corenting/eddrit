@@ -62,7 +62,7 @@ footer {
 
 /* Dark theme stuff */
 
-html[data-theme='dark'] .post-image-thumbnail-default {
+html[data-theme='dark'] .dark-inverted {
   filter: invert(100%);
 }
 
@@ -214,7 +214,7 @@ html[data-theme='dark'] .post-image-thumbnail-default {
 
 .post-comments-tree {
   /* Override padding left to reduce nested comments width */
-  padding-left: calc(var(--spacing) / 3);
+  padding-left: calc(var(--spacing) / 2.5);
 }
 
 /* VideoJS */

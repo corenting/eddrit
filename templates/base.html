@@ -8,6 +8,9 @@
     <title>{{ title }} | eddrit</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='vendors/videojs/video-js-min.css') }}">
+    <noscript>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/nojs.css') }}">
+    </noscript>
     {% endblock %}
 </head>
 

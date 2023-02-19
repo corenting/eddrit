@@ -17,10 +17,10 @@
         {% if show_thumbnails %}
         <span class="col-auto">
             {% if post.over18 and not settings.nsfw_thumbnails and not always_show_over18_thumbnail %}
-            <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}" class="post-image-thumbnail post-image-thumbnail-default" height="60" width="60">
+            <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}" class="post-image-thumbnail post-image-thumbnail-default dark-inverted" height="60" width="60">
             {% elif post.thumbnail_is_icon %}
             <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='' )) }}"
-                class="post-image-thumbnail post-image-thumbnail-default" height="60" width="60">
+                class="post-image-thumbnail post-image-thumbnail-default dark-inverted" height="60" width="60">
             {% else %}
             <img src="{{ post.thumbnail_url }}" class="post-image-thumbnail" height="60" width="60">
             {% endif %}
@@ -47,7 +47,7 @@
                 <span class="row align-items-center">
                     <!-- Open/close preview button -->
                     {% if post.content.type.value != "link" %}
-                    <span class="col col-2 col-md-auto">
+                    <span class="col col-2 col-md-auto needs-js">
                         <a id="post-preview-button-{{ post.id }}" class="outline post-preview-button" role="button"
                             href="javascript:void(0)" class="post-preview-button outline"
                             onclick="togglePostVisibility('{{ post.id }}');"> {{ '-' if content_expanded else '+' }}</a>
@@ -62,7 +62,7 @@
                                 href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{ post.subreddit }}</a>
                         </div>
                         <a href="{{ post.comments_url_path }}">
-                            <span><img src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
+                            <span><img class="dark-inverted" src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
                             </span>
                             <small>{{ post.comments_count }} comments</small>
                         </a>
@@ -107,7 +107,7 @@
     </a>
     {% endif %}
     {% if post.content.type.value == 'gallery' %}
-    <div id="gallery-{{ post.id }}" class="post-content-gallery">
+    <div id="gallery-{{ post.id }}" class="needs-js post-content-gallery">
         <div class="post-content-gallery-buttons">
             <a class="post-content-gallery-button  post-content-gallery-previous-button" href="#!"
                 onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button">Previous</a>
@@ -125,7 +125,7 @@
     {% endif %}
     {% if post.content.type.value == 'video' %}
     {% if not post.content.is_embed %}
-    <div class="post-content-image-or-video post-content-video"
+    <div class="post-content-image-or-video needs-js post-content-video"
         style="{{ 'width: fit-content' if post.content.width < post.content.height else 'height: fit-content;'}} ">
         <video class="video-js" id="video-{{ post.id }}" width="{{ post.content.width }}"
             height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}" data-url="{{ post.content.url }}"

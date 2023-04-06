@@ -9,11 +9,8 @@ async def over18_gate_page(request: Request) -> Response:
     can_proceed = request.cookies.get("over18", "0") == "1"
     destination_link = request.query_params.get("dest", None)
 
-    if can_proceed:
-        if destination_link:
-            pass
-        else:
-            return RedirectResponse(url="/")
+    if can_proceed and not destination_link:
+        return RedirectResponse(url="/")
 
     return templates.TemplateResponse(
         "over18.html",

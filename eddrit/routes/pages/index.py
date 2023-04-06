@@ -6,6 +6,7 @@ from starlette.routing import Route
 from eddrit import models
 from eddrit.reddit.fetch import get_frontpage_informations, get_frontpage_posts
 from eddrit.routes.common.context import (
+    get_canonical_url_context,
     get_subreddits_and_frontpage_common_context,
     get_templates_common_context,
 )
@@ -48,6 +49,7 @@ async def index(request: Request) -> Response:
                 response_pagination, posts, informations, sorting_mode, sorting_period
             ),
             **get_templates_common_context(request),
+            **get_canonical_url_context(request),
         },
     )
 

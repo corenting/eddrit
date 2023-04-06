@@ -127,11 +127,15 @@ def get_post_video_content(
             except Exception:
                 continue
 
-        # Sort: best resolution + embed first
-        parsed_results.sort(key=lambda x: x.width + x.height, reverse=True)
-        parsed_results.sort(key=lambda x: x.is_embed, reverse=True)
+        # Sort: best resolution + non-embed first
+        parsed_results.sort(
+            key=lambda x: (x.width + x.height, not x.is_embed), reverse=True
+        )
 
         # Pick best content
+        logger.debug(
+            f"Media parsed for {api_post_data['permalink']} : {str(parsed_results)}"
+        )
         return parsed_results[0]
 
     except Exception:

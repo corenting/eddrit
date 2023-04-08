@@ -1,8 +1,7 @@
 from typing import Any
-
-from starlette.requests import Request
-
+from urllib.parse import urlparse
 from eddrit import models
+from starlette.requests import Request
 
 
 def get_templates_common_context(request: Request) -> dict[str, Any]:
@@ -15,6 +14,16 @@ def get_templates_common_context(request: Request) -> dict[str, Any]:
         "request": request,
         "settings": settings,
     }
+
+
+def get_canonical_url_context(request: Request) -> dict[str, str]:
+    """Get reddit canonical URL for a given eddrit request"""
+    parsed_eddrit_url = urlparse(str(request.url))
+
+    reddit_url = f"https://old.reddit.com{parsed_eddrit_url.path}"
+    if parsed_eddrit_url.query:
+        reddit_url += f"?{parsed_eddrit_url.query}"
+    return {"canonical_url": reddit_url}
 
 
 def get_subreddits_and_frontpage_common_context(

@@ -78,7 +78,7 @@ def get_post_thumbnail(data: Dict[Hashable, Any]) -> tuple[str, bool]:
     elif thumbnail_url is None or len(thumbnail_url) == 0:
         thumbnail_url = f"{STATIC_RES_PATH_REPLACEMENT}images/icons/globe.svg"
 
-    return thumbnail_url, STATIC_RES_PATH_REPLACEMENT in thumbnail_url
+    return html.unescape(thumbnail_url), STATIC_RES_PATH_REPLACEMENT in thumbnail_url
 
 
 def get_post_url(data: Dict[Hashable, Any]) -> str:

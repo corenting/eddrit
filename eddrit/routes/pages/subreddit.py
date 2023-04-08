@@ -10,6 +10,7 @@ from eddrit.reddit.fetch import (
     get_subreddit_posts,
 )
 from eddrit.routes.common.context import (
+    get_canonical_url_context,
     get_subreddits_and_frontpage_common_context,
     get_templates_common_context,
 )
@@ -36,6 +37,7 @@ async def subreddit_post(request: Request) -> Response:
             "post": post,
             "title_link": request.url_for("subreddit", path=post.subreddit),
             **get_templates_common_context(request),
+            **get_canonical_url_context(request),
         },
     )
 
@@ -77,6 +79,7 @@ async def subreddit(request: Request) -> Response:
                 sorting_period,
             ),
             **get_templates_common_context(request),
+            **get_canonical_url_context(request),
         },
     )
 

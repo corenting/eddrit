@@ -3,7 +3,10 @@ from starlette.responses import Response
 from starlette.routing import Route
 
 from eddrit.reddit.fetch import search_posts, search_subreddits
-from eddrit.routes.common.context import get_templates_common_context
+from eddrit.routes.common.context import (
+    get_canonical_url_context,
+    get_templates_common_context,
+)
 from eddrit.templates import templates
 
 
@@ -19,6 +22,7 @@ async def search(request: Request) -> Response:
             "subreddits": subreddit_search_results[:3],
             "posts": posts_search_results,
             **get_templates_common_context(request),
+            **get_canonical_url_context(request),
         },
     )
 

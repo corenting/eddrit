@@ -18,7 +18,7 @@ def _cleanup_embed(content: str) -> str:
     return lxml.html.tostring(content_parsed).decode("utf-8")
 
 
-def get_gfycat_embed(api_post_data: Dict[Hashable, Any]) -> models.VideoPostContent:
+def get_gfycat_embed(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostContent:
     """Fetch gfycat embed directly"""
 
     # Get url
@@ -28,16 +28,14 @@ def get_gfycat_embed(api_post_data: Dict[Hashable, Any]) -> models.VideoPostCont
     # Get width and height from reddit video preview which should be same size
     reddit_video_preview = get_reddit_video_preview(api_post_data)
 
-    return models.VideoPostContent(
+    return models.EmbedPostContent(
         url=_cleanup_embed(embed_code),
         width=reddit_video_preview.width,
         height=reddit_video_preview.height,
-        is_gif=False,
-        is_embed=True,
     )
 
 
-def get_imgur_gif(api_post_data: Dict[Hashable, Any]) -> models.VideoPostContent:
+def get_imgur_gif(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
     """Fetch gif from imgur."""
 
     # Get item as we still need it for width/height
@@ -47,71 +45,62 @@ def get_imgur_gif(api_post_data: Dict[Hashable, Any]) -> models.VideoPostContent
     url = url.replace(".gifv", ".mp4")
     url = url.replace(".gif", ".mp4")
 
-    return models.VideoPostContent(
+    return models.PostVideo(
         url=url,
         width=video_item["width"],
         height=video_item["height"],
         is_gif=True,
-        is_embed=False,
         video_format=models.PostVideoFormat.MP4,
     )
 
 
-def get_embed_content(api_post_data: Dict[Hashable, Any]) -> models.VideoPostContent:
+def get_embed_content(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostContent:
     embed_data = api_post_data["secure_media"]["oembed"]
     content = html.unescape(embed_data["html"])
-    is_embed = True
 
-    return models.VideoPostContent(
+    return models.EmbedPostContent(
         url=_cleanup_embed(content),
         width=embed_data["width"],
         height=embed_data["height"],
-        is_gif=False,
-        is_embed=is_embed,
     )
 
 
 def get_secure_media_reddit_video(
     api_post_data: Dict[Hashable, Any]
-) -> models.VideoPostContent:
+) -> models.PostVideo:
     """Get 'secure media' reddit video."""
     reddit_video = api_post_data["secure_media"]["reddit_video"]
-    return models.VideoPostContent(
+    return models.PostVideo(
         url=html.unescape(reddit_video["dash_url"]),
         width=reddit_video["width"],
         height=reddit_video["height"],
         is_gif=reddit_video["is_gif"],
-        is_embed=False,
         video_format=models.PostVideoFormat.DASH,
     )
 
 
-def get_external_video(api_post_data: Dict[Hashable, Any]) -> models.VideoPostContent:
+def get_external_video(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
     """Get external video."""
     video = api_post_data["preview"]["images"][0]["variants"]["mp4"]["source"]
 
-    return models.VideoPostContent(
+    return models.PostVideo(
         url=html.unescape(video["url"]),
         width=video["width"],
         height=video["height"],
         is_gif="gif" in api_post_data["preview"]["images"][0]["variants"],
-        is_embed=False,
         video_format=models.PostVideoFormat.MP4,
     )
 
 
-def get_reddit_video_preview(
-    api_post_data: Dict[Hashable, Any]
-) -> models.VideoPostContent:
+def get_reddit_video_preview(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
     """Get reddit video."""
     reddit_video = api_post_data["preview"]["reddit_video_preview"]
     video_url = reddit_video["dash_url"]
 
-    return models.VideoPostContent(
+    return models.PostVideo(
         url=video_url,
         width=reddit_video["width"],
         height=reddit_video["height"],
         is_gif=reddit_video["is_gif"],
-        is_embed=False,
         video_format=models.PostVideoFormat.DASH,
     )

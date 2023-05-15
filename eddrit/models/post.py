@@ -7,17 +7,29 @@ from typing import Iterable, Optional, Union
 from eddrit.models.user import Flair, User
 
 
-class PostContentType(Enum):
+class PostContentType(str, Enum):
     GALLERY = "gallery"
     PICTURE = "picture"
     LINK = "link"
     TEXT = "text"
     VIDEO = "video"
+    EMBED = "embed"
 
 
-class PostVideoFormat(Enum):
+class PostVideoFormat(str, Enum):
     MP4 = "video/mp4"
     DASH = "application/dash+xml"
+
+
+@dataclass
+class PostVideo:
+    """Class representing a post video."""
+
+    url: str
+    is_gif: bool
+    width: int
+    height: int
+    video_format: Optional[PostVideoFormat] = None
 
 
 @dataclass
@@ -65,16 +77,20 @@ class TextPostContent(PostContentBase):
 
 @dataclass(kw_only=True)
 class VideoPostContent(PostContentBase):
-    """Class representing a video post content."""
+    """Class representing a video post content with different sources."""
 
     type: PostContentType = PostContentType.VIDEO
+    videos: list[PostVideo]
 
-    url: str
-    is_gif: bool
-    is_embed: bool
+
+@dataclass(kw_only=True)
+class EmbedPostContent(PostContentBase):
+    """Class representing a embed post content."""
+
+    type: PostContentType = PostContentType.EMBED
     width: int
     height: int
-    video_format: Optional[PostVideoFormat] = None
+    url: str
 
 
 @dataclass(kw_only=True)

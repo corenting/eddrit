@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "eddrit"
-version = "0.5.3"
+version = "0.5.4"
 description = "Alternative Reddit frontend"
 authors = ["corenting <corenting@gmail.com>"]
 license = "MIT"
@@ -11,15 +11,15 @@ python = "^3.11"
 aiofiles = "^23.1.0"
 environs = "^9.5.0"
 gunicorn = "^20.1.0"
-httpx = "^0.23.3"
+httpx = "^0.24.0"
 Jinja2 = "^3.1.2"
-loguru = "^0.6.0"
+loguru = "^0.7.0"
 lxml = "^4.9.2"
 python-multipart = "^0.0.6"
 starlette = "^0.26.1"
 timeago = "^1.0.16"
-tldextract = "^3.4.0"
-uvicorn = {version = "^0.21.1", extras = ["standard"]}
+tldextract = "^3.4.1"
+uvicorn = {version = "^0.22.0", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
 black = "*"

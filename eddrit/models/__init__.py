@@ -9,6 +9,8 @@ from eddrit.models.post import (
     PostContentBase,
     PostContentType,
     PostPicture,
+    PostVideo,
+    EmbedPostContent,
     PostVideoFormat,
     PostWithComments,
     TextPostContent,

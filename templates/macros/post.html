@@ -124,19 +124,15 @@
     </div>
     {% endif %}
     {% if post.content.type.value == 'video' %}
-    {% if not post.content.is_embed %}
     <div class="post-content-image-or-video needs-js post-content-video"
-        style="{{ 'width: fit-content' if post.content.width < post.content.height else 'height: fit-content;'}} ">
-        <video class="video-js" id="video-{{ post.id }}" width="{{ post.content.width }}"
-            height="{{ post.content.height }}" data-is-gif="{{ post.content.is_gif }}" data-url="{{ post.content.url }}"
-            data-video-format="{{ post.content.video_format.value }}">
-        </video>
-    </div>
-    {% else %}
-    <div class="post-content-image-or-video">
-        {{ post.content.url|safe }}
+        style="{{ 'width: fit-content' if post.content.videos[0].width < post.content.videos[0].height else 'height: fit-content;'}} ">
+        <video class="video-js" id="video-{{ post.id }}" data-content='{{ post.content | tojson_dataclass }}'/>
     </div>
     {% endif %}
+    {% if post.content.type.value == 'embed' %}
+    <div class="post-content-image-or-video">
+        {{ post.content.url |safe }}
+    </div>
     {% endif %}
 </div>
 {% endmacro %}

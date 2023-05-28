@@ -4,6 +4,8 @@ from typing import Any, Dict, Hashable
 import lxml.html
 
 from eddrit import models
+from eddrit.utils.media import domain_has_special_embed_handling
+from eddrit.utils.middlewares import get_current_host
 
 
 def _cleanup_embed(content: str) -> str:
@@ -16,6 +18,20 @@ def _cleanup_embed(content: str) -> str:
         elt.attrib.pop("style", None)
 
     return lxml.html.tostring(content_parsed).decode("utf-8")
+
+
+def get_twitch_embed(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostContent:
+    """Fetch twitch embed directly as the one in the API has
+    a Content-Security-Policy preventing including it.
+    """
+    embed_url = api_post_data["url"].replace(
+        "clips.twitch.tv/", "clips.twitch.tv/embed?clip="
+    )
+    parent = get_current_host()
+    embed_code = f'<iframe src="{embed_url}&parent={parent}" frameborder="0" allowfullscreen="true" scrolling="no" height="378" width="620"></iframe>'
+    return models.EmbedPostContent(
+        url=_cleanup_embed(embed_code), width=378, height=620
+    )
 
 
 def get_gfycat_embed(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostContent:
@@ -55,6 +71,9 @@ def get_imgur_gif(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
 
 
 def get_embed_content(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostContent:
+    if domain_has_special_embed_handling(api_post_data["url"]):
+        raise ValueError("The post domain cannot be parsed with get_embed_content")
+
     embed_data = api_post_data["secure_media"]["oembed"]
     content = html.unescape(embed_data["html"])
 

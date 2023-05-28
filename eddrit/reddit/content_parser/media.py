@@ -111,11 +111,17 @@ def get_post_video_content(
             video_parsers.get_reddit_video_preview,
         ]
 
+        # Special case for twitch, the embedly embed
+        # Content-Security-Policy prevents including it
+        if post_is_from_domain(api_post_data["domain"], "twitch.tv"):
+            parsers.append(video_parsers.get_twitch_embed)
+
         # Special case for imgur gif/gifv, it's easier to get the mp4 directly from the URL
         if _post_is_an_imgur_gif(api_post_data):
             parsers.append(video_parsers.get_imgur_gif)
 
-        # Special case for gfycats, some old links are not embed
+        # Special case for gfycat, some old links are not embed
+        # but it can be converted to it.
         if post_is_from_domain(api_post_data["domain"], "gfycat.com"):
             parsers.append(video_parsers.get_gfycat_embed)
 
@@ -132,6 +138,13 @@ def get_post_video_content(
             key=lambda x: (x.width + x.height, type(x) != models.EmbedPostContent),
             reverse=True,
         )
+
+        # If we cannot parse anything, put a link
+        if not parsed_results:
+            logger.debug(
+                f"Couldn't find media for {api_post_data['permalink']}, fallbacking to link"
+            )
+            return models.LinkPostContent()
 
         # Pick best content
         logger.debug(

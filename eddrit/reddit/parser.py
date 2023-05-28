@@ -14,7 +14,7 @@ from eddrit.reddit.content_parser.media import (
     post_has_video_content,
 )
 from eddrit.utils.math import pretty_big_num
-from eddrit.utils.media import is_image_or_video_host
+from eddrit.utils.media import is_media_hosting_domain
 
 
 def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBase:
@@ -39,7 +39,7 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBa
         hint == "image"
         or hint == "hosted:video"
         or hint == "rich:video"
-        or (hint == "link" and is_image_or_video_host(api_post_data["domain"]))
+        or (hint == "link" and is_media_hosting_domain(api_post_data["domain"]))
         or has_video_content
     ):
         # Check if image has video (then consider video) else consider image

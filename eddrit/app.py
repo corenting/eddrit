@@ -18,10 +18,11 @@ from eddrit.routes.pages import (
     subreddit,
 )
 from eddrit.routes.xhr import routes
-from eddrit.utils.middlewares import NoReferrerMiddleware
+from eddrit.utils.middlewares import CurrentHostMiddleware, NoReferrerMiddleware
 
 middlewares = [
     Middleware(NoReferrerMiddleware),
+    Middleware(CurrentHostMiddleware),
 ]
 
 exceptions_handlers = {

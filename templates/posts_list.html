@@ -31,7 +31,7 @@
             {% if sorting_mode == 'popular' %}
             {% set sorting_mode_url = url_for('subreddit', path=subreddit.name) %}
             {% else %}
-            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name + '/' + sorting_mode) %}
+            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name ~ '/' ~ sorting_mode) %}
             {% endif %}
             <li class="sorting-item col">
                 <a role="button"
@@ -54,14 +54,14 @@
         <ul class="row">
             {% for sorting_period in global.sorting_periods %}
             {% if sorting_mode == 'day' %}
-            {% set sorting_period_url = url_for('subreddit', path=subreddit.name + '/' + current_sorting_mode.value)
-            +
+            {% set sorting_period_url = url_for('subreddit', path=subreddit.name ~ '/' ~ current_sorting_mode.value)
+            ~
             "t="
-            + sorting_period %}
+            ~ sorting_period %}
             {% else %}
-            {% set sorting_period_url = url_for('subreddit', path=subreddit.name + '/' + current_sorting_mode.value)
-            +
-            "/?t=" + sorting_period %}
+            {% set sorting_period_url = url_for('subreddit', path=subreddit.name ~ '/' ~ current_sorting_mode.value)
+            ~
+            "/?t=" ~ sorting_period %}
             {% endif %}
             <li class="sorting-item col">
                 <a role="button"

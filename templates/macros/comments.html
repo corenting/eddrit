@@ -22,7 +22,7 @@
         {{ comment.author.name }}
     </span>
 </span>
-{% set author_tag = '<abbr title="Moderator of /r/' + subreddit_name + ', speaking officially">[M]</abbr>' %}
+{% set author_tag = '<abbr title="Moderator of /r/' ~ subreddit_name ~ ', speaking officially">[M]</abbr>' %}
 {% else %}
 <span class="post-comment-title-item">
     {{ comment.author.name }}

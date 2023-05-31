@@ -17,7 +17,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 # Dependencies
 WORKDIR /app/
 COPY ./pyproject.toml ./poetry.lock /app/
-RUN poetry install --no-interaction --no-ansi --no-root --only main
+RUN poetry install --no-interaction --no-root --only main
 
 
 # Prod image (app and default config)
@@ -25,6 +25,9 @@ FROM python:3.11-slim as prod
 
 COPY --from=base /usr/bin/dumb-init /usr/bin/
 COPY --from=base /app /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
 
 WORKDIR /app/
 

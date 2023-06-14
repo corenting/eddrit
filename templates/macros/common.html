@@ -1,9 +1,9 @@
 {% macro render_flair(flair) %}
 {% if flair %}
-<span class="post-flair" style="background-color: {{ flair.background_color }};">
+<span class="post-flair" style="color: {{ flair.text_color }}; background-color: {{ flair.background_color }};">
     {% for item in flair.components %}
     {% if item.type.value == 'text' %}
-    <span class="post-flair-text">
+    <span>
         {{ item.content | safe }}
     </span>
     {% elif item.type.value == 'emoji' %}

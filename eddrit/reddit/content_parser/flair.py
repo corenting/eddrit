@@ -6,15 +6,11 @@ from eddrit import models
 def get_post_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]:
     flair_components = []
 
-    # Background color
+    # Colors
+    text_color = (
+        "black" if api_post_data["link_flair_text_color"] == "dark" else "white"
+    )
     bg_color = api_post_data["link_flair_background_color"]
-    if not bg_color or bg_color == "#ffffff":
-        bg_color = "#6495ED"
-
-    # Text color
-    text_color = api_post_data["link_flair_text_color"]
-    if not text_color:
-        text_color = "#ffffff"
 
     if api_post_data.get("is_original_content", False):
         flair_components.append(

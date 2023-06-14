@@ -2,10 +2,8 @@
 
 {% macro render_warning_flair(is_enabled, text) %}
 {% if is_enabled %}
-<span class="post-flair post-flair-spoiler">
-    <span>
-        {{ text }}
-    </span>
+<span class="post-flair post-flair-warning">
+    {{ text }}
 </span>
 {% endif %}
 {% endmacro %}

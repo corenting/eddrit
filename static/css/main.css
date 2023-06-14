@@ -111,12 +111,8 @@ html[data-theme='dark'] .dark-inverted {
   width: fit-content;
 }
 
-.post-flair-spoiler {
-  background-color: darkred;
-}
-
-.post-flair-text {
-  mix-blend-mode: difference;
+.post-flair-warning {
+  background-color: red;
 }
 
 .post-flair-icon {

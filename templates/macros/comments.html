@@ -3,21 +3,21 @@
 {% macro render_author(comment, subreddit_name) %}
 {% set author_tag = '' %}
 {% if comment.is_submitter %}
-<span class="post-flair post-comment-title-item" style="background-color: blue;">
+<span class="post-flair post-comment-title-item" style="color: white; background-color: darkblue;">
     <span>
         {{ comment.author.name }}
     </span>
 </span>
 {% set author_tag = '<abbr title="Submitter">[S]</abbr>' %}
 {% elif comment.is_admin %}
-<span class="post-flair post-comment-title-item" style="background-color: red;">
+<span class="post-flair post-comment-title-item" style="color: white; background-color: red;">
     <span>
         {{ comment.author.name }}
     </span>
 </span>
 {% set author_tag = '<abbr title="Reddit admin">[A]</abbr>' %}
 {% elif comment.is_moderator %}
-<span class="post-flair post-comment-title-item" style="background-color: green;">
+<span class="post-flair post-comment-title-item" style="color: white; background-color: green;">
     <span>
         {{ comment.author.name }}
     </span>

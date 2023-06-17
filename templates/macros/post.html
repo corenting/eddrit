@@ -122,7 +122,7 @@
     </div>
     {% endif %}
     {% if post.content.type.value == 'video' %}
-    <div class="post-content-image-or-video needs-js post-content-video"
+    <div class="post-content-image-or-video needs-js"
         style="{{ 'width: fit-content' if post.content.videos[0].width < post.content.videos[0].height else 'height: fit-content;'}} ">
         <video class="video-js" id="video-{{ post.id }}" data-content='{{ post.content | tojson_dataclass }}'/>
     </div>

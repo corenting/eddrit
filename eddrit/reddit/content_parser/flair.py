@@ -10,7 +10,7 @@ def get_post_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
     text_color = (
         "black" if api_post_data["link_flair_text_color"] == "dark" else "white"
     )
-    bg_color = api_post_data["link_flair_background_color"]
+    bg_color = api_post_data["link_flair_background_color"] or "lightblue"
 
     if api_post_data.get("is_original_content", False):
         flair_components.append(
@@ -55,14 +55,12 @@ def get_user_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
     flair_components = []
 
     # Background color
-    bg_color = api_post_data["author_flair_background_color"]
-    if not bg_color or bg_color == "#ffffff":
-        bg_color = "#dadada"
+    bg_color = api_post_data["author_flair_background_color"] or "lightblue"
 
     # Text color
-    text_color = api_post_data["author_flair_text_color"]
-    if not text_color:
-        text_color = "#0000"
+    text_color = (
+        "black" if api_post_data["author_flair_text_color"] == "dark" else "white"
+    )
 
     if api_post_data.get("author_flair_richtext"):
         for part in api_post_data.get("author_flair_richtext", []):

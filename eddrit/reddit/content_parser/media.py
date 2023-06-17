@@ -4,18 +4,16 @@ from urllib.parse import urlparse
 
 
 from eddrit import models
-from eddrit.utils.media import (
-    post_is_from_domain,
-)
 from loguru import logger
 
 from eddrit.reddit.content_parser import video_parsers
+from eddrit.utils.urls import get_domain_and_suffix_from_url
 
 
 def _post_is_an_imgur_gif(api_post_data: Dict[Hashable, Any]) -> bool:
     """Check if a post is an imgur gif by checking domain and url file extension."""
     return (
-        post_is_from_domain(api_post_data["domain"], "imgur.com")
+        get_domain_and_suffix_from_url(api_post_data["domain"]) == "imgur.com"
         and ".gif" in api_post_data["url"]
     )
 
@@ -111,19 +109,14 @@ def get_post_video_content(
             video_parsers.get_reddit_video_preview,
         ]
 
-        # Special case for twitch, the embedly embed
-        # Content-Security-Policy prevents including it
-        if post_is_from_domain(api_post_data["domain"], "twitch.tv"):
-            parsers.append(video_parsers.get_twitch_embed)
+        post_domain = get_domain_and_suffix_from_url(api_post_data["domain"])
 
-        # Special case for imgur gif/gifv, it's easier to get the mp4 directly from the URL
-        if _post_is_an_imgur_gif(api_post_data):
-            parsers.append(video_parsers.get_imgur_gif)
-
-        # Special case for gfycat, some old links are not embed
-        # but it can be converted to it.
-        if post_is_from_domain(api_post_data["domain"], "gfycat.com"):
-            parsers.append(video_parsers.get_gfycat_embed)
+        # Special case for some embeds
+        domains_with_special_embed_handling = (
+            video_parsers.get_domains_with_special_embed_handling()
+        )
+        if post_domain in domains_with_special_embed_handling.keys():
+            parsers.append(domains_with_special_embed_handling[post_domain])
 
         parsed_results: list[models.PostVideo | models.EmbedPostContent] = []
         for parser in parsers:

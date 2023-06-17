@@ -29,7 +29,7 @@ There are multiple tags:
 - `dev` for the latest commit on the master branch
 - Version tags (like `0.1.1`, `0.1.2`) for specific versions
 
-The image supports linux/amd64 or linux/arm64 architectures.
+The image supports the following platforms: linux/amd64, linux/ppc64le, linux/arm/v5, linux/arm/v7 and linux/arm64/v8 .
 
 ### Without Docker
 

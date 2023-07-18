@@ -10,16 +10,16 @@ readme = "README.md"
 python = "^3.11"
 aiofiles = "^23.1.0"
 environs = "^9.5.0"
-gunicorn = "^20.1.0"
+gunicorn = "^21.0.0"
 httpx = "^0.24.0"
 Jinja2 = "^3.1.2"
 loguru = "^0.7.0"
-lxml = "^4.9.2"
+lxml = "^4.9.3"
 python-multipart = "^0.0.6"
-starlette = "^0.28.0"
+starlette = "^0.30.0"
 timeago = "^1.0.16"
 tldextract = "^3.4.1"
-uvicorn = {version = "^0.22.0", extras = ["standard"]}
+uvicorn = {version = "^0.23.0", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
 black = "*"

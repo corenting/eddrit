@@ -10,7 +10,13 @@ def get_post_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
     text_color = (
         "black" if api_post_data["link_flair_text_color"] == "dark" else "white"
     )
-    bg_color = api_post_data["link_flair_background_color"] or "lightblue"
+    if (
+        api_post_data["link_flair_background_color"]
+        and api_post_data["link_flair_background_color"] != "transparent"
+    ):
+        bg_color = api_post_data["link_flair_background_color"]
+    else:
+        bg_color = "lightblue"
 
     if api_post_data.get("is_original_content", False):
         flair_components.append(
@@ -55,7 +61,13 @@ def get_user_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
     flair_components = []
 
     # Background color
-    bg_color = api_post_data["author_flair_background_color"] or "lightblue"
+    if (
+        api_post_data["author_flair_background_color"]
+        and api_post_data["author_flair_background_color"] != "transparent"
+    ):
+        bg_color = api_post_data["author_flair_background_color"]
+    else:
+        bg_color = "lightblue"
 
     # Text color
     text_color = (

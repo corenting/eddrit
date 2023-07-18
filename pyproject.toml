@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "eddrit"
-version = "0.5.7"
+version = "0.5.8"
 description = "Alternative Reddit frontend"
 authors = ["corenting <corenting@gmail.com>"]
 license = "MIT"

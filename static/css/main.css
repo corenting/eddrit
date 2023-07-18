@@ -41,6 +41,17 @@ footer {
   margin-top: calc(var(--block-spacing-vertical) * 1);
 }
 
+/* General tweaks */
+
+blockquote {
+  padding: calc(var(--spacing) / 8);
+}
+
+blockquote > p {
+  margin-bottom: 0;
+}
+
+
 @media all and (min-width: 1200px) {
   .desktop-only {
     display: block;
@@ -84,6 +95,7 @@ html[data-theme='dark'] .dark-inverted {
   align-items: baseline;
   flex-wrap: wrap;
   gap: var(--nav-link-spacing-horizontal);
+  word-break: break-all;
 }
 
 .posts-list-pagination-button {
@@ -196,8 +208,7 @@ html[data-theme='dark'] .dark-inverted {
 
 .post-comment-content {
   background-color: var(--table-row-stripped-background-color);
-  padding-top: var(--border-radius);
-  padding-bottom: var(--border-radius);
+  padding: var(--border-radius);
 }
 
 .post-comment-content-inverse {

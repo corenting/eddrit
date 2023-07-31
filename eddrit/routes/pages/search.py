@@ -1,6 +1,8 @@
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
+from eddrit import exceptions
+from starlette.exceptions import HTTPException
 
 from eddrit.reddit.fetch import search_posts, search_subreddits
 from eddrit.routes.common.context import (
@@ -12,8 +14,12 @@ from eddrit.templates import templates
 
 async def search(request: Request) -> Response:
     input_text = request.query_params.get("q", "")
-    subreddit_search_results = await search_subreddits(input_text)
-    posts_search_results = await search_posts(input_text)
+
+    try:
+        subreddit_search_results = await search_subreddits(input_text)
+        posts_search_results = await search_posts(input_text)
+    except exceptions.RateLimited as e:
+        raise HTTPException(status_code=429, detail=e.message)
 
     return templates.TemplateResponse(
         "search.html",

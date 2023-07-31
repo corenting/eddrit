@@ -21,11 +21,12 @@ from eddrit.utils.request import redirect_to_age_check, should_redirect_to_age_c
 async def subreddit_post(request: Request) -> Response:
     try:
         subreddit_infos = await get_subreddit_informations(request.path_params["name"])
+        post_id = request.path_params["post_id"]
+        post = await get_post(request.path_params["name"], post_id)
     except exceptions.SubredditUnavailable as e:
         raise HTTPException(status_code=403, detail=e.message)
-
-    post_id = request.path_params["post_id"]
-    post = await get_post(request.path_params["name"], post_id)
+    except exceptions.RateLimited as e:
+        raise HTTPException(status_code=429, detail=e.message)
 
     if should_redirect_to_age_check(request, post.over18):
         return redirect_to_age_check(request)
@@ -53,20 +54,24 @@ async def subreddit(request: Request) -> Response:
 
     try:
         subreddit_infos = await get_subreddit_informations(request.path_params["name"])
+        if should_redirect_to_age_check(request, subreddit_infos.over18):
+            return redirect_to_age_check(request)
+
+        request_pagination = models.Pagination(
+            before_post_id=request.query_params.get("before"),
+            after_post_id=request.query_params.get("after"),
+        )
+
+        posts, response_pagination = await get_subreddit_posts(
+            request.path_params["name"],
+            request_pagination,
+            sorting_mode,
+            sorting_period,
+        )
     except exceptions.SubredditUnavailable as e:
         raise HTTPException(status_code=403, detail=e.message)
-
-    if should_redirect_to_age_check(request, subreddit_infos.over18):
-        return redirect_to_age_check(request)
-
-    request_pagination = models.Pagination(
-        before_post_id=request.query_params.get("before"),
-        after_post_id=request.query_params.get("after"),
-    )
-
-    posts, response_pagination = await get_subreddit_posts(
-        request.path_params["name"], request_pagination, sorting_mode, sorting_period
-    )
+    except exceptions.RateLimited as e:
+        raise HTTPException(status_code=429, detail=e.message)
 
     return templates.TemplateResponse(
         "posts_list.html",

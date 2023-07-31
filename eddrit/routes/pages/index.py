@@ -3,7 +3,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
 
-from eddrit import models
+from eddrit import exceptions, models
 from eddrit.reddit.fetch import get_frontpage_informations, get_frontpage_posts
 from eddrit.routes.common.context import (
     get_canonical_url_context,
@@ -40,7 +40,10 @@ async def index(request: Request) -> Response:
     )
 
     informations = await get_frontpage_informations()
-    posts, response_pagination = await get_frontpage_posts(request_pagination)
+    try:
+        posts, response_pagination = await get_frontpage_posts(request_pagination)
+    except exceptions.RateLimited as e:
+        raise HTTPException(status_code=429, detail=e.message)
 
     return templates.TemplateResponse(
         "posts_list.html",

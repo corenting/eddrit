@@ -9,7 +9,6 @@ from eddrit import config
 from eddrit.routes.common import exception_handlers
 from eddrit.routes.pages import (
     index,
-    instance,
     meta,
     over18,
     root_files,
@@ -34,7 +33,6 @@ app = Starlette(
     debug=config.DEBUG,
     routes=[
         Mount("/static", app=StaticFiles(directory="static"), name="static"),
-        Mount("/instance", routes=instance.routes),
         Mount("/meta", routes=meta.routes, name="meta"),
         Mount("/r", routes=subreddit.routes, name="subreddit"),
         Mount("/xhr", routes=routes, name="api"),

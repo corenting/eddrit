@@ -5,6 +5,7 @@ import httpx
 
 from eddrit import models
 from eddrit.exceptions import (
+    RateLimited,
     SubredditIsBanned,
     SubredditIsPrivate,
     SubredditIsQuarantined,
@@ -36,6 +37,8 @@ async def search_posts(input_text: str) -> list[models.Post]:
     async with httpx.AsyncClient() as client:
         res = await client.get(f"https://old.reddit.com/search.json?q={input_text}")
 
+        _raise_if_rate_limited(res)
+
     posts, _ = parser.parse_posts(res.json(), False)
     return posts
 
@@ -45,6 +48,7 @@ async def search_subreddits(input_text: str) -> list[models.Subreddit]:
         res = await client.get(
             f"https://www.reddit.com/subreddits/search.json?q={input_text}"
         )
+        _raise_if_rate_limited(res)
 
     results = res.json()["data"]["children"]
     return [
@@ -97,6 +101,8 @@ async def get_post(subreddit: str, post_id: str) -> models.PostWithComments:
         params = {"limit": 100}
         res = await client.get(url, params=params)
 
+        _raise_if_rate_limited(res)
+
     post = parser.parse_post(
         res.json()[0]["data"]["children"][0]["data"], is_popular_or_all=False
     )
@@ -114,6 +120,8 @@ async def get_comments(
         params = {"limit": 100}
         res = await client.get(url, params=params)
 
+        _raise_if_rate_limited(res)
+
     return parser.parse_comments(res.json()[1]["data"])
 
 
@@ -129,12 +137,16 @@ async def _get_posts_for_url(
 
         res = await client.get(url, params=params)
 
+        _raise_if_rate_limited(res)
+
     return parser.parse_posts(res.json(), is_popular_or_all)
 
 
 async def _get_subreddit_informations(name: str) -> models.Subreddit:
     async with httpx.AsyncClient() as client:
         res = await client.get(f"https://www.reddit.com/r/{name}/about/.json")
+
+    _raise_if_rate_limited(res)
 
     # If subreddit not found, the API redirects us to search endpoint
     if res.status_code == 302 and "search" in res.headers["location"]:
@@ -151,11 +163,19 @@ async def _get_multi_informations(name: str) -> models.Subreddit:
     async with httpx.AsyncClient() as client:
         res = await client.head(f"https://old.reddit.com/r/{name}")
 
+    _raise_if_rate_limited(res)
+
     if len(res.history) > 0 and res.history[0].status_code != 200:
         raise SubredditNotFound()
 
     over18 = res.status_code == 302 and "over18" in res.headers["location"]
     return parser.parse_subreddit_informations(name, over18)
+
+
+def _raise_if_rate_limited(api_res: httpx.Response) -> None:
+    """Raise an exception if Reddit returns a 429 (rate-limit reached)."""
+    if api_res.status_code == 429:
+        raise RateLimited()
 
 
 def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:

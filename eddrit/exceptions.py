@@ -20,3 +20,11 @@ class SubredditIsQuarantined(SubredditUnavailable):
 
 class SubredditIsBanned(SubredditUnavailable):
     message = "Subreddit is banned"
+
+
+class RateLimited(Exception):
+    """
+    Raised when rate-limit is reached
+    """
+
+    message = "eddrit made too much requests to Reddit and was rate-limited.Try again later or try another instance"

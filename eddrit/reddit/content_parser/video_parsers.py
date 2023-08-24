@@ -59,8 +59,6 @@ def get_twitch_embed(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostCont
     )
 
 
-
-
 def get_imgur_gif(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
     """Fetch gif from imgur."""
 
@@ -90,7 +88,7 @@ def get_embed_content(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostCon
     return models.EmbedPostContent(
         url=_cleanup_embed(content),
         width=embed_data["width"],
-        height=embed_data["height"] or 0 ,
+        height=embed_data["height"] or 0,
     )
 
 

@@ -39,13 +39,13 @@ class State(typing.TypedDict):
 
     http_client: httpx.AsyncClient
 
+
 @contextlib.asynccontextmanager
 async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
     """Init the app lifespan with httpx client."""
 
     async with httpx.AsyncClient(
-        headers={"User-Agent": f"eddrit: v{__version__}"},
-        http2=True
+        headers={"User-Agent": f"eddrit: v{__version__}"}, http2=True
     ) as client:
         yield {"http_client": client}
 

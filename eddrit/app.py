@@ -43,8 +43,9 @@ class State(typing.TypedDict):
 @contextlib.asynccontextmanager
 async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
     """Init the app lifespan with httpx client."""
+
     async with httpx.AsyncClient(
-        headers={"User-Agent": f"eddrit: v{__version__}"}
+        headers={"User-Agent": f"eddrit: v{__version__}"}, http2=True
     ) as client:
         yield {"http_client": client}
 
@@ -72,7 +73,6 @@ app = Starlette(
     middleware=middlewares,
     exception_handlers=exceptions_handlers,  # type: ignore
 )
-app.router.redirect_slashes = False  # allow slashes at the end of the URL
 
 if __name__ == "__main__":
     uvicorn.run(

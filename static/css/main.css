@@ -162,11 +162,6 @@ html[data-theme='dark'] .dark-inverted {
   object-fit: contain;
 }
 
-.post-content-iframe {
-  height: var(--post-content);
-  width: 100%;
-}
-
 .post-content-gallery-buttons {
   margin-right: calc(var(--spacing) / 2);
   margin-bottom: calc(var(--spacing) / 2);

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "eddrit"
-version = "0.6.0"
+version = "0.6.1"
 description = "Alternative Reddit frontend"
 authors = ["corenting <corenting@gmail.com>"]
 license = "MIT"
@@ -11,7 +11,7 @@ python = "^3.11"
 aiofiles = "^23.1.0"
 environs = "^9.5.0"
 gunicorn = "^21.0.0"
-httpx = "^0.24.0"
+httpx = {version = "^0.24.0", extras = ["http2"]}
 Jinja2 = "^3.1.2"
 loguru = "^0.7.0"
 lxml = "^4.9.3"

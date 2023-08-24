@@ -31,7 +31,7 @@ def get_domains_with_special_embed_handling() -> dict[str, Callable]:
     """Return dict of domain associated with parsing function
     of domains that have a special handling for their embed
     and should not be parsed with the generic embed code"""
-    return {"twitch.tv": get_twitch_embed, "gfycat.com": get_gfycat_embed}
+    return {"twitch.tv": get_twitch_embed}
 
 
 def get_twitch_embed(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostContent:
@@ -56,23 +56,6 @@ def get_twitch_embed(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostCont
     embed_code = f'<iframe src="{embed_url}&parent={parent}" frameborder="0" allowfullscreen="true" scrolling="no" height="378" width="620"></iframe>'
     return models.EmbedPostContent(
         url=_cleanup_embed(embed_code), width=378, height=620
-    )
-
-
-def get_gfycat_embed(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostContent:
-    """Fetch gfycat embed directly"""
-
-    # Get url
-    src_url = api_post_data["url"].replace("gfycat.com/", "gfycat.com/ifr/")
-    embed_code = f"<iframe src='{src_url}' frameborder='0' scrolling='no' allowfullscreen></iframe>"
-
-    # Get width and height from reddit video preview which should be same size
-    reddit_video_preview = get_reddit_video_preview(api_post_data)
-
-    return models.EmbedPostContent(
-        url=_cleanup_embed(embed_code),
-        width=reddit_video_preview.width,
-        height=reddit_video_preview.height,
     )
 
 
@@ -105,7 +88,7 @@ def get_embed_content(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostCon
     return models.EmbedPostContent(
         url=_cleanup_embed(content),
         width=embed_data["width"],
-        height=embed_data["height"],
+        height=embed_data["height"] or 0,
     )
 
 

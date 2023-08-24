@@ -7,10 +7,12 @@ An alternative frontend for Reddit, written with Python + [Starlette](https://ww
 - Lightweight
 - No ads
 - Compact design (closer to [old.reddit.com](https://old.reddit.com) than to the redesign)
-- Mobile support
-- Use the old `.json` APIs, no need to register for an OAuth2 identifier for self-hosting
+- Better mobile support
+- Use the old `.json` API endpoints, no need to register for an OAuth2 identifier for self-hosting
 
 Official instance: [eddrit.com](https://eddrit.com)
+
+⚠️ eddrit may get rate-limited by Reddit since they introduced rate-limiting on the API endpoints. In this case, an error message may be displayed.
 
 ## Screenshots
 

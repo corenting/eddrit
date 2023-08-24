@@ -102,4 +102,9 @@ routes = [
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}", endpoint=subreddit_post
     ),
+    # register with trailing slash too: the permalinks given by reddit for these URLs have a trailing slash
+    # so we want to avoid an extra redirect
+    Route(
+        "/{name:str}/comments/{post_id:str}/{post_title:str}/", endpoint=subreddit_post
+    ),
 ]

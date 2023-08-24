@@ -157,7 +157,7 @@ html[data-theme='dark'] .dark-inverted {
 
 .post-content-image-or-video {
   /* Use a fixed height for media and contain the object */
-  max-height: var(--post-content);
+  height: var(--post-content);
   object-position: top left;
   object-fit: contain;
 }

@@ -3,9 +3,9 @@ from starlette.responses import Response
 from starlette.routing import Route
 
 from eddrit import models
+from eddrit.config import DEBUG
 from eddrit.routes.common.context import get_templates_common_context
 from eddrit.templates import templates
-from eddrit.utils.cookies import cookie_is_secure, get_cookie_value_from_bool
 from eddrit.utils.request import get_checkbox_from_form
 
 
@@ -42,8 +42,8 @@ async def settings_submit(request: Request) -> Response:
     for cookie_name, cookie_value in boolean_cookies:
         res.set_cookie(
             cookie_name,
-            get_cookie_value_from_bool(cookie_value),
-            secure=cookie_is_secure(),
+            "1" if cookie_value else "0",
+            secure=not DEBUG,
             httponly=True,
         )
     return res

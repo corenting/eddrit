@@ -16,8 +16,10 @@ async def search(request: Request) -> Response:
     input_text = request.query_params.get("q", "")
 
     try:
-        subreddit_search_results = await search_subreddits(input_text)
-        posts_search_results = await search_posts(input_text)
+        subreddit_search_results = await search_subreddits(
+            request.state.http_client, input_text
+        )
+        posts_search_results = await search_posts(request.state.http_client, input_text)
     except exceptions.RateLimited as e:
         raise HTTPException(status_code=429, detail=e.message)
 

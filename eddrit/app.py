@@ -1,3 +1,6 @@
+import contextlib
+import typing
+import httpx
 import uvicorn
 from starlette.applications import Starlette
 from starlette.exceptions import HTTPException
@@ -18,6 +21,7 @@ from eddrit.routes.pages import (
 )
 from eddrit.routes.xhr import routes
 from eddrit.utils.middlewares import CurrentHostMiddleware, NoReferrerMiddleware
+from eddrit import __version__
 
 middlewares = [
     Middleware(NoReferrerMiddleware),
@@ -29,7 +33,24 @@ exceptions_handlers = {
     500: exception_handlers.http_exception,  # 500 are handled separately by starlette
 }
 
+
+class State(typing.TypedDict):
+    """App state"""
+
+    http_client: httpx.AsyncClient
+
+
+@contextlib.asynccontextmanager
+async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
+    """Init the app lifespan with httpx client."""
+    async with httpx.AsyncClient(
+        headers={"User-Agent": f"eddrit: v{__version__}"}
+    ) as client:
+        yield {"http_client": client}
+
+
 app = Starlette(
+    lifespan=lifespan,
     debug=config.DEBUG,
     routes=[
         Mount("/static", app=StaticFiles(directory="static"), name="static"),
@@ -51,6 +72,7 @@ app = Starlette(
     middleware=middlewares,
     exception_handlers=exceptions_handlers,  # type: ignore
 )
+app.router.redirect_slashes = False  # allow slashes at the end of the URL
 
 if __name__ == "__main__":
     uvicorn.run(

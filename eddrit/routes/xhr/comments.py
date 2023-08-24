@@ -20,7 +20,9 @@ async def comments(request: Request) -> Response:
     if not comment_id or not subreddit_name or not post_id:
         return PlainTextResponse(None, status_code=400)
 
-    comments = await get_comments(subreddit_name, post_id, comment_id)
+    comments = await get_comments(
+        request.state.http_client, subreddit_name, post_id, comment_id
+    )
 
     return templates.TemplateResponse(
         "comments_xhr.html",

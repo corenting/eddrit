@@ -26,29 +26,32 @@ async def get_frontpage_informations() -> models.Subreddit:
 
 
 async def get_frontpage_posts(
+    http_client: httpx.AsyncClient,
     pagination: models.Pagination,
 ) -> Tuple[List[models.Post], models.Pagination]:
     return await _get_posts_for_url(
-        "https://www.reddit.com/.json", pagination, is_popular_or_all=True
+        http_client, "https://www.reddit.com/.json", pagination, is_popular_or_all=True
     )
 
 
-async def search_posts(input_text: str) -> list[models.Post]:
-    async with httpx.AsyncClient() as client:
-        res = await client.get(f"https://old.reddit.com/search.json?q={input_text}")
+async def search_posts(
+    http_client: httpx.AsyncClient, input_text: str
+) -> list[models.Post]:
+    res = await http_client.get(f"https://old.reddit.com/search.json?q={input_text}")
 
-        _raise_if_rate_limited(res)
+    _raise_if_rate_limited(res)
 
     posts, _ = parser.parse_posts(res.json(), False)
     return posts
 
 
-async def search_subreddits(input_text: str) -> list[models.Subreddit]:
-    async with httpx.AsyncClient() as client:
-        res = await client.get(
-            f"https://www.reddit.com/subreddits/search.json?q={input_text}"
-        )
-        _raise_if_rate_limited(res)
+async def search_subreddits(
+    http_client: httpx.AsyncClient, input_text: str
+) -> list[models.Subreddit]:
+    res = await http_client.get(
+        f"https://www.reddit.com/subreddits/search.json?q={input_text}"
+    )
+    _raise_if_rate_limited(res)
 
     results = res.json()["data"]["children"]
     return [
@@ -59,7 +62,9 @@ async def search_subreddits(input_text: str) -> list[models.Subreddit]:
     ]
 
 
-async def get_subreddit_informations(subreddit: str) -> models.Subreddit:
+async def get_subreddit_informations(
+    http_client: httpx.AsyncClient, subreddit: str
+) -> models.Subreddit:
     if subreddit == "all":
         return models.Subreddit(
             title="All",
@@ -74,12 +79,13 @@ async def get_subreddit_informations(subreddit: str) -> models.Subreddit:
 
     # If multi subreddit
     if "+" in subreddit:
-        return await _get_multi_informations(subreddit)
+        return await _get_multi_informations(http_client, subreddit)
 
-    return await _get_subreddit_informations(subreddit)
+    return await _get_subreddit_informations(http_client, subreddit)
 
 
 async def get_subreddit_posts(
+    http_client: httpx.AsyncClient,
     subreddit: str,
     pagination: models.Pagination,
     sorting_mode: models.SubredditSortingMode,
@@ -92,16 +98,17 @@ async def get_subreddit_posts(
         if sorting_mode == models.SubredditSortingMode.POPULAR
         else f"https://www.reddit.com/r/{subreddit}/{sorting_mode.value}.json?t={sorting_period.value}"
     )
-    return await _get_posts_for_url(url, pagination)
+    return await _get_posts_for_url(http_client, url, pagination)
 
 
-async def get_post(subreddit: str, post_id: str) -> models.PostWithComments:
-    async with httpx.AsyncClient() as client:
-        url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}/.json"
-        params = {"limit": 100}
-        res = await client.get(url, params=params)
+async def get_post(
+    http_client: httpx.AsyncClient, subreddit: str, post_id: str
+) -> models.PostWithComments:
+    url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}/.json"
+    params = {"limit": 100}
+    res = await http_client.get(url, params=params)
 
-        _raise_if_rate_limited(res)
+    _raise_if_rate_limited(res)
 
     post = parser.parse_post(
         res.json()[0]["data"]["children"][0]["data"], is_popular_or_all=False
@@ -113,38 +120,40 @@ async def get_post(subreddit: str, post_id: str) -> models.PostWithComments:
 
 
 async def get_comments(
-    subreddit: str, post_id: str, comment_id: str
+    http_client: httpx.AsyncClient, subreddit: str, post_id: str, comment_id: str
 ) -> Iterable[Union[models.PostComment, models.PostCommentShowMore]]:
-    async with httpx.AsyncClient() as client:
-        url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
-        params = {"limit": 100}
-        res = await client.get(url, params=params)
+    url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
+    params = {"limit": 100}
+    res = await http_client.get(url, params=params)
 
-        _raise_if_rate_limited(res)
+    _raise_if_rate_limited(res)
 
     return parser.parse_comments(res.json()[1]["data"])
 
 
 async def _get_posts_for_url(
-    url: str, pagination: models.Pagination, is_popular_or_all: bool = False
+    http_client: httpx.AsyncClient,
+    url: str,
+    pagination: models.Pagination,
+    is_popular_or_all: bool = False,
 ) -> Tuple[List[models.Post], models.Pagination]:
-    async with httpx.AsyncClient() as client:
-        params: Dict[str, Union[str, int]] = {}
-        if pagination.before_post_id:
-            params = {"before": pagination.before_post_id, "count": 25}
-        elif pagination.after_post_id:
-            params = {"after": pagination.after_post_id, "count": 25}
+    params: Dict[str, Union[str, int]] = {}
+    if pagination.before_post_id:
+        params = {"before": pagination.before_post_id, "count": 25}
+    elif pagination.after_post_id:
+        params = {"after": pagination.after_post_id, "count": 25}
 
-        res = await client.get(url, params=params)
+    res = await http_client.get(url, params=params)
 
-        _raise_if_rate_limited(res)
+    _raise_if_rate_limited(res)
 
     return parser.parse_posts(res.json(), is_popular_or_all)
 
 
-async def _get_subreddit_informations(name: str) -> models.Subreddit:
-    async with httpx.AsyncClient() as client:
-        res = await client.get(f"https://www.reddit.com/r/{name}/about/.json")
+async def _get_subreddit_informations(
+    http_client: httpx.AsyncClient, name: str
+) -> models.Subreddit:
+    res = await http_client.get(f"https://www.reddit.com/r/{name}/about/.json")
 
     _raise_if_rate_limited(res)
 
@@ -158,10 +167,11 @@ async def _get_subreddit_informations(name: str) -> models.Subreddit:
     return parser.parse_subreddit_informations(name, json["data"]["over18"], json)
 
 
-async def _get_multi_informations(name: str) -> models.Subreddit:
+async def _get_multi_informations(
+    http_client: httpx.AsyncClient, name: str
+) -> models.Subreddit:
     # Check if there is a redirect to know if it's an NSFW multi
-    async with httpx.AsyncClient() as client:
-        res = await client.head(f"https://old.reddit.com/r/{name}")
+    res = await http_client.head(f"https://old.reddit.com/r/{name}")
 
     _raise_if_rate_limited(res)
 

@@ -20,9 +20,13 @@ from eddrit.utils.request import redirect_to_age_check, should_redirect_to_age_c
 
 async def subreddit_post(request: Request) -> Response:
     try:
-        subreddit_infos = await get_subreddit_informations(request.path_params["name"])
+        subreddit_infos = await get_subreddit_informations(
+            request.state.http_client, request.path_params["name"]
+        )
         post_id = request.path_params["post_id"]
-        post = await get_post(request.path_params["name"], post_id)
+        post = await get_post(
+            request.state.http_client, request.path_params["name"], post_id
+        )
     except exceptions.SubredditUnavailable as e:
         raise HTTPException(status_code=403, detail=e.message)
     except exceptions.RateLimited as e:
@@ -53,7 +57,9 @@ async def subreddit(request: Request) -> Response:
     sorting_period = models.SubredditSortingPeriod(request.query_params.get("t", "day"))
 
     try:
-        subreddit_infos = await get_subreddit_informations(request.path_params["name"])
+        subreddit_infos = await get_subreddit_informations(
+            request.state.http_client, request.path_params["name"]
+        )
         if should_redirect_to_age_check(request, subreddit_infos.over18):
             return redirect_to_age_check(request)
 
@@ -63,6 +69,7 @@ async def subreddit(request: Request) -> Response:
         )
 
         posts, response_pagination = await get_subreddit_posts(
+            request.state.http_client,
             request.path_params["name"],
             request_pagination,
             sorting_mode,

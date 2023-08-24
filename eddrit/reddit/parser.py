@@ -19,7 +19,7 @@ from eddrit.utils.urls import get_domain_and_suffix_from_url
 STATIC_RES_PATH_REPLACEMENT = "$STATIC_RES_PATH"
 
 # Domains that may be used in post of type link but that are majorly used for image hosting and should be parsed as such
-IMAGE_HOSTING_DOMAINS = ["imgur.com"]
+MEDIA_HOSTING_DOMAINS = ["imgur.com"]
 
 # Media domains to display as links (embed that cannot be displayed, scripts needed etc.)
 MEDIA_DOMAINS_TO_DISPLAY_AS_LINK = ["tiktok.com"]
@@ -46,14 +46,14 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBa
     post_domain = get_domain_and_suffix_from_url(api_post_data["domain"])
     if (
         hint in ["image", "hosted:video", "rich:video"]
-        or (hint == "link" and post_domain in IMAGE_HOSTING_DOMAINS)
+        or post_domain in MEDIA_HOSTING_DOMAINS
         or has_video_content
     ) and post_domain not in MEDIA_DOMAINS_TO_DISPLAY_AS_LINK:
-        # Check if image has video (then consider video) else consider image
-        if has_video_content:
-            return get_post_video_content(api_post_data)
-
-        return get_post_image_content(api_post_data)
+        # First try video: if link returned, try image
+        content = get_post_video_content(api_post_data)
+        if type(content) is models.LinkPostContent:
+            return get_post_image_content(api_post_data)
+        return content
 
     # Default case: link posts
     return models.LinkPostContent()

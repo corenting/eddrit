@@ -157,14 +157,9 @@ html[data-theme='dark'] .dark-inverted {
 
 .post-content-image-or-video {
   /* Use a fixed height for media and contain the object */
-  height: var(--post-content);
+  max-height: var(--post-content);
   object-position: top left;
   object-fit: contain;
-}
-
-.post-content-iframe {
-  height: var(--post-content);
-  width: 100%;
 }
 
 .post-content-gallery-buttons {

@@ -5,11 +5,11 @@ import httpx
 
 from eddrit import models
 from eddrit.exceptions import (
-    RateLimited,
-    SubredditIsBanned,
-    SubredditIsPrivate,
-    SubredditIsQuarantined,
-    SubredditNotFound,
+    RateLimitedError,
+    SubredditIsBannedError,
+    SubredditIsPrivateError,
+    SubredditIsQuarantinedError,
+    SubredditNotFoundError,
 )
 from eddrit.reddit import parser
 
@@ -159,7 +159,7 @@ async def _get_subreddit_informations(
 
     # If subreddit not found, the API redirects us to search endpoint
     if res.status_code == 302 and "search" in res.headers["location"]:
-        raise SubredditNotFound()
+        raise SubredditNotFoundError()
 
     _raise_if_subreddit_is_not_available(res)
 
@@ -176,7 +176,7 @@ async def _get_multi_informations(
     _raise_if_rate_limited(res)
 
     if len(res.history) > 0 and res.history[0].status_code != 200:
-        raise SubredditNotFound()
+        raise SubredditNotFoundError()
 
     over18 = res.status_code == 302 and "over18" in res.headers["location"]
     return parser.parse_subreddit_informations(name, over18)
@@ -185,7 +185,7 @@ async def _get_multi_informations(
 def _raise_if_rate_limited(api_res: httpx.Response) -> None:
     """Raise an exception if Reddit returns a 429 (rate-limit reached)."""
     if api_res.status_code == 429:
-        raise RateLimited()
+        raise RateLimitedError()
 
 
 def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:
@@ -195,20 +195,20 @@ def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:
 
     # Check for banned subreddits
     if api_res.status_code == 404 and json.get("reason") == "banned":
-        raise SubredditIsBanned()
+        raise SubredditIsBannedError()
 
     # Check for quarantined subreddits
     if api_res.status_code == 403 and json.get("reason") == "quarantined":
-        raise SubredditIsQuarantined()
+        raise SubredditIsQuarantinedError()
 
     # Check for private subreddits
     if api_res.status_code == 403 and json.get("reason") == "private":
-        raise SubredditIsPrivate()
+        raise SubredditIsPrivateError()
 
     # Check for subreddit not found
     if len(api_res.history) > 0 and api_res.history[0].status_code != 200:
-        raise SubredditNotFound()
+        raise SubredditNotFoundError()
 
     # If error, consider we didn't find the subreddit
     if json.get("error") == 404:
-        raise SubredditNotFound()
+        raise SubredditNotFoundError()

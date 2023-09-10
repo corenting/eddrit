@@ -113,7 +113,7 @@ def parse_posts(
 
 
 def parse_post(post_data: Dict[Hashable, Any], is_popular_or_all: bool) -> models.Post:
-    utc_now = datetime.datetime.utcnow()
+    utc_now = datetime.datetime.now(tz=datetime.timezone.utc)
 
     # Get post thumbnail
     thumbnail_url, thumbnail_is_icon = get_post_thumbnail(post_data)
@@ -130,7 +130,9 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular_or_all: bool) -> model
         subreddit=post_data["subreddit"],
         domain=post_data["domain"],
         human_date=timeago.format(
-            datetime.datetime.utcfromtimestamp(post_data["created_utc"]),
+            datetime.datetime.fromtimestamp(
+                post_data["created_utc"], tz=datetime.timezone.utc
+            ),
             utc_now,
         ),
         thumbnail_url=thumbnail_url,
@@ -182,7 +184,7 @@ def parse_comments(
 ) -> Iterable[Union[models.PostComment, models.PostCommentShowMore]]:
     root_comments = comments_data["children"]
     ret: List[Union[models.PostComment, models.PostCommentShowMore]] = []
-    utc_now = datetime.datetime.utcnow()
+    utc_now = datetime.datetime.now(tz=datetime.timezone.utc)
 
     for comment in root_comments:
         if comment["kind"] == "more":
@@ -219,7 +221,10 @@ def parse_comments(
                     is_moderator=data.get("distinguished", "") == "moderator",
                     content=html.unescape(data["body_html"]),
                     human_date=timeago.format(
-                        datetime.datetime.utcfromtimestamp(data["created_utc"]), utc_now
+                        datetime.datetime.fromtimestamp(
+                            data["created_utc"], tz=datetime.timezone.utc
+                        ),
+                        utc_now,
                     ),
                     human_score=pretty_big_num(data["score"]),
                     children=childrens,

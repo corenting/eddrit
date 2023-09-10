@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Iterable, Optional, Union
+from typing import Iterable
 
 from eddrit.models.user import Flair, User
 
@@ -29,7 +29,7 @@ class PostVideo:
     is_gif: bool
     width: int
     height: int
-    video_format: Optional[PostVideoFormat] = None
+    video_format: PostVideoFormat | None = None
 
 
 @dataclass
@@ -106,7 +106,7 @@ class GalleryPostContent(PostContentBase):
 class PostComment:
     id: str
     author: User
-    children: Iterable[Union[PostComment, PostCommentShowMore]]
+    children: Iterable[PostComment | PostCommentShowMore]
     content: str
     human_date: str
     human_score: str
@@ -136,7 +136,7 @@ class Post:
     human_date: str
     thumbnail_url: str
     thumbnail_is_icon: bool
-    flair: Optional[Flair]
+    flair: Flair | None
     content: PostContentBase
     url: str
     is_sticky: bool
@@ -148,4 +148,4 @@ class Post:
 
 @dataclass
 class PostWithComments(Post):
-    comments: Iterable[Union[PostComment, PostCommentShowMore]]
+    comments: Iterable[PostComment | PostCommentShowMore]

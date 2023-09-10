@@ -1,6 +1,8 @@
 from eddrit.models.flair import Flair, FlairComponent, FlairComponentType
 from eddrit.models.pagination import Pagination
 from eddrit.models.post import (
+    EmbedPostContent,
+    GalleryPostContent,
     LinkPostContent,
     PicturePostContent,
     Post,
@@ -10,12 +12,10 @@ from eddrit.models.post import (
     PostContentType,
     PostPicture,
     PostVideo,
-    EmbedPostContent,
     PostVideoFormat,
     PostWithComments,
     TextPostContent,
     VideoPostContent,
-    GalleryPostContent,
 )
 from eddrit.models.settings import Settings
 from eddrit.models.subreddit import (

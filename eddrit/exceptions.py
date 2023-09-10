@@ -1,4 +1,4 @@
-class SubredditUnavailable(Exception):
+class SubredditUnavailableError(Exception):
     """
     Raised when a subreddit is not available.
     """
@@ -6,23 +6,23 @@ class SubredditUnavailable(Exception):
     message = "Subreddit is not available"
 
 
-class SubredditNotFound(SubredditUnavailable):
+class SubredditNotFoundError(SubredditUnavailableError):
     message = "Subreddit not found"
 
 
-class SubredditIsPrivate(SubredditUnavailable):
+class SubredditIsPrivateError(SubredditUnavailableError):
     message = "Subreddit is private"
 
 
-class SubredditIsQuarantined(SubredditUnavailable):
+class SubredditIsQuarantinedError(SubredditUnavailableError):
     message = "Subreddit is quarantined"
 
 
-class SubredditIsBanned(SubredditUnavailable):
+class SubredditIsBannedError(SubredditUnavailableError):
     message = "Subreddit is banned"
 
 
-class RateLimited(Exception):
+class RateLimitedError(Exception):
     """
     Raised when rate-limit is reached
     """

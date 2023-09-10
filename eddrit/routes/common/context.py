@@ -1,8 +1,9 @@
 from typing import Any
 from urllib.parse import urlparse
-from eddrit import models
+
 from starlette.requests import Request
 
+from eddrit import models
 from eddrit.models.settings import ThumbnailsMode
 
 
@@ -28,7 +29,7 @@ def get_templates_common_context(
     If cookies is provided, this dict will be used for the settings as the cookies source instead of the request cookies.
     This is useful if there were updated during this request.
     """
-    cookies_source = request.cookies if not cookies else cookies
+    cookies_source = cookies if cookies else request.cookies
     settings = models.Settings(
         thumbnails=ThumbnailsMode(
             cookies_source.get("thumbnails", "subreddit_preference")

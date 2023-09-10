@@ -8,4 +8,4 @@ def should_redirect_to_age_check(request: Any, over18: bool) -> bool:
 
 
 def redirect_to_age_check(request: Any) -> RedirectResponse:
-    return RedirectResponse(url=f"/over18?dest={str(request.url)}")
+    return RedirectResponse(url=f"/over18?dest={request.url!s}")

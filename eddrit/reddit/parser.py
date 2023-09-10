@@ -22,7 +22,7 @@ STATIC_RES_PATH_REPLACEMENT = "$STATIC_RES_PATH"
 MEDIA_HOSTING_DOMAINS = ["imgur.com"]
 
 # Media domains to display as links (embed that cannot be displayed, scripts needed etc.)
-MEDIA_DOMAINS_TO_DISPLAY_AS_LINK = ["tiktok.com"]
+MEDIA_DOMAINS_TO_DISPLAY_AS_LINK = ["tiktok.com", "twitter.com"]
 
 
 def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBase:
@@ -63,6 +63,7 @@ def get_post_thumbnail(data: Dict[Hashable, Any]) -> tuple[str, bool]:
     """Return a tuple with the post thumbnail URL and a boolean indicating if the thumbnail is an icon or not."""
     thumbnail_url = data.get("thumbnail")
 
+    # Icons
     if thumbnail_url == "self":
         thumbnail_url = f"{STATIC_RES_PATH_REPLACEMENT}images/icons/card-list.svg"
     elif thumbnail_url == "default":
@@ -75,6 +76,7 @@ def get_post_thumbnail(data: Dict[Hashable, Any]) -> tuple[str, bool]:
         )
     elif thumbnail_url == "image":
         thumbnail_url = f"{STATIC_RES_PATH_REPLACEMENT}images/icons/image.svg"
+    # Else get from media
     elif (
         (not thumbnail_url or thumbnail_url == "image")
         and data.get("media", None)

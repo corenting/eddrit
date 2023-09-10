@@ -8,11 +8,12 @@
 {% endif %}
 {% endmacro %}
 
-{% macro render_post_card(post, show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
+
+{% macro render_post_card(post, subreddit_show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
 <article class="container-fluid">
     <div class="row">
         <!-- Thumbnail (first column) -->
-        {% if show_thumbnails %}
+        {% if settings.thumbnails.value == "always" or (settings.thumbnails.value == "subreddit_preference" and subreddit_show_thumbnails) %}
         <span class="col-auto">
             {% if post.over18 and not settings.nsfw_thumbnails and not always_show_over18_thumbnail %}
             <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}" class="post-image-thumbnail post-image-thumbnail-default dark-inverted" height="60" width="60">

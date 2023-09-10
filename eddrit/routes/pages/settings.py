@@ -2,11 +2,9 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
 
-from eddrit import models
 from eddrit.config import DEBUG
 from eddrit.routes.common.context import get_templates_common_context
 from eddrit.templates import templates
-from eddrit.utils.request import get_checkbox_from_form
 
 
 async def settings_page(request: Request) -> Response:
@@ -19,33 +17,36 @@ async def settings_page(request: Request) -> Response:
 async def settings_submit(request: Request) -> Response:
     # Get request content
     data = await request.form()
-    nsfw_popular_all = get_checkbox_from_form(data, "nsfw_popular_all")
-    nsfw_thumbnails = get_checkbox_from_form(data, "nsfw_thumbnails")
+
+    # For each modified setting, prepare cookies
+    updated_cookies: dict[str, str] = {}
+    for setting_key, setting_value in data.items():
+        # If it's a checkbox it's on or off
+        # and we can set directly
+        if setting_value in ["on", "off"]:
+            value_to_save = "1" if setting_value == "on" else "0"
+        # Else it's a radio, save value directly
+        else:
+            value_to_save = str(setting_value)
+
+        updated_cookies[setting_key] = value_to_save
 
     res = templates.TemplateResponse(
         "settings.html",
         {
-            "request": request,
+            **get_templates_common_context(request, request.cookies | updated_cookies),
             "is_saved": True,
-            "settings": models.Settings(
-                nsfw_popular_all=nsfw_popular_all,
-                nsfw_thumbnails=nsfw_thumbnails,
-            ),
         },
     )
 
-    # Set cookies for response
-    boolean_cookies = [
-        ("nsfw_popular_all", nsfw_popular_all),
-        ("nsfw_thumbnails", nsfw_thumbnails),
-    ]
-    for cookie_name, cookie_value in boolean_cookies:
+    for cookie_name, cookie_value in updated_cookies.items():
         res.set_cookie(
             cookie_name,
-            "1" if cookie_value else "0",
+            cookie_value,
             secure=not DEBUG,
             httponly=True,
         )
+
     return res
 
 

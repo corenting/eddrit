@@ -1,8 +1,15 @@
-{% macro checkbox_is_checked(pref_name) %}
+{% macro setting_checkbox_checked(pref_name) %}
 {% if settings[pref_name] %}
 checked
 {% endif %}
 {% endmacro %}
+
+{% macro setting_thumbnails_mode_checked(thumbnails_mode) %}
+{% if settings.thumbnails.value == thumbnails_mode %}
+checked
+{% endif %}
+{% endmacro %}
+
 
 {% set title = "Settings" %}
 
@@ -39,14 +46,32 @@ checked
     <header>Content</header>
     <form action="/settings" method="post">
         <fieldset>
+            <legend>Thumbnails</legend>
+
+            <div>
+              <input type="radio" id="always" name="thumbnails" value="always" {{ setting_thumbnails_mode_checked("always") }} />
+              <label for="always">Always show thumbnails next to links</label>
+            </div>
+
+            <div>
+              <input type="radio" id="never" name="thumbnails" value="never" {{ setting_thumbnails_mode_checked("never") }} />
+              <label for="never">Never show thumbnails next to links</label>
+            </div>
+
+            <div>
+              <input type="radio" id="subreddit_preference" name="thumbnails" value="subreddit_preference" {{ setting_thumbnails_mode_checked("subreddit_preference") }} />
+              <label for="subreddit_preference">Show thumbnails based on that subreddit's media preferences</label>
+            </div>
+          </fieldset>
+
+        <fieldset>
+            <legend>NSFW</legend>
             <label for="nsfw_popular_all">
-                <input type="checkbox" id="nsfw_popular_all" name="nsfw_popular_all" {{
-                    checkbox_is_checked("nsfw_popular_all") }}>
+                <input type="checkbox" id="nsfw_popular_all" name="nsfw_popular_all" {{ setting_checkbox_checked("nsfw_popular_all") }}>
                 Show NSFW content on /r/popular and /r/all
             </label>
             <label for="nsfw_thumbnails" class="checkbox">
-                <input id="nsfw_thumbnails" name="nsfw_thumbnails" type="checkbox" {{
-                    checkbox_is_checked("nsfw_thumbnails") }}>
+                <input id="nsfw_thumbnails" name="nsfw_thumbnails" type="checkbox" {{ setting_checkbox_checked("nsfw_thumbnails") }}>
                 Show NSFW thumbnails on non-NSFW subreddits
             </label>
         </fieldset>

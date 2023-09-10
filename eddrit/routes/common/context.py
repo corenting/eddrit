@@ -3,11 +3,42 @@ from urllib.parse import urlparse
 from eddrit import models
 from starlette.requests import Request
 
+from eddrit.models.settings import ThumbnailsMode
 
-def get_templates_common_context(request: Request) -> dict[str, Any]:
+
+def _get_bool_setting_value_from_cookie(
+    name: str, cookies: dict[str, str], default: bool = False
+) -> bool:
+    """Get boolean value of a given setting according to the given cookies.
+
+    If setting not present, use default value
+    """
+    if name in cookies:
+        return cookies[name] == "1"
+    else:
+        return default
+
+
+def get_templates_common_context(
+    request: Request, cookies: dict[str, str] | None = None
+) -> dict[str, Any]:
+    """
+    Get common context from request (the request itself and the user settings).
+
+    If cookies is provided, this dict will be used for the settings as the cookies source instead of the request cookies.
+    This is useful if there were updated during this request.
+    """
+    cookies_source = request.cookies if not cookies else cookies
     settings = models.Settings(
-        nsfw_popular_all=request.cookies.get("nsfw_popular_all", "0") == "1",
-        nsfw_thumbnails=request.cookies.get("nsfw_thumbnails", "0") == "1",
+        thumbnails=ThumbnailsMode(
+            cookies_source.get("thumbnails", "subreddit_preference")
+        ),
+        nsfw_popular_all=_get_bool_setting_value_from_cookie(
+            "nsfw_popular_all", cookies_source
+        ),
+        nsfw_thumbnails=_get_bool_setting_value_from_cookie(
+            "nsfw_thumbnails", cookies_source
+        ),
     )
 
     return {

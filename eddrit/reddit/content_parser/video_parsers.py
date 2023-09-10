@@ -12,7 +12,7 @@ from eddrit.utils.middlewares import get_current_host
 def _domain_has_special_embed_handling(domain: str) -> bool:
     """Check if the given domain is a domain that has a special code for embed handling."""
     _, domain, suffix = tldextract.extract(domain)
-    return f"{domain}.{suffix}" in get_domains_with_special_embed_handling().keys()
+    return f"{domain}.{suffix}" in get_domains_with_special_embed_handling()
 
 
 def _cleanup_embed(content: str) -> str:

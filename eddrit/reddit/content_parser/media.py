@@ -2,10 +2,9 @@ import html
 from typing import Any, Callable, Dict, Hashable
 from urllib.parse import urlparse
 
-
-from eddrit import models
 from loguru import logger
 
+from eddrit import models
 from eddrit.reddit.content_parser import video_parsers
 from eddrit.utils.urls import get_domain_and_suffix_from_url
 
@@ -115,7 +114,7 @@ def get_post_video_content(
         domains_with_special_embed_handling = (
             video_parsers.get_domains_with_special_embed_handling()
         )
-        if post_domain in domains_with_special_embed_handling.keys():
+        if post_domain in domains_with_special_embed_handling:
             parsers.append(domains_with_special_embed_handling[post_domain])
 
         parsed_results: list[models.PostVideo | models.EmbedPostContent] = []
@@ -123,7 +122,8 @@ def get_post_video_content(
             try:
                 parsed_item = parser(api_post_data)
                 parsed_results.append(parsed_item)
-            except Exception:
+            except Exception:  # noqa: PERF203
+                logger.debug(f"Cannot parse content with {parser}")
                 continue
 
         # Sort: best resolution + non-embed first

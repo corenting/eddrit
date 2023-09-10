@@ -1,8 +1,8 @@
 from contextvars import ContextVar
 
-from starlette.requests import Request
-from starlette.types import ASGIApp, Message, Scope, Receive, Send
 from starlette.datastructures import MutableHeaders
+from starlette.requests import Request
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 _current_host_ctx_var: ContextVar[str] = ContextVar("CURRENT_HOST_CTX_VAR", default="")
 

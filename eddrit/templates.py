@@ -1,5 +1,6 @@
-from dataclasses import asdict, is_dataclass
 import json
+from dataclasses import asdict, is_dataclass
+
 from starlette.templating import Jinja2Templates
 
 from eddrit import __version__, models

@@ -1,5 +1,6 @@
 import contextlib
 import typing
+
 import httpx
 import uvicorn
 from starlette.applications import Starlette
@@ -8,7 +9,7 @@ from starlette.middleware import Middleware
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
-from eddrit import config
+from eddrit import __version__, config
 from eddrit.routes.common import exception_handlers
 from eddrit.routes.pages import (
     index,
@@ -21,7 +22,6 @@ from eddrit.routes.pages import (
 )
 from eddrit.routes.xhr import routes
 from eddrit.utils.middlewares import CurrentHostMiddleware, NoReferrerMiddleware
-from eddrit import __version__
 
 middlewares = [
     Middleware(NoReferrerMiddleware),

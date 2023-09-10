@@ -44,7 +44,7 @@ async def index(request: Request) -> Response:
         posts, response_pagination = await get_frontpage_posts(
             request.state.http_client, request_pagination
         )
-    except exceptions.RateLimited as e:
+    except exceptions.RateLimitedError as e:
         raise HTTPException(status_code=429, detail=e.message)
 
     return templates.TemplateResponse(

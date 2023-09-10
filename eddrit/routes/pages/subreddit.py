@@ -27,9 +27,9 @@ async def subreddit_post(request: Request) -> Response:
         post = await get_post(
             request.state.http_client, request.path_params["name"], post_id
         )
-    except exceptions.SubredditUnavailable as e:
+    except exceptions.SubredditUnavailableError as e:
         raise HTTPException(status_code=403, detail=e.message)
-    except exceptions.RateLimited as e:
+    except exceptions.RateLimitedError as e:
         raise HTTPException(status_code=429, detail=e.message)
 
     if should_redirect_to_age_check(request, post.over18):
@@ -75,9 +75,9 @@ async def subreddit(request: Request) -> Response:
             sorting_mode,
             sorting_period,
         )
-    except exceptions.SubredditUnavailable as e:
+    except exceptions.SubredditUnavailableError as e:
         raise HTTPException(status_code=403, detail=e.message)
-    except exceptions.RateLimited as e:
+    except exceptions.RateLimitedError as e:
         raise HTTPException(status_code=429, detail=e.message)
 
     return templates.TemplateResponse(

@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 aiofiles = "^23.1.0"
 environs = "^9.5.0"
 gunicorn = "^21.0.0"

@@ -36,6 +36,12 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBa
 
         return models.TextPostContent(text=content)
 
+    # Check if it's a crosspost.
+    # If it's a case, use crosspost data as the normal
+    # data will be a link
+    if "crosspost_parent_list" in api_post_data:
+        api_post_data = api_post_data["crosspost_parent_list"][0]
+
     # Gallery posts
     if "gallery_data" in api_post_data:
         return get_post_gallery_content(api_post_data)

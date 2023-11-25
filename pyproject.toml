@@ -16,9 +16,9 @@ Jinja2 = "^3.1.2"
 loguru = "^0.7.0"
 lxml = "^4.9.3"
 python-multipart = "^0.0.6"
-starlette = "^0.31.0"
+starlette = "^0.32.0"
 timeago = "^1.0.16"
-tldextract = "^3.4.1"
+tldextract = "^5.0.0"
 uvicorn = {version = "^0.24.0", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]

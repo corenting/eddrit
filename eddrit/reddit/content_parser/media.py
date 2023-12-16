@@ -71,14 +71,12 @@ def get_post_gallery_content(
     try:
         # Get image urls in order
         gallery_data = api_post_data["gallery_data"].get("items")
-        sorted_image_ids = [item['media_id'] for item in gallery_data]
+        sorted_image_ids = [item["media_id"] for item in gallery_data]
 
         media_metadata = api_post_data["media_metadata"]
         sorted_image_metadata = [media_metadata[id] for id in sorted_image_ids]
 
-        pictures = [
-            _get_gallery_picture(item) for item in sorted_image_metadata
-        ]
+        pictures = [_get_gallery_picture(item) for item in sorted_image_metadata]
 
         return models.GalleryPostContent(pictures=pictures)
     except Exception:

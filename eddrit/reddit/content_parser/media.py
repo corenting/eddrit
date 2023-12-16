@@ -155,7 +155,9 @@ def get_post_video_content(
 
         # Else return the list of non-embed sources
         return models.VideoPostContent(
-            videos=[item for item in parsed_results if type(item) != models.EmbedPostContent]  # type: ignore
+            videos=[
+                item for item in parsed_results if type(item) != models.EmbedPostContent
+            ]  # type: ignore
         )
 
     except Exception:

@@ -22,7 +22,6 @@ tldextract = "^5.0.0"
 uvicorn = {version = "^0.24.0", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
-black = "*"
 coverage = {version = "*", extras = ["toml"]}
 mypy = "*"
 pytest = "*"

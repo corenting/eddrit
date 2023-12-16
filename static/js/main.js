@@ -64,10 +64,8 @@ function fetchCommentsChildren(
 	fetch(
 		`/xhr/comments/xhr?subreddit=${subredditName}&post_id=${postId}&comment_id=${commentIdParam}&depth=${depth}`,
 	)
-		.then(function (response) {
-			return response.text();
-		})
-		.then(function (text) {
+		.then((response) => response.text())
+		.then((text) => {
 			// Parse new content
 			const parser = new DOMParser();
 			const newCommentElement = parser
@@ -84,9 +82,7 @@ function setupVideo(videoElement) {
 		return;
 	}
 
-	const videos = JSON.parse(videoElement.getAttribute("data-content"))[
-		"videos"
-	];
+	const videos = JSON.parse(videoElement.getAttribute("data-content")).videos;
 	const player = videojs(videoElement, {
 		controls: true,
 		fill: true,
@@ -103,22 +99,22 @@ function setupVideo(videoElement) {
 		}),
 	});
 
-	player.on("sourceset", function () {
+	player.on("sourceset", () => {
 		// Sometimes source returned from currentSource doesn't include
 		// the custom metadata, so get it from the original sources
 		let currentSource = player.currentSource();
-		if (currentSource["is_gif"] === undefined) {
+		if (currentSource.is_gif === undefined) {
 			currentSource = player
 				.currentSources()
 				.find((x) => x.src === currentSource.src);
 		}
 
 		console.debug("Switched to source", currentSource);
-		player.autoplay(currentSource["is_gif"]);
-		player.loop(currentSource["is_gif"]);
+		player.autoplay(currentSource.is_gif);
+		player.loop(currentSource.is_gif);
 
-		videoElement.setAttribute("width", currentSource["width"]);
-		videoElement.setAttribute("height", currentSource["height"]);
+		videoElement.setAttribute("width", currentSource.width);
+		videoElement.setAttribute("height", currentSource.height);
 	});
 }
 
@@ -211,7 +207,7 @@ function initPage() {
 if (document.readyState !== "loading") {
 	initPage();
 } else {
-	document.addEventListener("DOMContentLoaded", function () {
+	document.addEventListener("DOMContentLoaded", () => {
 		initPage();
 	});
 }

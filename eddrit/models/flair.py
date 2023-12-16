@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
 
 
 class FlairComponentType(Enum):
@@ -18,4 +17,4 @@ class FlairComponent:
 class Flair:
     background_color: str
     text_color: str
-    components: List[FlairComponent]
+    components: list[FlairComponent]

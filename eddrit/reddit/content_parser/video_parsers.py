@@ -1,6 +1,7 @@
 import html
 import re
-from typing import Any, Callable, Dict, Hashable
+from collections.abc import Callable, Hashable
+from typing import Any
 
 import lxml.html
 import tldextract
@@ -37,7 +38,7 @@ def get_domains_with_special_embed_handling() -> dict[str, Callable]:
     return {"twitch.tv": get_twitch_embed}
 
 
-def get_twitch_embed(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostContent:
+def get_twitch_embed(api_post_data: dict[Hashable, Any]) -> models.EmbedPostContent:
     """Fetch twitch embed directly as the one in the API has
     a Content-Security-Policy preventing including it.
     """
@@ -62,7 +63,7 @@ def get_twitch_embed(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostCont
     )
 
 
-def get_imgur_gif(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
+def get_imgur_gif(api_post_data: dict[Hashable, Any]) -> models.PostVideo:
     """Fetch gif from imgur."""
 
     # Get item as we still need it for width/height
@@ -81,7 +82,7 @@ def get_imgur_gif(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
     )
 
 
-def get_embed_content(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostContent:
+def get_embed_content(api_post_data: dict[Hashable, Any]) -> models.EmbedPostContent:
     if _domain_has_special_embed_handling(api_post_data["url"]):
         raise ValueError("The post domain cannot be parsed with get_embed_content")
 
@@ -96,7 +97,7 @@ def get_embed_content(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostCon
 
 
 def get_secure_media_reddit_video(
-    api_post_data: Dict[Hashable, Any]
+    api_post_data: dict[Hashable, Any],
 ) -> models.PostVideo:
     """Get 'secure media' reddit video."""
     reddit_video = api_post_data["secure_media"]["reddit_video"]
@@ -109,7 +110,7 @@ def get_secure_media_reddit_video(
     )
 
 
-def get_external_video(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
+def get_external_video(api_post_data: dict[Hashable, Any]) -> models.PostVideo:
     """Get external video."""
     video = api_post_data["preview"]["images"][0]["variants"]["mp4"]["source"]
 
@@ -122,7 +123,7 @@ def get_external_video(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
     )
 
 
-def get_reddit_video_preview(api_post_data: Dict[Hashable, Any]) -> models.PostVideo:
+def get_reddit_video_preview(api_post_data: dict[Hashable, Any]) -> models.PostVideo:
     """Get reddit video."""
     reddit_video = api_post_data["preview"]["reddit_video_preview"]
     video_url = reddit_video["dash_url"]

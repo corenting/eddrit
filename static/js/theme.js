@@ -48,7 +48,7 @@ function setupSettingsPage() {
 		currentTheme[0].toUpperCase() + currentTheme.substring(1);
 
 	// Add listener for theme change
-	selectElement.addEventListener("change", function () {
+	selectElement.addEventListener("change", () => {
 		let selectedTheme = selectElement.value.toLowerCase();
 		// handle system theme choice
 		if (selectedTheme === "") {

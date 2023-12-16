@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 
 @dataclass
@@ -8,9 +7,9 @@ class Subreddit:
     title: str
     name: str
     show_thumbnails: bool
-    public_description: Optional[str]
+    public_description: str | None
     over18: bool
-    icon_url: Optional[str]
+    icon_url: str | None
 
 
 class SubredditSortingMode(Enum):

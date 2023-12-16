@@ -1,9 +1,10 @@
-from typing import Any, Dict, Hashable, Optional
+from collections.abc import Hashable
+from typing import Any
 
 from eddrit import models
 
 
-def get_post_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]:
+def get_post_flair(api_post_data: dict[Hashable, Any]) -> models.Flair | None:
     flair_components = []
 
     # Colors
@@ -57,7 +58,7 @@ def get_post_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]
     return None
 
 
-def get_user_flair(api_post_data: Dict[Hashable, Any]) -> Optional[models.Flair]:
+def get_user_flair(api_post_data: dict[Hashable, Any]) -> models.Flair | None:
     flair_components = []
 
     # Background color

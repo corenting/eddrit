@@ -1,5 +1,5 @@
+from collections.abc import Iterable
 from dataclasses import asdict
-from typing import Dict, Iterable, List, Tuple, Union
 
 import httpx
 
@@ -28,7 +28,7 @@ async def get_frontpage_informations() -> models.Subreddit:
 async def get_frontpage_posts(
     http_client: httpx.AsyncClient,
     pagination: models.Pagination,
-) -> Tuple[List[models.Post], models.Pagination]:
+) -> tuple[list[models.Post], models.Pagination]:
     return await _get_posts_for_url(
         http_client, "https://www.reddit.com/.json", pagination, is_popular_or_all=True
     )
@@ -90,7 +90,7 @@ async def get_subreddit_posts(
     pagination: models.Pagination,
     sorting_mode: models.SubredditSortingMode,
     sorting_period: models.SubredditSortingPeriod,
-) -> Tuple[List[models.Post], models.Pagination]:
+) -> tuple[list[models.Post], models.Pagination]:
     # Always add sorting period as it is ignored
     # when not needed
     url = (
@@ -121,7 +121,7 @@ async def get_post(
 
 async def get_comments(
     http_client: httpx.AsyncClient, subreddit: str, post_id: str, comment_id: str
-) -> Iterable[Union[models.PostComment, models.PostCommentShowMore]]:
+) -> Iterable[models.PostComment | models.PostCommentShowMore]:
     url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
     params = {"limit": 100}
     res = await http_client.get(url, params=params)
@@ -136,8 +136,8 @@ async def _get_posts_for_url(
     url: str,
     pagination: models.Pagination,
     is_popular_or_all: bool = False,
-) -> Tuple[List[models.Post], models.Pagination]:
-    params: Dict[str, Union[str, int]] = {}
+) -> tuple[list[models.Post], models.Pagination]:
+    params: dict[str, str | int] = {}
     if pagination.before_post_id:
         params = {"before": pagination.before_post_id, "count": 25}
     elif pagination.after_post_id:

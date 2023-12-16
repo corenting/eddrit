@@ -1,5 +1,5 @@
 PYTHON := poetry run
-ROME := npx rome@latest
+BIOME := npx @biomejs/biome@latest
 SRC = eddrit
 JS_SRC = static/js
 
@@ -10,16 +10,18 @@ init:
 
 .PHONY: format
 format:
-	$(PYTHON) black $(SRC)
+	$(PYTHON) ruff format $(SRC)
 	$(PYTHON) ruff --fix $(SRC)
-	$(ROME) check --apply $(JS_SRC)
+	$(BIOME) format --write $(JS_SRC)
+	$(BIOME) check --apply $(JS_SRC)
+
 
 .PHONY: style
 style:
-	$(PYTHON) black --check $(SRC)
+	$(PYTHON) ruff format --check $(SRC)
 	$(PYTHON) ruff $(SRC)
 	$(PYTHON) mypy -- $(SRC)
-	$(ROME) check $(JS_SRC)
+	$(BIOME) lint  $(JS_SRC)
 
 .PHONY: test
 .SILENT: test

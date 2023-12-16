@@ -9,20 +9,19 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 aiofiles = "^23.1.0"
-environs = "^9.5.0"
+environs = "^10.0.0"
 gunicorn = "^21.0.0"
 httpx = {version = "^0.25.0", extras = ["http2"]}
 Jinja2 = "^3.1.2"
 loguru = "^0.7.0"
 lxml = "^4.9.3"
 python-multipart = "^0.0.6"
-starlette = "^0.32.0"
+starlette = "^0.33.0"
 timeago = "^1.0.16"
 tldextract = "^5.0.0"
 uvicorn = {version = "^0.24.0", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
-black = "*"
 coverage = {version = "*", extras = ["toml"]}
 mypy = "*"
 pytest = "*"
@@ -30,7 +29,7 @@ pytest-cov = "*"
 ruff = "*"
 
 [tool.ruff]
-line-length = 88
+target-version = "py312"
 # Enable pycodestyle (E), Pyflakes (F), flake8-print (T20), ruff rules (RUF),
 # flake8-comprehensions (C4), flake8-datetimez (DTZ), isort (I), pep8-naming (N)
 # pyupgrade (UP), flake8-async (ASYNC), flake8-bandit (S), perflint (PERF),

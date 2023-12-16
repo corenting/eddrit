@@ -40,7 +40,7 @@ def post_has_video_content(api_post_data: Dict[Hashable, Any]) -> bool:
 
 
 def get_post_image_content(
-    api_post_data: Dict[Hashable, Any]
+    api_post_data: Dict[Hashable, Any],
 ) -> models.LinkPostContent | models.PicturePostContent:
     """
     Get the image content of a post.
@@ -62,7 +62,7 @@ def get_post_image_content(
 
 
 def get_post_gallery_content(
-    api_post_data: Dict[Hashable, Any]
+    api_post_data: Dict[Hashable, Any],
 ) -> models.LinkPostContent | models.GalleryPostContent:
     """
     Get the gallery content of a post.
@@ -96,7 +96,7 @@ def _get_gallery_picture(picture_api_data: dict[str, Any]) -> models.PostPicture
 
 
 def get_post_video_content(
-    api_post_data: Dict[Hashable, Any]
+    api_post_data: Dict[Hashable, Any],
 ) -> models.VideoPostContent | models.LinkPostContent | models.EmbedPostContent:
     """
     Get the video content of a post.

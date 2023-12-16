@@ -96,7 +96,7 @@ def get_embed_content(api_post_data: Dict[Hashable, Any]) -> models.EmbedPostCon
 
 
 def get_secure_media_reddit_video(
-    api_post_data: Dict[Hashable, Any]
+    api_post_data: Dict[Hashable, Any],
 ) -> models.PostVideo:
     """Get 'secure media' reddit video."""
     reddit_video = api_post_data["secure_media"]["reddit_video"]

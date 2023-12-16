@@ -186,7 +186,7 @@ def parse_subreddit_informations(
 
 
 def parse_comments(
-    comments_data: Dict[Hashable, Any]
+    comments_data: Dict[Hashable, Any],
 ) -> Iterable[Union[models.PostComment, models.PostCommentShowMore]]:
     root_comments = comments_data["children"]
     ret: List[Union[models.PostComment, models.PostCommentShowMore]] = []

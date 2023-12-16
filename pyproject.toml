@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 aiofiles = "^23.1.0"
-environs = "^9.5.0"
+environs = "^10.0.0"
 gunicorn = "^21.0.0"
 httpx = {version = "^0.25.0", extras = ["http2"]}
 Jinja2 = "^3.1.2"

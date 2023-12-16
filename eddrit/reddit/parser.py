@@ -1,6 +1,7 @@
 import datetime
 import html
-from typing import Any, Dict, Hashable, Iterable, List, Optional, Tuple, Union
+from collections.abc import Hashable, Iterable
+from typing import Any
 
 import timeago
 
@@ -25,7 +26,7 @@ MEDIA_HOSTING_DOMAINS = ["imgur.com"]
 MEDIA_DOMAINS_TO_DISPLAY_AS_LINK = ["tiktok.com", "twitter.com"]
 
 
-def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBase:
+def get_post_content(api_post_data: dict[Hashable, Any]) -> models.PostContentBase:
     # Text posts
     if api_post_data["is_self"] and api_post_data.get("selftext_html"):
         content = (
@@ -65,7 +66,7 @@ def get_post_content(api_post_data: Dict[Hashable, Any]) -> models.PostContentBa
     return models.LinkPostContent()
 
 
-def get_post_thumbnail(data: Dict[Hashable, Any]) -> tuple[str, bool]:
+def get_post_thumbnail(data: dict[Hashable, Any]) -> tuple[str, bool]:
     """Return a tuple with the post thumbnail URL and a boolean indicating if the thumbnail is an icon or not."""
     thumbnail_url = data.get("thumbnail")
 
@@ -96,13 +97,13 @@ def get_post_thumbnail(data: Dict[Hashable, Any]) -> tuple[str, bool]:
     return html.unescape(thumbnail_url), STATIC_RES_PATH_REPLACEMENT in thumbnail_url
 
 
-def get_post_url(data: Dict[Hashable, Any]) -> str:
+def get_post_url(data: dict[Hashable, Any]) -> str:
     return data["permalink"] if data["is_self"] else data["url"]
 
 
 def parse_posts(
-    api_response: Dict[Hashable, Any], is_popular_or_all: bool
-) -> Tuple[List[models.Post], models.Pagination]:
+    api_response: dict[Hashable, Any], is_popular_or_all: bool
+) -> tuple[list[models.Post], models.Pagination]:
     res = []
     for item in api_response["data"]["children"]:
         data = item["data"]
@@ -118,8 +119,8 @@ def parse_posts(
     )
 
 
-def parse_post(post_data: Dict[Hashable, Any], is_popular_or_all: bool) -> models.Post:
-    utc_now = datetime.datetime.now(tz=datetime.timezone.utc)
+def parse_post(post_data: dict[Hashable, Any], is_popular_or_all: bool) -> models.Post:
+    utc_now = datetime.datetime.now(tz=datetime.UTC)
 
     # Get post thumbnail
     thumbnail_url, thumbnail_is_icon = get_post_thumbnail(post_data)
@@ -136,9 +137,7 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular_or_all: bool) -> model
         subreddit=post_data["subreddit"],
         domain=post_data["domain"],
         human_date=timeago.format(
-            datetime.datetime.fromtimestamp(
-                post_data["created_utc"], tz=datetime.timezone.utc
-            ),
+            datetime.datetime.fromtimestamp(post_data["created_utc"], tz=datetime.UTC),
             utc_now,
         ),
         thumbnail_url=thumbnail_url,
@@ -155,7 +154,7 @@ def parse_post(post_data: Dict[Hashable, Any], is_popular_or_all: bool) -> model
 
 
 def parse_subreddit_informations(
-    name: str, over18: bool, api_response: Optional[Dict[Hashable, Any]] = None
+    name: str, over18: bool, api_response: dict[Hashable, Any] | None = None
 ) -> models.Subreddit:
     # Check if multi
     splitted_name = name.split("+")
@@ -186,11 +185,11 @@ def parse_subreddit_informations(
 
 
 def parse_comments(
-    comments_data: Dict[Hashable, Any],
-) -> Iterable[Union[models.PostComment, models.PostCommentShowMore]]:
+    comments_data: dict[Hashable, Any],
+) -> Iterable[models.PostComment | models.PostCommentShowMore]:
     root_comments = comments_data["children"]
-    ret: List[Union[models.PostComment, models.PostCommentShowMore]] = []
-    utc_now = datetime.datetime.now(tz=datetime.timezone.utc)
+    ret: list[models.PostComment | models.PostCommentShowMore] = []
+    utc_now = datetime.datetime.now(tz=datetime.UTC)
 
     for comment in root_comments:
         if comment["kind"] == "more":
@@ -228,7 +227,7 @@ def parse_comments(
                     content=html.unescape(data["body_html"]),
                     human_date=timeago.format(
                         datetime.datetime.fromtimestamp(
-                            data["created_utc"], tz=datetime.timezone.utc
+                            data["created_utc"], tz=datetime.UTC
                         ),
                         utc_now,
                     ),

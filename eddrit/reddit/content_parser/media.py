@@ -1,5 +1,6 @@
 import html
-from typing import Any, Callable, Dict, Hashable
+from collections.abc import Callable, Hashable
+from typing import Any
 from urllib.parse import urlparse
 
 from loguru import logger
@@ -9,7 +10,7 @@ from eddrit.reddit.content_parser import video_parsers
 from eddrit.utils.urls import get_domain_and_suffix_from_url
 
 
-def _post_is_an_imgur_gif(api_post_data: Dict[Hashable, Any]) -> bool:
+def _post_is_an_imgur_gif(api_post_data: dict[Hashable, Any]) -> bool:
     """Check if a post is an imgur gif by checking domain and url file extension."""
     return (
         get_domain_and_suffix_from_url(api_post_data["domain"]) == "imgur.com"
@@ -17,7 +18,7 @@ def _post_is_an_imgur_gif(api_post_data: Dict[Hashable, Any]) -> bool:
     )
 
 
-def post_has_video_content(api_post_data: Dict[Hashable, Any]) -> bool:
+def post_has_video_content(api_post_data: dict[Hashable, Any]) -> bool:
     """Check if a post is a video."""
 
     # Special case for imgur.com images as links
@@ -40,7 +41,7 @@ def post_has_video_content(api_post_data: Dict[Hashable, Any]) -> bool:
 
 
 def get_post_image_content(
-    api_post_data: Dict[Hashable, Any],
+    api_post_data: dict[Hashable, Any],
 ) -> models.LinkPostContent | models.PicturePostContent:
     """
     Get the image content of a post.
@@ -62,7 +63,7 @@ def get_post_image_content(
 
 
 def get_post_gallery_content(
-    api_post_data: Dict[Hashable, Any],
+    api_post_data: dict[Hashable, Any],
 ) -> models.LinkPostContent | models.GalleryPostContent:
     """
     Get the gallery content of a post.
@@ -96,7 +97,7 @@ def _get_gallery_picture(picture_api_data: dict[str, Any]) -> models.PostPicture
 
 
 def get_post_video_content(
-    api_post_data: Dict[Hashable, Any],
+    api_post_data: dict[Hashable, Any],
 ) -> models.VideoPostContent | models.LinkPostContent | models.EmbedPostContent:
     """
     Get the video content of a post.
@@ -125,7 +126,7 @@ def get_post_video_content(
             try:
                 parsed_item = parser(api_post_data)
                 parsed_results.append(parsed_item)
-            except Exception:  # noqa: PERF203
+            except Exception:
                 logger.debug(f"Cannot parse content with {parser}")
                 continue
 
@@ -154,10 +155,11 @@ def get_post_video_content(
             return best_content
 
         # Else return the list of non-embed sources
+        videos = [
+            item for item in parsed_results if type(item) != models.EmbedPostContent
+        ]
         return models.VideoPostContent(
-            videos=[
-                item for item in parsed_results if type(item) != models.EmbedPostContent
-            ]  # type: ignore
+            videos=videos  # type: ignore
         )
 
     except Exception:

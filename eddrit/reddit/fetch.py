@@ -1,10 +1,10 @@
 from collections.abc import Iterable
 from dataclasses import asdict
-from functools import lru_cache
 from json import JSONDecodeError
 
 import httpx
 from loguru import logger
+
 from eddrit import models
 from eddrit.exceptions import (
     RateLimitedError,
@@ -151,6 +151,7 @@ async def _get_posts_for_url(
 
     return parser.parse_posts(res.json(), is_popular_or_all)
 
+
 async def _get_subreddit_informations(
     http_client: httpx.AsyncClient, name: str
 ) -> models.Subreddit:
@@ -195,7 +196,11 @@ def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:
     try:
         json = api_res.json()
     except JSONDecodeError:
-        logger.exception("Cannot parse JSON", api_status_code=api_res.status_code, api_content=api_res.text)
+        logger.exception(
+            "Cannot parse JSON",
+            api_status_code=api_res.status_code,
+            api_content=api_res.text,
+        )
         return None
 
     # Check for banned subreddits

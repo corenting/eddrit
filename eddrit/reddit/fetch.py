@@ -197,7 +197,7 @@ def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:
         json = api_res.json()
     except JSONDecodeError:
         logger.exception(
-            "Cannot parse JSON",
+            "Cannot parse JSON from response with status code {api_status_code} and content {api_content}",
             api_status_code=api_res.status_code,
             api_content=api_res.text,
         )

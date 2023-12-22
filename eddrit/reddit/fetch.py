@@ -146,10 +146,19 @@ async def _get_posts_for_url(
         params = {"after": pagination.after_post_id, "count": 25}
 
     res = await http_client.get(url, params=params)
-
     _raise_if_rate_limited(res)
 
-    return parser.parse_posts(res.json(), is_popular_or_all)
+    try:
+        json_res = res.json()
+    except JSONDecodeError:
+        logger.exception(
+            "Cannot parse JSON from response with status code {api_status_code} and content {api_content}",
+            api_status_code=res.status_code,
+            api_content=res.text,
+        )
+        raise
+    else:
+        return parser.parse_posts(json_res, is_popular_or_all)
 
 
 async def _get_subreddit_informations(

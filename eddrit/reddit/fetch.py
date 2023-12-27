@@ -32,7 +32,7 @@ async def get_frontpage_posts(
     pagination: models.Pagination,
 ) -> tuple[list[models.Post], models.Pagination]:
     return await _get_posts_for_url(
-        http_client, "https://www.reddit.com/.json", pagination, is_popular_or_all=True
+        http_client, "https://old.reddit.com/.json", pagination, is_popular_or_all=True
     )
 
 
@@ -51,7 +51,7 @@ async def search_subreddits(
     http_client: httpx.AsyncClient, input_text: str
 ) -> list[models.Subreddit]:
     res = await http_client.get(
-        f"https://www.reddit.com/subreddits/search.json?q={input_text}"
+        f"https://old.reddit.com/subreddits/search.json?q={input_text}"
     )
     _raise_if_rate_limited(res)
 
@@ -96,9 +96,9 @@ async def get_subreddit_posts(
     # Always add sorting period as it is ignored
     # when not needed
     url = (
-        f"https://www.reddit.com/r/{subreddit}/.json?t={sorting_period.value}"
+        f"https://old.reddit.com/r/{subreddit}/.json?t={sorting_period.value}"
         if sorting_mode == models.SubredditSortingMode.POPULAR
-        else f"https://www.reddit.com/r/{subreddit}/{sorting_mode.value}.json?t={sorting_period.value}"
+        else f"https://old.reddit.com/r/{subreddit}/{sorting_mode.value}.json?t={sorting_period.value}"
     )
     return await _get_posts_for_url(http_client, url, pagination)
 
@@ -106,7 +106,7 @@ async def get_subreddit_posts(
 async def get_post(
     http_client: httpx.AsyncClient, subreddit: str, post_id: str
 ) -> models.PostWithComments:
-    url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}/.json"
+    url = f"https://old.reddit.com/r/{subreddit}/comments/{post_id}/.json"
     params = {"limit": 100}
     res = await http_client.get(url, params=params)
 
@@ -124,7 +124,7 @@ async def get_post(
 async def get_comments(
     http_client: httpx.AsyncClient, subreddit: str, post_id: str, comment_id: str
 ) -> Iterable[models.PostComment | models.PostCommentShowMore]:
-    url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
+    url = f"https://old.reddit.com/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
     params = {"limit": 100}
     res = await http_client.get(url, params=params)
 
@@ -164,7 +164,7 @@ async def _get_posts_for_url(
 async def _get_subreddit_informations(
     http_client: httpx.AsyncClient, name: str
 ) -> models.Subreddit:
-    res = await http_client.get(f"https://www.reddit.com/r/{name}/about/.json")
+    res = await http_client.get(f"https://old.reddit.com/r/{name}/about/.json")
 
     _raise_if_rate_limited(res)
 

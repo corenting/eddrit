@@ -1,3 +1,7 @@
+# Version 0.6.4
+
+- Query old.reddit.com instead of www.reddit.com to avoid blocking
+
 # Version 0.6.3
 
 - Fix gallery pictures being out of order. Thanks to [jedicobra](https://github.com/jedicobra) for the [PR](https://github.com/corenting/eddrit/pull/114).

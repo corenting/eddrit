@@ -44,7 +44,7 @@
     <noscript>
         <li class="post-comment-list-item">
             <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
-                <a href="https://old.reddit.com/r{{ request.path }}">{{ comment.show_more_count }} more
+                <a href="https://old.reddit.com{{ request.path }}">{{ comment.show_more_count }} more
                     comments cannot be displayed, click here to see them on old.reddit.com</a>
             </div>
         </li>
@@ -60,7 +60,7 @@
     {% else %}
     <li class="post-comment-list-item">
         <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
-            <a href="https://old.reddit.com/r{{ request.path }}">{{ comment.show_more_count }} more
+            <a href="https://old.reddit.com{{ request.path }}">{{ comment.show_more_count }} more
                 comments cannot be displayed, click here to see them on old.reddit.com</a>
         </div>
     </li>

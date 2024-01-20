@@ -2,7 +2,7 @@
     <img src="{{ url_for('static', path='images/logo.svg') }}" width="132" height="28">
 </a>
 
-<nav>
+<nav class="align-items-baseline">
     <ul>
         <!-- Logo  -->
         <li class="desktop-only">
@@ -31,9 +31,9 @@
             </form>
         </li>
         <li>
-            <details role="list" dir="rtl">
-                <summary aria-haspopup="listbox" role="link">⚙️</summary>
-                <ul role="listbox">
+            <details class="dropdown">
+                <summary>⚙️</summary>
+                <ul dir="rtl">
                     <li>
                         <a href="/settings">
                             Settings

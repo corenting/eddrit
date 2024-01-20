@@ -41,6 +41,10 @@ You can run the app with gunicorn directly :
 3. Download the repository and run "make init" to install the dependencies.
 4. You can then run the app through gunicorn, for example with the following command: `poetry run gunicorn eddrit.app:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8080`
 
+## Donations
+
+If you wish to support the app, donations are possible [here](https://corenting.fr/donate).
+
 ## Credits
 
 - [Bootstrap Icons](https://icons.getbootstrap.com/) for the icons used

@@ -1,3 +1,8 @@
+# Version 0.6.5
+
+- Remove sorting option "gilded" as reddit removed awards
+- Updated [Pico CSS](https://v2.picocss.com/) to v2
+
 # Version 0.6.4
 
 - Query old.reddit.com instead of www.reddit.com to avoid blocking

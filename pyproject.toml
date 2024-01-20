@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "eddrit"
-version = "0.6.4"
+version = "0.6.5"
 description = "Alternative Reddit frontend"
 authors = ["corenting <corenting@gmail.com>"]
 license = "MIT"
@@ -19,7 +19,7 @@ python-multipart = "^0.0.6"
 starlette = "^0.35.1"
 timeago = "^1.0.16"
 tldextract = "^5.0.0"
-uvicorn = {version = "^0.25.0", extras = ["standard"]}
+uvicorn = {version = "^0.26.0", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
 coverage = {version = "*", extras = ["toml"]}

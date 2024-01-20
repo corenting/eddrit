@@ -18,7 +18,6 @@ class SubredditSortingMode(Enum):
     RISING = "rising"
     CONTROVERSIAL = "controversial"
     TOP = "top"
-    GILDED = "gilded"
 
 
 class SubredditSortingPeriod(Enum):

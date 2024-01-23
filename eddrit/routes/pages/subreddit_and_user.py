@@ -6,12 +6,12 @@ from starlette.routing import Route
 from eddrit import exceptions, models
 from eddrit.reddit.fetch import (
     get_post,
-    get_subreddit_informations,
-    get_subreddit_posts,
+    get_subreddit_or_user_information,
+    get_subreddit_or_user_posts,
 )
 from eddrit.routes.common.context import (
     get_canonical_url_context,
-    get_subreddits_and_frontpage_common_context,
+    get_posts_pages_common_context,
     get_templates_common_context,
 )
 from eddrit.templates import templates
@@ -20,8 +20,8 @@ from eddrit.utils.request import redirect_to_age_check, should_redirect_to_age_c
 
 async def subreddit_post(request: Request) -> Response:
     try:
-        subreddit_infos = await get_subreddit_informations(
-            request.state.http_client, request.path_params["name"]
+        subreddit_infos = await get_subreddit_or_user_information(
+            request.state.http_client, request.path_params["name"], is_user=False
         )
         post_id = request.path_params["post_id"]
         post = await get_post(
@@ -47,7 +47,11 @@ async def subreddit_post(request: Request) -> Response:
     )
 
 
-async def subreddit(request: Request) -> Response:
+async def subreddit_or_user(request: Request) -> Response:
+    """
+    Endpoint for a subreddit or an user page.
+    """
+
     # Get sorting mode
     sorting_mode = models.SubredditSortingMode(
         request.path_params.get("sorting_mode", "popular")
@@ -56,9 +60,10 @@ async def subreddit(request: Request) -> Response:
     # Get sorting period
     sorting_period = models.SubredditSortingPeriod(request.query_params.get("t", "day"))
 
+    is_user = request.url.path.startswith("/user")
     try:
-        subreddit_infos = await get_subreddit_informations(
-            request.state.http_client, request.path_params["name"]
+        subreddit_infos = await get_subreddit_or_user_information(
+            request.state.http_client, request.path_params["name"], is_user
         )
         if should_redirect_to_age_check(request, subreddit_infos.over18):
             return redirect_to_age_check(request)
@@ -68,12 +73,13 @@ async def subreddit(request: Request) -> Response:
             after_post_id=request.query_params.get("after"),
         )
 
-        posts, response_pagination = await get_subreddit_posts(
+        posts, response_pagination = await get_subreddit_or_user_posts(
             request.state.http_client,
             request.path_params["name"],
             request_pagination,
             sorting_mode,
             sorting_period,
+            is_user,
         )
     except exceptions.SubredditUnavailableError as e:
         raise HTTPException(status_code=403, detail=e.message)
@@ -83,7 +89,7 @@ async def subreddit(request: Request) -> Response:
     return templates.TemplateResponse(
         "posts_list.html",
         {
-            **get_subreddits_and_frontpage_common_context(
+            **get_posts_pages_common_context(
                 response_pagination,
                 posts,
                 subreddit_infos,
@@ -97,8 +103,8 @@ async def subreddit(request: Request) -> Response:
 
 
 routes = [
-    Route("/{name:str}", endpoint=subreddit),
-    Route("/{name:str}/{sorting_mode:str}", endpoint=subreddit),
+    Route("/{name:str}", endpoint=subreddit_or_user),
+    Route("/{name:str}/{sorting_mode:str}", endpoint=subreddit_or_user),
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}", endpoint=subreddit_post
     ),

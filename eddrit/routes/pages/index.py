@@ -4,10 +4,10 @@ from starlette.responses import Response
 from starlette.routing import Route
 
 from eddrit import exceptions, models
-from eddrit.reddit.fetch import get_frontpage_informations, get_frontpage_posts
+from eddrit.reddit.fetch import get_frontpage_information, get_frontpage_posts
 from eddrit.routes.common.context import (
     get_canonical_url_context,
-    get_subreddits_and_frontpage_common_context,
+    get_posts_pages_common_context,
     get_templates_common_context,
 )
 from eddrit.templates import templates
@@ -39,7 +39,7 @@ async def index(request: Request) -> Response:
         after_post_id=request.query_params.get("after"),
     )
 
-    informations = await get_frontpage_informations()
+    information = await get_frontpage_information()
     try:
         posts, response_pagination = await get_frontpage_posts(
             request.state.http_client, request_pagination
@@ -50,8 +50,8 @@ async def index(request: Request) -> Response:
     return templates.TemplateResponse(
         "posts_list.html",
         {
-            **get_subreddits_and_frontpage_common_context(
-                response_pagination, posts, informations, sorting_mode, sorting_period
+            **get_posts_pages_common_context(
+                response_pagination, posts, information, sorting_mode, sorting_period
             ),
             **get_templates_common_context(request),
             **get_canonical_url_context(request),

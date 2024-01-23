@@ -101,14 +101,22 @@ def get_post_url(data: dict[Hashable, Any]) -> str:
     return data["permalink"] if data["is_self"] else data["url"]
 
 
-def parse_posts(
+def parse_posts_and_comments(
     api_response: dict[Hashable, Any], is_popular_or_all: bool
-) -> tuple[list[models.Post], models.Pagination]:
-    res = []
+) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
+    """ "
+    Parse posts from API response.
+
+    Will also return comments if parsing an user page.
+    """
+    res: list[models.Post | models.PostComment] = []
     for item in api_response["data"]["children"]:
         data = item["data"]
 
-        res.append(parse_post(data, is_popular_or_all))
+        if item["kind"] == "t3":
+            res.append(parse_post(data, is_popular_or_all))
+        else:
+            res.append(_parse_comment(item))
 
     return (
         res,
@@ -153,7 +161,7 @@ def parse_post(post_data: dict[Hashable, Any], is_popular_or_all: bool) -> model
     )
 
 
-def parse_subreddit_informations(
+def parse_subreddit_information(
     name: str, over18: bool, api_response: dict[Hashable, Any] | None = None
 ) -> models.Subreddit:
     # Check if multi
@@ -184,12 +192,45 @@ def parse_subreddit_informations(
     )
 
 
-def parse_comments(
+def _parse_comment(comment: dict[Hashable, Any]) -> models.PostComment:
+    """
+    Parse a single comment (not a show more link) to a models.PostComment
+    """
+    data = comment["data"]
+    replies = data["replies"]
+    utc_now = datetime.datetime.now(tz=datetime.UTC)
+    childrens = (
+        []
+        if replies is None or isinstance(replies, str)
+        else parse_comments_tree(data["replies"]["data"])
+    )
+
+    return models.PostComment(
+        id=data["id"],
+        parent_id=comment["data"]["parent_id"].replace("t1_", "").replace("t3_", ""),
+        is_sticky=data["stickied"],
+        author=models.User(
+            name=data["author"],
+            flair=get_user_flair(data),
+        ),
+        is_submitter=data["is_submitter"],
+        is_admin=data.get("distinguished", "") == "admin",
+        is_moderator=data.get("distinguished", "") == "moderator",
+        content=html.unescape(data["body_html"]),
+        human_date=timeago.format(
+            datetime.datetime.fromtimestamp(data["created_utc"], tz=datetime.UTC),
+            utc_now,
+        ),
+        human_score=pretty_big_num(data["score"]),
+        children=childrens,
+    )
+
+
+def parse_comments_tree(
     comments_data: dict[Hashable, Any],
 ) -> Iterable[models.PostComment | models.PostCommentShowMore]:
     root_comments = comments_data["children"]
     ret: list[models.PostComment | models.PostCommentShowMore] = []
-    utc_now = datetime.datetime.now(tz=datetime.UTC)
 
     for comment in root_comments:
         if comment["kind"] == "more":
@@ -203,36 +244,5 @@ def parse_comments(
                 )
             )
         else:
-            data = comment["data"]
-            replies = data["replies"]
-            childrens = (
-                []
-                if replies is None or isinstance(replies, str)
-                else parse_comments(data["replies"]["data"])
-            )
-            ret.append(
-                models.PostComment(
-                    id=data["id"],
-                    parent_id=comment["data"]["parent_id"]
-                    .replace("t1_", "")
-                    .replace("t3_", ""),
-                    is_sticky=data["stickied"],
-                    author=models.User(
-                        name=data["author"],
-                        flair=get_user_flair(data),
-                    ),
-                    is_submitter=data["is_submitter"],
-                    is_admin=data.get("distinguished", "") == "admin",
-                    is_moderator=data.get("distinguished", "") == "moderator",
-                    content=html.unescape(data["body_html"]),
-                    human_date=timeago.format(
-                        datetime.datetime.fromtimestamp(
-                            data["created_utc"], tz=datetime.UTC
-                        ),
-                        utc_now,
-                    ),
-                    human_score=pretty_big_num(data["score"]),
-                    children=childrens,
-                )
-            )
+            ret.append(_parse_comment(comment))
     return ret

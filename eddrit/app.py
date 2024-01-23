@@ -18,7 +18,7 @@ from eddrit.routes.pages import (
     root_files,
     search,
     settings,
-    subreddit,
+    subreddit_and_user,
 )
 from eddrit.routes.xhr import routes
 from eddrit.utils.middlewares import CurrentHostMiddleware, NoReferrerMiddleware
@@ -56,7 +56,8 @@ app = Starlette(
     routes=[
         Mount("/static", app=StaticFiles(directory="static"), name="static"),
         Mount("/meta", routes=meta.routes, name="meta"),
-        Mount("/r", routes=subreddit.routes, name="subreddit"),
+        Mount("/r", routes=subreddit_and_user.routes, name="subreddit"),
+        Mount("/user", routes=subreddit_and_user.routes, name="user"),
         Mount("/xhr", routes=routes, name="api"),
         Mount(
             "/",

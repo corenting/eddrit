@@ -12,7 +12,7 @@
 {% macro render_post_card(post, subreddit_show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
 <article class="container-fluid">
     <div class="row">
-        <!-- Thumbnail (first column) -->
+        {# Thumbnail (first column) #}
         {% if settings.thumbnails.value == "always" or (settings.thumbnails.value == "subreddit_preference" and subreddit_show_thumbnails) %}
         <span class="col-auto">
             {% if post.over18 and not settings.nsfw_thumbnails and not always_show_over18_thumbnail %}
@@ -26,9 +26,9 @@
         </span>
         {% endif %}
 
-        <!-- Content (second column) -->
+        {# Content (second column) #}
         <div class="col">
-            <!-- Title + flairs -->
+            {# Title + flairs #}
             <div class="col post-title">
                 <a href="{{ post.url }}">
                     <strong>{{ post.title }}</strong>
@@ -41,10 +41,10 @@
                 </small>
             </div>
 
-            <!-- Infos -->
+            {# Infos #}
             <span class="col">
                 <span class="row align-items-center">
-                    <!-- Open/close preview button -->
+                    {# Open/close preview button #}
                     {% if post.content.type.value != "link" %}
                     <span class="col col-2 col-md-auto needs-js">
                         <a id="post-preview-button-{{ post.id }}" class="outline post-preview-button" role="button"
@@ -53,7 +53,7 @@
                     </span>
                     {% endif %}
 
-                    <!-- Author / subreddit etc. -->
+                    {# Author / subreddit etc. #}
                     <small class="col">
                         <div class="post-infos">
                             {{ post.human_score }} points - submitted {{ post.human_date }} by {{ post.author.name }} {{

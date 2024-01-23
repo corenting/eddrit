@@ -7,7 +7,6 @@ from loguru import logger
 
 from eddrit import models
 from eddrit.exceptions import (
-    RateLimitedError,
     SubredditIsBannedError,
     SubredditIsPrivateError,
     SubredditIsQuarantinedError,
@@ -41,9 +40,6 @@ async def search_posts(
     http_client: httpx.AsyncClient, input_text: str
 ) -> list[models.Post]:
     res = await http_client.get(f"https://old.reddit.com/search.json?q={input_text}")
-
-    _raise_if_rate_limited(res)
-
     posts, _ = parser.parse_posts_and_comments(res.json(), False)
     # Ignore response type as there is no models.PostComment for search posts
     return posts  # type: ignore
@@ -55,8 +51,6 @@ async def search_subreddits(
     res = await http_client.get(
         f"https://old.reddit.com/subreddits/search.json?q={input_text}"
     )
-    _raise_if_rate_limited(res)
-
     results = res.json()["data"]["children"]
     return [
         parser.parse_subreddit_information(
@@ -132,8 +126,6 @@ async def get_post(
     params = {"limit": 100}
     res = await http_client.get(url, params=params)
 
-    _raise_if_rate_limited(res)
-
     post = parser.parse_post(
         res.json()[0]["data"]["children"][0]["data"], is_popular_or_all=False
     )
@@ -149,8 +141,6 @@ async def get_comments(
     url = f"https://old.reddit.com/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
     params = {"limit": 100}
     res = await http_client.get(url, params=params)
-
-    _raise_if_rate_limited(res)
 
     return parser.parse_comments_tree(res.json()[1]["data"])
 
@@ -168,7 +158,6 @@ async def _get_posts_for_url(
         params = {"after": pagination.after_post_id, "count": 25}
 
     res = await http_client.get(url, params=params)
-    _raise_if_rate_limited(res)
 
     try:
         json_res = res.json()
@@ -188,8 +177,6 @@ async def _get_subreddit_information(
 ) -> models.Subreddit:
     res = await http_client.get(f"https://old.reddit.com/r/{name}/about/.json")
 
-    _raise_if_rate_limited(res)
-
     # If subreddit not found, the API redirects us to search endpoint
     if res.status_code == 302 and "search" in res.headers["location"]:
         raise SubredditNotFoundError()
@@ -206,19 +193,11 @@ async def _get_multi_information(
     # Check if there is a redirect to know if it's an NSFW multi
     res = await http_client.head(f"https://old.reddit.com/r/{name}")
 
-    _raise_if_rate_limited(res)
-
     if len(res.history) > 0 and res.history[0].status_code != 200:
         raise SubredditNotFoundError()
 
     over18 = res.status_code == 302 and "over18" in res.headers["location"]
     return parser.parse_subreddit_information(name, over18)
-
-
-def _raise_if_rate_limited(api_res: httpx.Response) -> None:
-    """Raise an exception if Reddit returns a 429 (rate-limit reached)."""
-    if api_res.status_code == 429:
-        raise RateLimitedError()
 
 
 def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:

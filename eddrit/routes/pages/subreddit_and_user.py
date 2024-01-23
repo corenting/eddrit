@@ -1,6 +1,6 @@
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
 
 from eddrit import exceptions, models
@@ -15,7 +15,14 @@ from eddrit.routes.common.context import (
     get_templates_common_context,
 )
 from eddrit.templates import templates
-from eddrit.utils.request import redirect_to_age_check, should_redirect_to_age_check
+
+
+def _redirect_to_age_check(request: Request) -> RedirectResponse:
+    return RedirectResponse(url=f"/over18?dest={request.url!s}")
+
+
+def _should_redirect_to_age_check(request: Request, over18: bool) -> bool:
+    return over18 and request.cookies.get("over18", "0") != "1"
 
 
 async def subreddit_post(request: Request) -> Response:
@@ -32,8 +39,8 @@ async def subreddit_post(request: Request) -> Response:
     except exceptions.RateLimitedError as e:
         raise HTTPException(status_code=429, detail=e.message)
 
-    if should_redirect_to_age_check(request, post.over18):
-        return redirect_to_age_check(request)
+    if _should_redirect_to_age_check(request, post.over18):
+        return _redirect_to_age_check(request)
 
     return templates.TemplateResponse(
         "post.html",
@@ -65,8 +72,8 @@ async def subreddit_or_user(request: Request) -> Response:
         subreddit_infos = await get_subreddit_or_user_information(
             request.state.http_client, request.path_params["name"], is_user
         )
-        if should_redirect_to_age_check(request, subreddit_infos.over18):
-            return redirect_to_age_check(request)
+        if _should_redirect_to_age_check(request, subreddit_infos.over18):
+            return _redirect_to_age_check(request)
 
         request_pagination = models.Pagination(
             before_post_id=request.query_params.get("before"),

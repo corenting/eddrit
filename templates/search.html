@@ -11,7 +11,7 @@
 {% if subreddits|length > 1 %}
 {{ search_results_macros.render_subreddits_search_results(subreddits) }}
 {% else %}
-<p>No subreddits found for this search.</p>
+<article>No subreddits found for this search.</article>
 {% endif %}
 
 <!-- Posts -->
@@ -19,7 +19,7 @@
 {% if posts|length > 1 %}
 {{ search_results_macros.render_posts_search_results(posts) }}
 {% else %}
-<p>No posts found for this search.</p>
+<article>No posts found for this search.</article>
 {% endif %}
 
 {% endblock %}

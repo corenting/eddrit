@@ -1,3 +1,7 @@
+# Version 0.6.6 (next release)
+
+- Fix pictures galleries buttons being enabled by mistake for first and last item
+
 # Version 0.6.5
 
 - Remove sorting option "gilded" as reddit removed awards

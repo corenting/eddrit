@@ -10,6 +10,10 @@ on:
     branches:
       - 'master'
 
+env:
+  DOCKERHUB_REGISTRY_IMAGE: corentingarcia/eddrit
+  GHCR_REGISTRY_IMAGE: ghcr.io/corenting/eddrit
+
 jobs:
   ci:
     name: Style and test
@@ -30,49 +34,134 @@ jobs:
       run: make style
     - name: Test
       run: make test
-  docker:
-    name: Build and push Docker images
-    needs: ci
+  docker_build:
+    name: Build Docker image (${{ matrix.platform }})
     runs-on: ubuntu-latest
+    needs: ci
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm/v7
+          - linux/arm64
     steps:
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            corentingarcia/eddrit
-            ghcr.io/corenting/eddrit
-          tags: |
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=dev,enable={{is_default_branch}}
-      - name: Login to DockerHub
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         if: ${{ github.event_name != 'pull_request' }}
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME  }}
           password: ${{ secrets.DOCKER_HUB_TOKEN  }}
-      - name: Login to GitHub Container Registry
+      - name: Login to GHCR
         uses: docker/login-action@v3
         if: ${{ github.event_name != 'pull_request' }}
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
+      - name: Build and push by digest (Docker Hub)
+        id: build_dockerhub
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/arm64/v8, linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
+          platforms:  ${{ matrix.platform }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.DOCKERHUB_REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Build and push by digest (GHCR)
+        id: build_ghcr
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms:  ${{ matrix.platform }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.GHCR_REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests/dockerhub
+          mkdir -p /tmp/digests/ghcr
+          digest_docker="${{ steps.build_dockerhub.outputs.digest }}"
+          touch "/tmp/digests/dockerhub/${digest_docker#sha256:}"
+          digest_ghcr="${{ steps.build_ghcr.outputs.digest }}"
+          touch "/tmp/digests/ghcr/${digest_ghcr#sha256:}"
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+  docker_merge:
+    runs-on: ubuntu-latest
+    needs:
+      - docker_build
+    if: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME  }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN  }}
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Docker meta (GHCR)
+        id: meta_ghcr
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.GHCR_REGISTRY_IMAGE }}
+          tags: |
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=dev,enable={{is_default_branch}}
+      - name: Docker meta (Docker Hub)
+        id: meta_dockerhub
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKERHUB_REGISTRY_IMAGE }}
+          tags: |
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=dev,enable={{is_default_branch}}
+      - name: Create manifest list and push (GHCR)
+        working-directory: /tmp/digests/ghcr
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "${{ steps.meta_ghcr.outputs.json }}") \
+            $(printf '${{ env.DOCKERHUB_REGISTRY_IMAGE }}@sha256:%s ' *)
+      - name: Create manifest list and push (Docker Hub)
+        working-directory: /tmp/digests/dockerhub
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "${{ steps.meta_dockerhub.outputs.json }}") \
+            $(printf '${{ env.DOCKERHUB_REGISTRY_IMAGE }}@sha256:%s ' *)

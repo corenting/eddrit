@@ -43,7 +43,6 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          - linux/arm/v7
           - linux/arm64
     steps:
       - name: Prepare
@@ -159,9 +158,21 @@ jobs:
         working-directory: /tmp/digests/ghcr
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "${{ steps.meta_ghcr.outputs.json }}") \
-            $(printf '${{ env.DOCKERHUB_REGISTRY_IMAGE }}@sha256:%s ' *)
+            $(printf '${{ env.GHCR_REGISTRY_IMAGE }}@sha256:%s ' *)
       - name: Create manifest list and push (Docker Hub)
         working-directory: /tmp/digests/dockerhub
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "${{ steps.meta_dockerhub.outputs.json }}") \
             $(printf '${{ env.DOCKERHUB_REGISTRY_IMAGE }}@sha256:%s ' *)
+      - name: Inspect image (GHCR)
+        run: |
+          docker buildx imagetools inspect ${{ env.GHCR_REGISTRY_IMAGE }}:${{ steps.meta_ghcr.outputs.version }}
+      - name: Inspect image (Docker Hub)
+        run: |
+          docker buildx imagetools inspect ${{ env.DOCKERHUB_REGISTRY_IMAGE }}:${{ steps.meta_dockerhub.outputs.version }}
+      - name: Update description (Docker Hub)
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          repository: ${{ env.DOCKERHUB_REGISTRY_IMAGE }}

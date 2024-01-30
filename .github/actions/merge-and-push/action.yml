@@ -1,0 +1,39 @@
+name: Merge and push a Docker image
+description: Apply meta, create manifest, and push the image to acontainer registry
+
+inputs:
+  image_name:
+    required: true
+    description: The name of the image to push
+  registry:
+    required: true
+    description: The Registry to push the image to
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check inputs
+      shell: bash
+      run: |
+        [[ "${{ inputs.image_name }}" ]] || { echo "image_name input is empty" ; exit 1; }
+        [[ "${{ inputs.registry }}" ]] || { echo "registry input is empty" ; exit 1; }
+    - name: Docker meta
+      id: meta_docker
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ inputs.image_name }}
+        tags: |
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=dev,enable={{is_default_branch}}
+    - name: Create manifest list and push to repository
+      working-directory: /tmp/digests/${{ inputs.registry }}
+      shell: bash
+      run: |
+        docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+          $(printf '${{ inputs.image_name }}@sha256:%s ' *)
+    - name: Inspect image
+      shell: bash
+      run: |
+        docker buildx imagetools inspect ${{ inputs.image_name }}:${{ steps.meta_docker.outputs.version }}

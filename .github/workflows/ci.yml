@@ -11,7 +11,7 @@ on:
       - 'master'
 
 env:
-  DOCKERHUB_REGISTRY_IMAGE: corentingarcia/eddrit
+  DOCKER_HUB_REGISTRY_IMAGE: corentingarcia/eddrit
   GHCR_REGISTRY_IMAGE: ghcr.io/corenting/eddrit
 
 jobs:
@@ -76,7 +76,7 @@ jobs:
           platforms:  ${{ matrix.platform }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.DOCKERHUB_REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.DOCKER_HUB_REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Build and push by digest (GHCR)
@@ -134,45 +134,13 @@ jobs:
           merge-multiple: true
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Docker meta (GHCR)
-        id: meta_ghcr
-        uses: docker/metadata-action@v5
+      - name: Collect and push (Docker Hub)
+        uses: ./.github/actions/merge-and-push
         with:
-          images: ${{ env.GHCR_REGISTRY_IMAGE }}
-          tags: |
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=dev,enable={{is_default_branch}}
-      - name: Docker meta (Docker Hub)
-        id: meta_dockerhub
-        uses: docker/metadata-action@v5
+          image_name: ${{ env.DOCKER_HUB_REGISTRY_IMAGE }}
+          registry: dockerhub
+      - name: Collect and push (GHCR)
+        uses: ./.github/actions/merge-and-push
         with:
-          images: ${{ env.DOCKERHUB_REGISTRY_IMAGE }}
-          tags: |
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=dev,enable={{is_default_branch}}
-      - name: Create manifest list and push (GHCR)
-        working-directory: /tmp/digests/ghcr
-        run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "${{ steps.meta_ghcr.outputs.json }}") \
-            $(printf '${{ env.GHCR_REGISTRY_IMAGE }}@sha256:%s ' *)
-      - name: Create manifest list and push (Docker Hub)
-        working-directory: /tmp/digests/dockerhub
-        run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "${{ steps.meta_dockerhub.outputs.json }}") \
-            $(printf '${{ env.DOCKERHUB_REGISTRY_IMAGE }}@sha256:%s ' *)
-      - name: Inspect image (GHCR)
-        run: |
-          docker buildx imagetools inspect ${{ env.GHCR_REGISTRY_IMAGE }}:${{ steps.meta_ghcr.outputs.version }}
-      - name: Inspect image (Docker Hub)
-        run: |
-          docker buildx imagetools inspect ${{ env.DOCKERHUB_REGISTRY_IMAGE }}:${{ steps.meta_dockerhub.outputs.version }}
-      - name: Update description (Docker Hub)
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-          repository: ${{ env.DOCKERHUB_REGISTRY_IMAGE }}
+          image_name: ${{ env.GHCR_REGISTRY_IMAGE }}
+          registry: ghcr

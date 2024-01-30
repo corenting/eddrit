@@ -146,9 +146,3 @@ jobs:
         with:
           image_name: ${{ env.GHCR_REGISTRY_IMAGE }}
           registry: ghcr
-      - name: Update description (Docker Hub)
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-          repository: ${{ env.DOCKERHUB_REGISTRY_IMAGE }}

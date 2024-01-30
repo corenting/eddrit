@@ -3,12 +3,12 @@ name: CI
 on:
   push:
     branches:
-      - 'master'
+      - "master"
     tags:
-      - 'v*'
+      - "v*"
   pull_request:
     branches:
-      - 'master'
+      - "master"
 
 env:
   DOCKER_HUB_REGISTRY_IMAGE: corentingarcia/eddrit
@@ -19,21 +19,21 @@ jobs:
     name: Style and test
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Install Poetry
-      run: pipx install poetry
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-        cache: 'poetry'
-    - name: Install dependencies
-      run: poetry install
-    - name: Style
-      run: make style
-    - name: Test
-      run: make test
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Poetry
+        run: pipx install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "poetry"
+      - name: Install dependencies
+        run: poetry install
+      - name: Style
+        run: make style
+      - name: Test
+        run: make test
   docker_build:
     name: Build Docker image (${{ matrix.platform }})
     runs-on: ubuntu-latest
@@ -73,7 +73,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms:  ${{ matrix.platform }}
+          platforms: ${{ matrix.platform }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.DOCKER_HUB_REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
@@ -84,7 +84,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms:  ${{ matrix.platform }}
+          platforms: ${{ matrix.platform }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.GHCR_REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
@@ -146,3 +146,9 @@ jobs:
         with:
           image_name: ${{ env.GHCR_REGISTRY_IMAGE }}
           registry: ghcr
+      - name: Update description (Docker Hub)
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          repository: ${{ env.DOCKERHUB_REGISTRY_IMAGE }}

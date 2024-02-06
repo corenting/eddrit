@@ -86,7 +86,7 @@ def get_post_thumbnail(data: dict[Hashable, Any]) -> tuple[str, bool]:
     # Else get from media
     elif (
         (not thumbnail_url or thumbnail_url == "image")
-        and data.get("media", None)
+        and data.get("media")
         and "oembed" in data["media"]
         and data["media"]["oembed"].get("thumbnail_url")
     ):

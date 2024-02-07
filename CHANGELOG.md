@@ -1,4 +1,4 @@
-# Version 0.7.0 (next release)
+# Version 0.7.0
 
 - Fix pictures galleries buttons being enabled by mistake for first and last item
 - Add /user/ pages

@@ -1,12 +1,12 @@
 {% import "macros/post.html" as post_macros with context %}
 {% import "macros/comments.html" as comments_macros with context %}
 
-{% set title = subreddit.title %}
+{% set title = about_information.title %}
 
 {% extends "base.html" %}
 
 {% block main_content %}
-{{ post_macros.render_post_card(post, subreddit.show_thumbnails, subreddit.over18, True) }}
+{{ post_macros.render_post_card(post, about_information.show_thumbnails, about_information.over18, True) }}
 <hr />
-{{ comments_macros.render_comments(subreddit.name, post.id, post.comments) }}
+{{ comments_macros.render_comments(about_information.name, post.id, post.comments) }}
 {% endblock %}

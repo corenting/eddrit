@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import Any
 from urllib.parse import urlparse
 
@@ -27,7 +28,7 @@ def get_templates_common_context(
     Get common context from request (the request itself and the user settings).
 
     If cookies is provided, this dict will be used for the settings as the cookies source instead of the request cookies.
-    This is useful if there were updated during this request.
+    This is useful if they were updated during this request.
     """
     cookies_source = cookies if cookies else request.cookies
     settings = models.Settings(
@@ -58,19 +59,29 @@ def get_canonical_url_context(request: Request) -> dict[str, str]:
     return {"canonical_url": reddit_url}
 
 
-def get_subreddits_and_frontpage_common_context(
+def get_posts_pages_common_context(
     pagination: models.Pagination,
-    posts: list[models.Post],
-    subreddit: models.Subreddit,
-    sorting_mode: models.SubredditSortingMode,
+    posts: Iterable[models.Post | models.PostComment],
+    about_information: models.Subreddit | models.User,
+    sorting_mode: models.SubredditSortingMode | models.UserSortingMode,
     sorting_period: models.SubredditSortingPeriod,
 ) -> dict[str, Any]:
+    """
+    Get common context for pages containing posts (subreddits, homepage, user pages).
+
+    Posts also include post comments for user pages.
+    """
     return {
         "pagination": pagination,
         "posts": posts,
-        "subreddit": subreddit,
+        "about_information": about_information,
         "current_sorting_mode": sorting_mode,
         "current_sorting_period": sorting_period,
         "has_sorting_period": sorting_mode
-        in [models.SubredditSortingMode.CONTROVERSIAL, models.SubredditSortingMode.TOP],
+        in [
+            models.SubredditSortingMode.CONTROVERSIAL,
+            models.SubredditSortingMode.TOP,
+            models.UserSortingMode.CONTROVERSIAL,
+            models.UserSortingMode.TOP,
+        ],
     }

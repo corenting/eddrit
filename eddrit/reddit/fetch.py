@@ -7,16 +7,16 @@ from loguru import logger
 
 from eddrit import models
 from eddrit.exceptions import (
-    RateLimitedError,
     SubredditIsBannedError,
     SubredditIsPrivateError,
     SubredditIsQuarantinedError,
     SubredditNotFoundError,
+    UserNotFoundError,
 )
 from eddrit.reddit import parser
 
 
-async def get_frontpage_informations() -> models.Subreddit:
+async def get_frontpage_information() -> models.Subreddit:
     return models.Subreddit(
         title="Popular",
         show_thumbnails=True,
@@ -31,20 +31,19 @@ async def get_frontpage_posts(
     http_client: httpx.AsyncClient,
     pagination: models.Pagination,
 ) -> tuple[list[models.Post], models.Pagination]:
-    return await _get_posts_for_url(
+    ret = await _get_posts_for_url(
         http_client, "https://old.reddit.com/.json", pagination, is_popular_or_all=True
     )
+    return ret  # type: ignore
 
 
 async def search_posts(
     http_client: httpx.AsyncClient, input_text: str
 ) -> list[models.Post]:
     res = await http_client.get(f"https://old.reddit.com/search.json?q={input_text}")
-
-    _raise_if_rate_limited(res)
-
-    posts, _ = parser.parse_posts(res.json(), False)
-    return posts
+    posts, _ = parser.parse_posts_and_comments(res.json(), False)
+    # Ignore response type as there is no models.PostComment for search posts
+    return posts  # type: ignore
 
 
 async def search_subreddits(
@@ -53,53 +52,68 @@ async def search_subreddits(
     res = await http_client.get(
         f"https://old.reddit.com/subreddits/search.json?q={input_text}"
     )
-    _raise_if_rate_limited(res)
-
     results = res.json()["data"]["children"]
     return [
-        parser.parse_subreddit_informations(
+        parser.parse_subreddit_information(
             item["data"]["display_name"], item["data"]["over18"], item
         )
         for item in results
     ]
 
 
-async def get_subreddit_informations(
-    http_client: httpx.AsyncClient, subreddit: str
+async def get_subreddit_information(
+    http_client: httpx.AsyncClient, subreddit_name: str
 ) -> models.Subreddit:
-    if subreddit == "all":
+    """
+    Get information about a subreddit
+    """
+    if subreddit_name == "all":
         return models.Subreddit(
-            title="All",
-            name="all",
+            title=subreddit_name,
+            name=subreddit_name,
             show_thumbnails=True,
             public_description=None,
             over18=False,
             icon_url=None,
         )
-    elif subreddit == "popular":
-        return await get_frontpage_informations()
+    elif subreddit_name == "popular":
+        return await get_frontpage_information()
 
     # If multi subreddit
-    if "+" in subreddit:
-        return await _get_multi_informations(http_client, subreddit)
+    if "+" in subreddit_name:
+        return await _get_multi_information(http_client, subreddit_name)
 
-    return await _get_subreddit_informations(http_client, subreddit)
+    return await _get_subreddit_information(http_client, subreddit_name)
 
 
-async def get_subreddit_posts(
+async def get_subreddit_or_user_posts(
     http_client: httpx.AsyncClient,
-    subreddit: str,
+    subreddit_or_username: str,
     pagination: models.Pagination,
-    sorting_mode: models.SubredditSortingMode,
+    sorting_mode: models.SubredditSortingMode | models.UserSortingMode,
     sorting_period: models.SubredditSortingPeriod,
-) -> tuple[list[models.Post], models.Pagination]:
+    is_user: bool,
+) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
+    """
+    Get posts for a subreddit (or an user if is_user is set).
+
+    Will include post comments if it's an user.
+    """
     # Always add sorting period as it is ignored
     # when not needed
-    url = (
-        f"https://old.reddit.com/r/{subreddit}/.json?t={sorting_period.value}"
-        if sorting_mode == models.SubredditSortingMode.POPULAR
-        else f"https://old.reddit.com/r/{subreddit}/{sorting_mode.value}.json?t={sorting_period.value}"
-    )
+    path_part = "user" if is_user else "r"
+
+    if is_user:
+        if sorting_mode == models.UserSortingMode.NEW:
+            url = f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
+        else:
+            url = f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?sort={sorting_mode.value}&t={sorting_period.value}"
+    else:
+        if sorting_mode == models.SubredditSortingMode.POPULAR:
+            url = f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
+        else:
+            url = f"https://old.reddit.com/r/{subreddit_or_username}/{sorting_mode.value}.json?t={sorting_period.value}"
+
     return await _get_posts_for_url(http_client, url, pagination)
 
 
@@ -110,14 +124,12 @@ async def get_post(
     params = {"limit": 100}
     res = await http_client.get(url, params=params)
 
-    _raise_if_rate_limited(res)
-
     post = parser.parse_post(
         res.json()[0]["data"]["children"][0]["data"], is_popular_or_all=False
     )
 
     return models.PostWithComments(
-        **asdict(post), comments=parser.parse_comments(res.json()[1]["data"])
+        **asdict(post), comments=parser.parse_comments_tree(res.json()[1]["data"])
     )
 
 
@@ -128,9 +140,7 @@ async def get_comments(
     params = {"limit": 100}
     res = await http_client.get(url, params=params)
 
-    _raise_if_rate_limited(res)
-
-    return parser.parse_comments(res.json()[1]["data"])
+    return parser.parse_comments_tree(res.json()[1]["data"])
 
 
 async def _get_posts_for_url(
@@ -138,7 +148,7 @@ async def _get_posts_for_url(
     url: str,
     pagination: models.Pagination,
     is_popular_or_all: bool = False,
-) -> tuple[list[models.Post], models.Pagination]:
+) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
     params: dict[str, str | int] = {}
     if pagination.before_post_id:
         params = {"before": pagination.before_post_id, "count": 25}
@@ -146,7 +156,6 @@ async def _get_posts_for_url(
         params = {"after": pagination.after_post_id, "count": 25}
 
     res = await http_client.get(url, params=params)
-    _raise_if_rate_limited(res)
 
     try:
         json_res = res.json()
@@ -158,15 +167,26 @@ async def _get_posts_for_url(
         )
         raise
     else:
-        return parser.parse_posts(json_res, is_popular_or_all)
+        return parser.parse_posts_and_comments(json_res, is_popular_or_all)
 
 
-async def _get_subreddit_informations(
+async def get_user_information(
+    http_client: httpx.AsyncClient, name: str
+) -> models.User:
+    res = await http_client.get(f"https://old.reddit.com/user/{name}/about/.json")
+
+    # If user not found, the API redirects us to search endpoint
+    if res.status_code == 404:
+        raise UserNotFoundError()
+
+    json = res.json()
+    return parser.parse_user_information(json)
+
+
+async def _get_subreddit_information(
     http_client: httpx.AsyncClient, name: str
 ) -> models.Subreddit:
     res = await http_client.get(f"https://old.reddit.com/r/{name}/about/.json")
-
-    _raise_if_rate_limited(res)
 
     # If subreddit not found, the API redirects us to search endpoint
     if res.status_code == 302 and "search" in res.headers["location"]:
@@ -175,28 +195,20 @@ async def _get_subreddit_informations(
     _raise_if_subreddit_is_not_available(res)
 
     json = res.json()
-    return parser.parse_subreddit_informations(name, json["data"]["over18"], json)
+    return parser.parse_subreddit_information(name, json["data"]["over18"], json)
 
 
-async def _get_multi_informations(
+async def _get_multi_information(
     http_client: httpx.AsyncClient, name: str
 ) -> models.Subreddit:
     # Check if there is a redirect to know if it's an NSFW multi
     res = await http_client.head(f"https://old.reddit.com/r/{name}")
 
-    _raise_if_rate_limited(res)
-
     if len(res.history) > 0 and res.history[0].status_code != 200:
         raise SubredditNotFoundError()
 
     over18 = res.status_code == 302 and "over18" in res.headers["location"]
-    return parser.parse_subreddit_informations(name, over18)
-
-
-def _raise_if_rate_limited(api_res: httpx.Response) -> None:
-    """Raise an exception if Reddit returns a 429 (rate-limit reached)."""
-    if api_res.status_code == 429:
-        raise RateLimitedError()
+    return parser.parse_subreddit_information(name, over18)
 
 
 def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:

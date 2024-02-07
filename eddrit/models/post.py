@@ -115,6 +115,13 @@ class PostComment:
     is_sticky: bool
     is_submitter: bool
     parent_id: str
+    subreddit: str
+
+    # only for comments on user pages
+    comments_count: str
+    link_title: str
+    link_url: str | None
+    over18: bool
 
 
 @dataclass

@@ -11,7 +11,7 @@ from eddrit.utils import math
     ],
 )
 def test_sign_for_negative(num: int, expected: str) -> None:
-    assert math.sign_for_negative(num) == expected
+    assert math._sign_for_negative(num) == expected
 
 
 @pytest.mark.parametrize(

@@ -1,22 +1,15 @@
 {% import "macros/common.html" as common_macros with context %}
 
-{% macro render_warning_flair(is_enabled, text) %}
-{% if is_enabled %}
-<span class="post-flair post-flair-warning">
-    {{ text }}
-</span>
-{% endif %}
-{% endmacro %}
-
-
 {% macro render_post_card(post, subreddit_show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
 <article class="container-fluid">
     <div class="row">
-        <!-- Thumbnail (first column) -->
-        {% if settings.thumbnails.value == "always" or (settings.thumbnails.value == "subreddit_preference" and subreddit_show_thumbnails) %}
+        {# Thumbnail (first column) #}
+        {% if settings.thumbnails.value == "always" or (settings.thumbnails.value == "subreddit_preference" and
+        subreddit_show_thumbnails) %}
         <span class="col-auto">
             {% if post.over18 and not settings.nsfw_thumbnails and not always_show_over18_thumbnail %}
-            <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}" class="post-image-thumbnail post-image-thumbnail-default dark-inverted" height="60" width="60">
+            <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}"
+                class="post-image-thumbnail post-image-thumbnail-default dark-inverted" height="60" width="60">
             {% elif post.thumbnail_is_icon %}
             <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='' )) }}"
                 class="post-image-thumbnail post-image-thumbnail-default dark-inverted" height="60" width="60">
@@ -26,25 +19,25 @@
         </span>
         {% endif %}
 
-        <!-- Content (second column) -->
+        {# Content (second column) #}
         <div class="col">
-            <!-- Title + flairs -->
+            {# Title + flairs #}
             <div class="col post-title">
                 <a href="{{ post.url }}">
                     <strong>{{ post.title }}</strong>
                 </a>
                 <small>({{ post.domain }}) </small>
                 <small>
-                    {{ render_warning_flair(post.over18, "NSFW") }}
-                    {{ render_warning_flair(post.spoiler, "Spoiler") }}
+                    {{ common_macros.render_warning_flair(post.over18, "NSFW") }}
+                    {{ common_macros.render_warning_flair(post.spoiler, "Spoiler") }}
                     {{ common_macros.render_flair(post.flair) }}
                 </small>
             </div>
 
-            <!-- Infos -->
+            {# Infos #}
             <span class="col">
                 <span class="row align-items-center">
-                    <!-- Open/close preview button -->
+                    {# Open/close preview button #}
                     {% if post.content.type.value != "link" %}
                     <span class="col col-2 col-md-auto needs-js">
                         <a id="post-preview-button-{{ post.id }}" class="outline post-preview-button" role="button"
@@ -53,15 +46,16 @@
                     </span>
                     {% endif %}
 
-                    <!-- Author / subreddit etc. -->
+                    {# Author / subreddit etc. #}
                     <small class="col">
                         <div class="post-infos">
-                            {{ post.human_score }} points - submitted {{ post.human_date }} by {{ post.author.name }} {{
+                            {{ post.human_score }} points - submitted {{ post.human_date }} by <a href="{{ url_for('user', path=post.author.name) }}">{{ post.author.name }}</a> {{
                             common_macros.render_flair(post.author.flair) }} to <a
                                 href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{ post.subreddit }}</a>
                         </div>
                         <a href="{{ post.comments_url_path }}">
-                            <span><img class="dark-inverted" src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
+                            <span><img class="dark-inverted"
+                                    src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
                             </span>
                             <small>{{ post.comments_count }} comments</small>
                         </a>
@@ -110,8 +104,8 @@
             <a class="post-content-gallery-button  post-content-gallery-previous-button" href="#!"
                 onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button">Previous</a>
             <div class="post-content-gallery-numbers">1 / {{ post.content.pictures | length }}</div>
-            <a class="post-content-gallery-button  post-content-gallery-next-button" href="#!" onclick="onGalleryButtonClick('{{ post.id }}', 1);"
-                role="button">Next</a>
+            <a class="post-content-gallery-button  post-content-gallery-next-button" href="#!"
+                onclick="onGalleryButtonClick('{{ post.id }}', 1);" role="button">Next</a>
         </div>
         {% for picture in post.content.pictures %}
         <a href="{{ post.url }}">
@@ -124,7 +118,52 @@
     {% if post.content.type.value == 'video' %}
     <div class="post-content-image-or-video needs-js"
         style="{{ 'width: fit-content' if post.content.videos[0].width < post.content.videos[0].height else 'height: fit-content;'}} ">
-        <video class="video-js" id="video-{{ post.id }}" data-content='{{ post.content | tojson_dataclass }}'/>
+        <video class="video-js" id="video-{{ post.id }}" data-content='{{ post.content | tojson_dataclass }}' />
+    </div>
+    {% endif %}
+    {% if post.content.type.value == 'embed' %}
+    <div class="post-content-image-or-video">
+        {{ post.content.url |safe }}
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro render_content(post) %}
+<div class="post-content">
+    {% if post.content.type.value == 'text' %}
+    <div class="post-content-text">
+        {{ post.content.text|safe }}
+    </div>
+    {% endif %}
+    {% if post.content.type.value == 'picture' %}
+    <a href="{{ post.url }}">
+        <img height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}"
+            style="{{ 'width: fit-content' if post.content.picture.width < post.content.picture.height else 'height: fit-content;'}}"
+            class="post-content-image-or-video" src="{{ post.content.picture.url }}" />
+    </a>
+    {% endif %}
+    {% if post.content.type.value == 'gallery' %}
+    <div id="gallery-{{ post.id }}" class="needs-js post-content-gallery">
+        <div class="post-content-gallery-buttons">
+            <a class="post-content-gallery-button  post-content-gallery-previous-button" href="#!"
+                onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button">Previous</a>
+            <div class="post-content-gallery-numbers">1 / {{ post.content.pictures | length }}</div>
+            <a class="post-content-gallery-button  post-content-gallery-next-button" href="#!"
+                onclick="onGalleryButtonClick('{{ post.id }}', 1);" role="button">Next</a>
+        </div>
+        {% for picture in post.content.pictures %}
+        <a href="{{ post.url }}">
+            <img id="{{ loop.index0 }}" class="post-content-image-or-video post-content-gallery-picture"
+                height="{{ picture.height }}" width="{{ picture.width }}" src="{{ picture.url }}" />
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if post.content.type.value == 'video' %}
+    <div class="post-content-image-or-video needs-js"
+        style="{{ 'width: fit-content' if post.content.videos[0].width < post.content.videos[0].height else 'height: fit-content;'}} ">
+        <video class="video-js" id="video-{{ post.id }}" data-content='{{ post.content | tojson_dataclass }}' />
     </div>
     {% endif %}
     {% if post.content.type.value == 'embed' %}

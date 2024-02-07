@@ -4,14 +4,14 @@
 
 <nav class="align-items-baseline">
     <ul>
-        <!-- Logo  -->
+        {# Logo #}
         <li class="desktop-only">
             <a href="{{ url_for('root', path='') }}">
                 <img src="{{ url_for('static', path='images/logo.svg') }}" width="132" height="28">
             </a>
         </li>
 
-        <!-- Main links  -->
+        {# Main links #}
         <li>
             <a href="/">
                 Popular
@@ -24,7 +24,7 @@
         </li>
     </ul>
 
-    <ul>
+    <ul class="align-items-baseline">
         <li>
             <form class="nav-search" action="/search" method="get">
                 <input type="search" id="search" name="q" placeholder="Search">

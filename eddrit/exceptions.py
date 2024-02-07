@@ -6,6 +6,18 @@ class SubredditUnavailableError(Exception):
     message = "Subreddit is not available"
 
 
+class UserUnavailableError(Exception):
+    """
+    Raised when an user is not available.
+    """
+
+    message = "User is not available"
+
+
+class UserNotFoundError(SubredditUnavailableError):
+    message = "User not found"
+
+
 class SubredditNotFoundError(SubredditUnavailableError):
     message = "Subreddit not found"
 

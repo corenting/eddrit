@@ -18,9 +18,10 @@ from eddrit.routes.pages import (
     root_files,
     search,
     settings,
-    subreddit,
+    subreddit_and_user,
 )
 from eddrit.routes.xhr import routes
+from eddrit.utils.httpx import raise_if_rate_limited
 from eddrit.utils.middlewares import CurrentHostMiddleware, NoReferrerMiddleware
 
 middlewares = [
@@ -45,7 +46,9 @@ async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
     """Init the app lifespan with httpx client."""
 
     async with httpx.AsyncClient(
-        headers={"User-Agent": f"eddrit:v{__version__}"}, http2=True
+        headers={"User-Agent": f"eddrit:v{__version__}"},
+        http2=True,
+        event_hooks={"response": [raise_if_rate_limited]},
     ) as client:
         yield {"http_client": client}
 
@@ -56,7 +59,8 @@ app = Starlette(
     routes=[
         Mount("/static", app=StaticFiles(directory="static"), name="static"),
         Mount("/meta", routes=meta.routes, name="meta"),
-        Mount("/r", routes=subreddit.routes, name="subreddit"),
+        Mount("/r", routes=subreddit_and_user.routes, name="subreddit"),
+        Mount("/user", routes=subreddit_and_user.routes, name="user"),
         Mount("/xhr", routes=routes, name="api"),
         Mount(
             "/",

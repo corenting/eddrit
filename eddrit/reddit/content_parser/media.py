@@ -127,13 +127,18 @@ def get_post_video_content(
                 parsed_item = parser(api_post_data)
                 parsed_results.append(parsed_item)
             except Exception:
-                logger.debug(f"Cannot parse content with {parser}")
+                logger.debug(f"Cannot parse content with {parser.__name__}")
                 continue
+            else:
+                logger.debug(f"Parsed {parsed_item} with {parser.__name__}")
 
         # Sort: best resolution + non-embed first
         parsed_results.sort(
-            key=lambda x: (x.width + x.height, type(x) != models.EmbedPostContent),
+            key=lambda x: (x.width * x.height, type(x) != models.EmbedPostContent),
             reverse=True,
+        )
+        logger.debug(
+            f"Media parsed for {api_post_data['permalink']} : {parsed_results}"
         )
 
         # If we cannot parse anything, put a link
@@ -143,10 +148,14 @@ def get_post_video_content(
             )
             return models.LinkPostContent()
 
-        # Pick best content
-        logger.debug(
-            f"Media parsed for {api_post_data['permalink']} : {parsed_results}"
-        )
+        # If one content is an embed but the other are GIF (so no sound),
+        # display the embed as it may have sound
+        if (
+            embed_content := next(
+                (x for x in parsed_results if type(x) == models.EmbedPostContent), None
+            )
+        ) and any(getattr(x, "is_gif", False) for x in parsed_results):
+            return embed_content
 
         # If the best content is an embed, just return it as the frontend
         # doesn't handle mix of embed and non embed sources

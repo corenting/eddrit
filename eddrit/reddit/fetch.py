@@ -11,6 +11,7 @@ from eddrit.exceptions import (
     SubredditIsPrivateError,
     SubredditIsQuarantinedError,
     SubredditNotFoundError,
+    UserNotFoundError,
 )
 from eddrit.reddit import parser
 
@@ -60,46 +61,36 @@ async def search_subreddits(
     ]
 
 
-async def get_subreddit_or_user_information(
-    http_client: httpx.AsyncClient, subreddit_or_user_name: str, is_user: bool
+async def get_subreddit_information(
+    http_client: httpx.AsyncClient, subreddit_name: str
 ) -> models.Subreddit:
     """
-    Get information about a subreddit (or an user if is_user set to True).
+    Get information about a subreddit
     """
-    if is_user:
+    if subreddit_name == "all":
         return models.Subreddit(
-            title="All",
-            name="all",
+            title=subreddit_name,
+            name=subreddit_name,
             show_thumbnails=True,
             public_description=None,
             over18=False,
             icon_url=None,
         )
-    if subreddit_or_user_name == "all":
-        # TODO: check what details are really needed for user
-        return models.Subreddit(
-            title=subreddit_or_user_name,
-            name=subreddit_or_user_name,
-            show_thumbnails=True,
-            public_description=None,
-            over18=False,
-            icon_url=None,
-        )
-    elif subreddit_or_user_name == "popular":
+    elif subreddit_name == "popular":
         return await get_frontpage_information()
 
     # If multi subreddit
-    if "+" in subreddit_or_user_name:
-        return await _get_multi_information(http_client, subreddit_or_user_name)
+    if "+" in subreddit_name:
+        return await _get_multi_information(http_client, subreddit_name)
 
-    return await _get_subreddit_information(http_client, subreddit_or_user_name)
+    return await _get_subreddit_information(http_client, subreddit_name)
 
 
 async def get_subreddit_or_user_posts(
     http_client: httpx.AsyncClient,
     subreddit_or_username: str,
     pagination: models.Pagination,
-    sorting_mode: models.SubredditSortingMode,
+    sorting_mode: models.SubredditSortingMode | models.UserSortingMode,
     sorting_period: models.SubredditSortingPeriod,
     is_user: bool,
 ) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
@@ -111,11 +102,18 @@ async def get_subreddit_or_user_posts(
     # Always add sorting period as it is ignored
     # when not needed
     path_part = "user" if is_user else "r"
-    url = (
-        f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
-        if sorting_mode == models.SubredditSortingMode.POPULAR
-        else f"https://old.reddit.com/r/{subreddit_or_username}/{sorting_mode.value}.json?t={sorting_period.value}"
-    )
+
+    if is_user:
+        if sorting_mode == models.UserSortingMode.NEW:
+            url = f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
+        else:
+            url = f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?sort={sorting_mode.value}&t={sorting_period.value}"
+    else:
+        if sorting_mode == models.SubredditSortingMode.POPULAR:
+            url = f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
+        else:
+            url = f"https://old.reddit.com/r/{subreddit_or_username}/{sorting_mode.value}.json?t={sorting_period.value}"
+
     return await _get_posts_for_url(http_client, url, pagination)
 
 
@@ -170,6 +168,19 @@ async def _get_posts_for_url(
         raise
     else:
         return parser.parse_posts_and_comments(json_res, is_popular_or_all)
+
+
+async def get_user_information(
+    http_client: httpx.AsyncClient, name: str
+) -> models.User:
+    res = await http_client.get(f"https://old.reddit.com/user/{name}/about/.json")
+
+    # If user not found, the API redirects us to search endpoint
+    if res.status_code == 404:
+        raise UserNotFoundError()
+
+    json = res.json()
+    return parser.parse_user_information(json)
 
 
 async def _get_subreddit_information(

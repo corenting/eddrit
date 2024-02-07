@@ -23,7 +23,7 @@ uvicorn = {version = "^0.27.0", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
 coverage = {version = "*", extras = ["toml"]}
-mypy = "*"
+pyright = "*"
 pytest = "*"
 pytest-cov = "*"
 ruff = "*"
@@ -31,7 +31,7 @@ ruff = "*"
 [tool.ruff]
 target-version = "py312"
 
-[too.ruff.lint]
+[tool.ruff.lint]
 # Enable pycodestyle (E), Pyflakes (F), flake8-print (T20), ruff rules (RUF),
 # flake8-comprehensions (C4), flake8-datetimez (DTZ), isort (I), pep8-naming (N)
 # pyupgrade (UP), flake8-async (ASYNC), flake8-bandit (S), perflint (PERF),
@@ -42,10 +42,6 @@ ignore = ["E501"]
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "app.py" = ["S104"] # binding on all interfaces for dev
-
-[tool.mypy]
-ignore_missing_imports = true
-disallow_untyped_defs = true
 
 [tool.coverage.run]
 omit = ["eddrit/config.py"]

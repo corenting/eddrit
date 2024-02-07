@@ -192,6 +192,17 @@ def parse_subreddit_information(
     )
 
 
+def parse_user_information(api_response: dict[Hashable, Any]) -> models.User:
+    """
+    Parse an user.
+    """
+    return models.User(
+        name=api_response["data"]["name"],
+        flair=None,
+        over18=api_response["data"]["subreddit"]["over_18"],
+    )
+
+
 def _parse_comment(comment: dict[Hashable, Any]) -> models.PostComment:
     """
     Parse a single comment (not a show more link) to a models.PostComment
@@ -204,6 +215,13 @@ def _parse_comment(comment: dict[Hashable, Any]) -> models.PostComment:
         if replies is None or isinstance(replies, str)
         else parse_comments_tree(data["replies"]["data"])
     )
+
+    # For user page, get the link to the associated post
+    # The link to the post is not relative in the API
+    if link_url_absolute := data.get("link_url"):
+        link_url: str | None = link_url_absolute.replace("https://old.reddit.com", "")
+    else:
+        link_url = None
 
     return models.PostComment(
         id=data["id"],
@@ -222,6 +240,11 @@ def _parse_comment(comment: dict[Hashable, Any]) -> models.PostComment:
             utc_now,
         ),
         human_score=pretty_big_num(data["score"]),
+        over18=data.get("over_18"),
+        link_url=link_url,
+        link_title=data.get("link_title"),
+        comments_count=data.get("num_comments"),
+        subreddit=data["subreddit"],
         children=childrens,
     )
 

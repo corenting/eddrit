@@ -5,27 +5,27 @@
 {% if comment.is_submitter %}
 <span class="post-flair post-comment-title-item" style="color: white; background-color: darkblue;">
     <span>
-        {{ comment.author.name }}
+        <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a>
     </span>
 </span>
 {% set author_tag = '<abbr title="Submitter">[S]</abbr>' %}
 {% elif comment.is_admin %}
 <span class="post-flair post-comment-title-item" style="color: white; background-color: red;">
     <span>
-        {{ comment.author.name }}
+        <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a>
     </span>
 </span>
 {% set author_tag = '<abbr title="Reddit admin">[A]</abbr>' %}
 {% elif comment.is_moderator %}
 <span class="post-flair post-comment-title-item" style="color: white; background-color: green;">
     <span>
-        {{ comment.author.name }}
+        <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a>
     </span>
 </span>
 {% set author_tag = '<abbr title="Moderator of /r/' ~ subreddit_name ~ ', speaking officially">[M]</abbr>' %}
 {% else %}
 <span class="post-comment-title-item">
-    {{ comment.author.name }}
+    <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a>
 </span>
 {% endif %}
 {{ common_macros.render_flair(comment.author.flair) }}
@@ -93,4 +93,56 @@
     {% if render_root_ul %}
     </ul>
     {% endif %}
+{% endmacro %}
+
+{# For user page #}
+{% macro render_comment_card(comment, subreddit_show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
+<article class="container-fluid">
+    <div class="row">
+        {# Content (second column) #}
+        <div class="col">
+            {# Title + flairs #}
+            <div class="col post-title">
+                <a href="{{ comment.link_url }}">
+                    <strong>{{ comment.link_title }}</strong>
+                </a>
+                <small>
+                    {{ common_macros.render_warning_flair(comment.over18, "NSFW") }}
+                    {{ common_macros.render_flair(comment.flair) }}
+                </small>
+            </div>
+
+            {# Infos #}
+            <span class="col">
+                <span class="row align-items-center">
+                    {# Author / subreddit etc. #}
+                    <div class="col">
+                        <small class="post-infos">
+                            {{ comment.human_score }} points - comment submitted {{ comment.human_date }} by <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a> {{
+                            common_macros.render_flair(comment.author.flair) }} in <a
+                                href="{{ url_for('subreddit', path=comment.subreddit) }}">r/{{ comment.subreddit }}</a> post
+                        </small>
+
+                        <div>
+                            <div class="" id="content-{{ comment.id }}">
+                                <div id="content-{{ comment.id }}-preview">
+                                    <div class="post-content-text">
+                                        {{ comment.content|safe }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="{{ comment.link_url }}">
+                            <small><img class="dark-inverted"
+                                    src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
+                            </small>
+                            <small>full comments ({{ comment.comments_count }})</small>
+                        </a>
+                    </div>
+                </span>
+            </span>
+        </div>
+    </div>
+</article>
 {% endmacro %}

@@ -1,6 +1,11 @@
 {% import "macros/post.html" as post_macros with context %}
+{% import "macros/comments.html" as comments_macros with context %}
 
-{% set title = subreddit.title %}
+{% set title = about_information.title %}
+{% set is_user_page = '/user' in request.raw_path.decode('utf-8') %}
+{% set default_sorting_mode = 'popular' if not is_user_page else 'new' %}
+{% set default_sorting_period = 'month' if not is_user_page else 'all' %}
+{% set sorting_modes = global.subreddit_sorting_modes if not is_user_page else global.user_sorting_modes %}
 
 {# Compute older/newer links #}
 {% if pagination.before_post_id %}
@@ -9,14 +14,29 @@
 {% if pagination.after_post_id %}
 {% set older_url = request.raw_path.decode('utf-8') ~ "?count=25&after=" ~ pagination.after_post_id %}
 {% endif %}
+
 {# Keep sorting period query parameter if needed #}
 {% if request.query_params['t'] %}
-{% if pagination.after_post_id %}
-{% set older_url = older_url ~ "&t=" ~ request.query_params['t'] %}
+
+    {% if pagination.after_post_id %}
+    {% set older_url = older_url ~ "&t=" ~ request.query_params['t'] %}
+    {% endif %}
+
+    {% if pagination.before_post_id %}
+    {% set newer_url = newer_url ~ "&t=" ~ request.query_params['t'] %}
+    {% endif %}
 {% endif %}
-{% if pagination.before_post_id %}
-{% set newer_url = newer_url ~ "&t=" ~ request.query_params['t'] %}
-{% endif %}
+
+{# Keep user sort mode query parameter if needed #}
+{% if request.query_params['sort'] %}
+
+    {% if pagination.after_post_id %}
+    {% set older_url = older_url ~ "&sort=" ~ request.query_params['sort'] %}
+    {% endif %}
+
+    {% if pagination.before_post_id %}
+    {% set newer_url = newer_url ~ "&sort=" ~ request.query_params['sort'] %}
+    {% endif %}
 {% endif %}
 
 {% extends "base.html" %}
@@ -27,11 +47,19 @@
     <summary>Sorting mode</summary>
     <nav>
         <ul class="row">
-            {% for sorting_mode in global.sorting_modes %}
-            {% if sorting_mode == 'popular' %}
-            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name) %}
+            {% for sorting_mode in sorting_modes %}
+
+            {# Default mode: no sorting in URL #}
+            {% if sorting_mode == default_sorting_mode %}
+                {% set sorting_mode_url = request.raw_path.decode('utf-8') or "/" %}
+
+            {# Else add sorting mode #}
             {% else %}
-            {% set sorting_mode_url = url_for('subreddit', path=subreddit.name ~ '/' ~ sorting_mode) %}
+                {% if is_user_page %}
+                    {% set sorting_mode_url = request.raw_path.decode('utf-8') ~ '?sort=' ~ sorting_mode %}
+                {% else %}
+                    {% set sorting_mode_url =url_for('subreddit', path=about_information.name ~ '/' ~ sorting_mode) %}
+                {% endif %}
             {% endif %}
             <li class="post-sorting-item col">
                 <a role="button"
@@ -53,15 +81,33 @@
     <nav>
         <ul class="row">
             {% for sorting_period in global.sorting_periods %}
-            {% if sorting_mode == 'day' %}
-            {% set sorting_period_url = url_for('subreddit', path=subreddit.name ~ '/' ~ current_sorting_mode.value)
-            ~
-            "t="
-            ~ sorting_period %}
+
+            {% if is_user_page %}
+
+                {% if sorting_mode == default_sorting_period %}
+                {% set sorting_period_url = request.raw_path.decode('utf-8') ~ '?sort=' ~ current_sorting_mode.value
+                ~
+                "&t="
+                ~ sorting_period %}
+                {% else %}
+                {% set sorting_period_url = request.raw_path.decode('utf-8') ~ '?sort=' ~ current_sorting_mode.value
+                ~
+                "&t=" ~ sorting_period %}
+                {% endif %}
+
             {% else %}
-            {% set sorting_period_url = url_for('subreddit', path=subreddit.name ~ '/' ~ current_sorting_mode.value)
-            ~
-            "/?t=" ~ sorting_period %}
+
+                {% if sorting_mode == default_sorting_period %}
+                    {% set sorting_period_url = url_for('subreddit', path=about_information.name ~ '/' ~ current_sorting_mode.value)
+                    ~
+                    "t="
+                    ~ sorting_period %}
+                {% else %}
+                    {% set sorting_period_url = url_for('subreddit', path=about_information.name ~ '/' ~ current_sorting_mode.value)
+                    ~
+                    "/?t=" ~ sorting_period %}
+                {% endif %}
+
             {% endif %}
             <li class="post-sorting-item col">
                 <a role="button"
@@ -85,19 +131,25 @@
 {% endif %}
 
 {# Posts #}
-{% for post in posts %}
+{% for post_or_comment in posts %}
 
 {# Ignore NSFW posts on home pages unless enabled in settings #}
-{% if global.subreddit_is_homepage(subreddit.title) and post.over18 and not settings.nsfw_popular_all %}
+{% if global.subreddit_is_homepage(about_information.title) and post_or_comment.over18 and not settings.nsfw_popular_all
+%}
 {% else %}
-{# if it's an user page there are post comments too: check if it's a comment (it has children) or a post and display accordingly#}
+{# if it's an user page there are post comments too: check if it's a comment (it has children) or a post and display
+accordingly #}
 {# TODO: add display of comments #}
-{% if post.children is not defined %}
-{{ post_macros.render_post_card(post, subreddit.show_thumbnails, subreddit.over18, False) }}
+
+{% if post_or_comment.children is not defined %}
+{{ post_macros.render_post_card(post_or_comment, about_information.show_thumbnails, about_information.over18, False) }}
+{% else %}
+{{ comments_macros.render_comment_card(post_or_comment, about_information.show_thumbnails, about_information.over18,
+False) }}
 {% endif %}
+
 {% endif %}
 {% endfor %}
-
 {% endblock %}
 
 {% block bottom_content %}

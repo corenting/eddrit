@@ -20,7 +20,7 @@ format:
 style:
 	$(PYTHON) ruff format --check $(SRC)
 	$(PYTHON) ruff $(SRC)
-	$(PYTHON) mypy -- $(SRC)
+	$(PYTHON) pyright -- $(SRC)
 	$(BIOME) lint  $(JS_SRC)
 
 .PHONY: test

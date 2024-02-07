@@ -12,7 +12,8 @@ templates = Jinja2Templates(directory="templates")
 templates.env.globals["global"] = {
     "app_version": __version__,
     "subreddit_is_homepage": is_homepage,
-    "sorting_modes": [e.value for e in models.SubredditSortingMode],
+    "subreddit_sorting_modes": [e.value for e in models.SubredditSortingMode],
+    "user_sorting_modes": [e.value for e in models.UserSortingMode],
     "sorting_periods": [e.value for e in models.SubredditSortingPeriod],
 }
 

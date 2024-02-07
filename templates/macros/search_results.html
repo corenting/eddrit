@@ -6,10 +6,10 @@
     <div class="row">
         {# Thumbnail (first column) #}
         <span class="col-auto">
-            {% if not subreddit.icon_url %}
+            {% if not about_information.icon_url %}
             <img class="post-image-thumbnail-default dark-inverted" src="{{ url_for('static', path='images/icons/globe.svg') }}" height="60" width="60">
             {% else %}
-            <img class="post-image-thumbnail" src="{{ subreddit.icon_url }}" height="60" width="60">
+            <img class="post-image-thumbnail" src="{{ about_information.icon_url }}" height="60" width="60">
             {% endif %}
         </span>
 
@@ -17,8 +17,8 @@
         <div class="col">
             {# Title + flairs #}
             <div class="col post-title">
-                <a href="{{ url_for('subreddit', path=subreddit.name) }}">
-                    <strong>{{ subreddit.title }}</strong>
+                <a href="{{ url_for('subreddit', path=about_information.name) }}">
+                    <strong>{{ about_information.title }}</strong>
                 </a>
             </div>
 
@@ -28,7 +28,7 @@
                     {# Author / subreddit etc. #}
                     <small class="col">
                         <div class="post-infos">
-                            {{ subreddit.public_description }}
+                            {{ about_information.public_description }}
                         </div>
                     </small>
                 </span>

@@ -62,8 +62,8 @@ def get_canonical_url_context(request: Request) -> dict[str, str]:
 def get_posts_pages_common_context(
     pagination: models.Pagination,
     posts: Iterable[models.Post | models.PostComment],
-    subreddit: models.Subreddit,
-    sorting_mode: models.SubredditSortingMode,
+    about_information: models.Subreddit | models.User,
+    sorting_mode: models.SubredditSortingMode | models.UserSortingMode,
     sorting_period: models.SubredditSortingPeriod,
 ) -> dict[str, Any]:
     """
@@ -74,9 +74,14 @@ def get_posts_pages_common_context(
     return {
         "pagination": pagination,
         "posts": posts,
-        "subreddit": subreddit,
+        "about_information": about_information,
         "current_sorting_mode": sorting_mode,
         "current_sorting_period": sorting_period,
         "has_sorting_period": sorting_mode
-        in [models.SubredditSortingMode.CONTROVERSIAL, models.SubredditSortingMode.TOP],
+        in [
+            models.SubredditSortingMode.CONTROVERSIAL,
+            models.SubredditSortingMode.TOP,
+            models.UserSortingMode.CONTROVERSIAL,
+            models.UserSortingMode.TOP,
+        ],
     }

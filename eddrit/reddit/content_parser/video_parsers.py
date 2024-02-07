@@ -28,7 +28,7 @@ def _cleanup_embed(content: str) -> str:
         elt.attrib.pop("height", None)
         elt.attrib.pop("style", None)
 
-    return lxml.html.tostring(content_parsed).decode("utf-8")
+    return lxml.html.tostring(content_parsed).decode("utf-8")  # type: ignore
 
 
 def get_domains_with_special_embed_handling() -> dict[str, Callable]:

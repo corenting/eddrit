@@ -6,8 +6,9 @@ from starlette.routing import Route
 from eddrit import exceptions, models
 from eddrit.reddit.fetch import (
     get_post,
-    get_subreddit_or_user_information,
+    get_subreddit_information,
     get_subreddit_or_user_posts,
+    get_user_information,
 )
 from eddrit.routes.common.context import (
     get_canonical_url_context,
@@ -26,9 +27,12 @@ def _should_redirect_to_age_check(request: Request, over18: bool) -> bool:
 
 
 async def subreddit_post(request: Request) -> Response:
+    """
+    Endpoint for a post page.
+    """
     try:
-        subreddit_infos = await get_subreddit_or_user_information(
-            request.state.http_client, request.path_params["name"], is_user=False
+        subreddit_infos = await get_subreddit_information(
+            request.state.http_client, request.path_params["name"]
         )
         post_id = request.path_params["post_id"]
         post = await get_post(
@@ -45,7 +49,7 @@ async def subreddit_post(request: Request) -> Response:
     return templates.TemplateResponse(
         "post.html",
         {
-            "subreddit": subreddit_infos,
+            "about_information": subreddit_infos,
             "post": post,
             "title_link": request.url_for("subreddit", path=post.subreddit),
             **get_templates_common_context(request),
@@ -58,21 +62,32 @@ async def subreddit_or_user(request: Request) -> Response:
     """
     Endpoint for a subreddit or an user page.
     """
+    is_user = request.url.path.startswith("/user")
 
     # Get sorting mode
-    sorting_mode = models.SubredditSortingMode(
-        request.path_params.get("sorting_mode", "popular")
+    sorting_mode = (
+        models.SubredditSortingMode(request.path_params.get("sorting_mode", "popular"))
+        if not is_user
+        else models.UserSortingMode(request.query_params.get("sort", "new"))
     )
 
     # Get sorting period
-    sorting_period = models.SubredditSortingPeriod(request.query_params.get("t", "day"))
+    sorting_period = models.SubredditSortingPeriod(
+        request.query_params.get("t", "month" if not is_user else "all")
+    )
 
-    is_user = request.url.path.startswith("/user")
     try:
-        subreddit_infos = await get_subreddit_or_user_information(
-            request.state.http_client, request.path_params["name"], is_user
-        )
-        if _should_redirect_to_age_check(request, subreddit_infos.over18):
+        # Get information
+        if is_user:
+            information = await get_user_information(
+                request.state.http_client, request.path_params["name"]
+            )
+        else:
+            information = await get_subreddit_information(
+                request.state.http_client, request.path_params["name"]
+            )
+
+        if _should_redirect_to_age_check(request, information.over18):
             return _redirect_to_age_check(request)
 
         request_pagination = models.Pagination(
@@ -99,7 +114,7 @@ async def subreddit_or_user(request: Request) -> Response:
             **get_posts_pages_common_context(
                 response_pagination,
                 posts,
-                subreddit_infos,
+                information,
                 sorting_mode,
                 sorting_period,
             ),

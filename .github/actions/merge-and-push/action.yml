@@ -1,5 +1,5 @@
 name: Merge and push a Docker image
-description: Apply meta, create manifest, and push the image to acontainer registry
+description: Apply meta, create manifest, and push the image to a container registry
 
 inputs:
   image_name:

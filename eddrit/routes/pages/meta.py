@@ -3,6 +3,7 @@ from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
 from eddrit import __version__
+from eddrit.routes.common.context import get_templates_common_context
 from eddrit.templates import templates
 
 
@@ -11,6 +12,7 @@ async def about(request: Request) -> Response:
         "about.html",
         {
             "request": request,
+            **get_templates_common_context(request),
         },
     )
 

@@ -3,6 +3,7 @@ from starlette.responses import PlainTextResponse, Response
 from starlette.routing import Route
 
 from eddrit.reddit.fetch import get_comments
+from eddrit.routes.common.context import get_templates_common_context
 from eddrit.templates import templates
 
 
@@ -32,6 +33,7 @@ async def comments(request: Request) -> Response:
             "comments": comments,
             "post_id": post_id,
             "depth": int(depth),
+            **get_templates_common_context(request),
         },
     )
 

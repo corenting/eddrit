@@ -44,6 +44,7 @@ blockquote > p {
   margin-bottom: 0;
 }
 
+/* desktop-only and phone-only classes */
 
 @media all and (min-width: 1200px) {
   .desktop-only {
@@ -115,6 +116,10 @@ html[data-theme='dark'] .dark-inverted {
   display: inline-flex;
   align-items: center;
   width: fit-content;
+}
+
+.post-flair a {
+  color: unset; /* remove blue link color if in a flair */
 }
 
 .post-flair-warning {
@@ -239,7 +244,7 @@ html[data-theme='dark'] .dark-inverted {
 
 /* Over 18 page */
 .over18-button {
-  width: 10rem;
+  width: 10rem !important; /* !important to remove submit styling */
   margin-top: var(--pico-spacing);
 }
 

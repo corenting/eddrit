@@ -42,13 +42,17 @@
 </head>
 
 <body>
-    <header class="container-fluid">
+
+    {# Set UI layout #}
+    {% set ui_layout_class = 'container-fluid' if settings.layout.value == 'wide' else 'container' %}
+
+    <header class="{{ ui_layout_class }}">
         <div>
             {% include 'header.html' %}
         </div>
     </header>
 
-    <main class="container-fluid">
+    <main class="{{ ui_layout_class }}">
         <h1 class="main-title">
             {% if title_link is defined %}
             <a href="{{ title_link }}">{{ title }}</a>
@@ -67,7 +71,7 @@
 
     </main>
 
-    <div class="container-fluid">
+    <div class="{{ ui_layout_class }}">
         {% include 'footer.html' %}
     </div>
 </body>

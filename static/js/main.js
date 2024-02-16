@@ -128,8 +128,12 @@ function setupGallery(galleryElement) {
 	const picturesElements = galleryElement.getElementsByClassName(
 		"post-content-gallery-picture",
 	);
+	const captionsElements = galleryElement.getElementsByClassName(
+		"post-content-gallery-caption",
+	);
 	for (let i = 1; i < picturesElements.length; ++i) {
 		picturesElements[i].style.display = "none";
+		captionsElements[i].style.display = "none";
 	}
 
 	// Mask previous button
@@ -144,6 +148,9 @@ function onGalleryButtonClick(postId, move) {
 	const parentElement = document.getElementById(`gallery-${postId}`);
 	const picturesElements = [
 		...parentElement.getElementsByClassName("post-content-gallery-picture"),
+	];
+	const captionsElements = [
+		...parentElement.getElementsByClassName("post-content-gallery-caption"),
 	];
 
 	// Get current displayed and current index
@@ -161,7 +168,9 @@ function onGalleryButtonClick(postId, move) {
 
 	// Display correct picture
 	for (let i = 0; i < picturesElements.length; ++i) {
-		picturesElements[i].style.display = i === newIndex ? "unset" : "none";
+		const displayMode = i === newIndex ? "unset" : "none";
+		picturesElements[i].style.display = displayMode;
+		captionsElements[i].style.display = displayMode;
 	}
 
 	// Previous button

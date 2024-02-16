@@ -100,6 +100,7 @@ class GalleryPostContent(PostContentBase):
     type: PostContentType = PostContentType.GALLERY
 
     pictures: Iterable[PostPicture]
+    captions: Iterable[str]
 
 
 @dataclass

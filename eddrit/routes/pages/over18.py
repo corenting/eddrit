@@ -2,6 +2,7 @@ from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
 
+from eddrit.routes.common.context import get_templates_common_context
 from eddrit.templates import templates
 
 
@@ -17,6 +18,7 @@ async def over18_gate_page(request: Request) -> Response:
         {
             "request": request,
             "destination_link": destination_link,
+            **get_templates_common_context(request),
         },
     )
 

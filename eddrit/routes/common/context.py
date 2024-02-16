@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from starlette.requests import Request
 
 from eddrit import models
-from eddrit.models.settings import ThumbnailsMode
+from eddrit.models.settings import LayoutMode, ThumbnailsMode
 
 
 def _get_bool_setting_value_from_cookie(
@@ -27,13 +27,15 @@ def get_templates_common_context(
     """
     Get common context from request (the request itself and the user settings).
 
-    If cookies is provided, this dict will be used for the settings as the cookies source instead of the request cookies.
-    This is useful if they were updated during this request.
+    If cookies are provided, they will be used instead of the one of the request.
+    This is only used when updating settings, as we just computed new values that are
+    not in the original request.
     """
     cookies_source = cookies if cookies else request.cookies
     settings = models.Settings(
+        layout=LayoutMode(cookies_source.get("layout", LayoutMode.WIDE.value)),
         thumbnails=ThumbnailsMode(
-            cookies_source.get("thumbnails", "subreddit_preference")
+            cookies_source.get("thumbnails", ThumbnailsMode.SUBREDDIT_PREFERENCE.value)
         ),
         nsfw_popular_all=_get_bool_setting_value_from_cookie(
             "nsfw_popular_all", cookies_source

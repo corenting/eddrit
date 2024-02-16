@@ -1,6 +1,7 @@
 # Version 0.8.0 (unreleased)
 
 - Add layout settings to toggle between the existing wide layout or a more compact and centered layout. Thanks to [ValiumBear](https://github.com/ValiumBear) for the [suggestion](https://github.com/corenting/eddrit/issues/133)
+- Add caption to gallery posts
 
 # Version 0.7.0
 

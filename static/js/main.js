@@ -133,7 +133,10 @@ function setupGallery(galleryElement) {
 	);
 	for (let i = 1; i < picturesElements.length; ++i) {
 		picturesElements[i].style.display = "none";
-		captionsElements[i].style.display = "none";
+
+		if (captionsElements[i]) {
+			captionsElements[i].style.display = "none";
+		}
 	}
 
 	// Mask previous button
@@ -170,7 +173,10 @@ function onGalleryButtonClick(postId, move) {
 	for (let i = 0; i < picturesElements.length; ++i) {
 		const displayMode = i === newIndex ? "unset" : "none";
 		picturesElements[i].style.display = displayMode;
-		captionsElements[i].style.display = displayMode;
+
+		if (captionsElements[i]) {
+			captionsElements[i].style.display = displayMode;
+		}
 	}
 
 	// Previous button

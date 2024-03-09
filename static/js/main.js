@@ -160,7 +160,7 @@ function onGalleryButtonClick(postId, move) {
 	const currentDisplayedElement = picturesElements.find((element) => {
 		return element.style.display !== "none";
 	});
-	const currentIndex = parseInt(currentDisplayedElement.id);
+	const currentIndex = Number.parseInt(currentDisplayedElement.id);
 	const newIndex = currentIndex + move;
 
 	// Update text

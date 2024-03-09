@@ -1,3 +1,5 @@
+from datetime import UTC, datetime, timedelta
+
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
@@ -45,6 +47,7 @@ async def settings_submit(request: Request) -> Response:
             cookie_value,
             secure=not DEBUG,
             httponly=True,
+            expires=datetime.now(tz=UTC) + timedelta(days=90),
         )
 
     return res

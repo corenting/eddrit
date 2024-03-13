@@ -1,11 +1,9 @@
-from datetime import UTC, datetime, timedelta
-
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
 
-from eddrit.config import DEBUG
 from eddrit.routes.common.context import get_templates_common_context
+from eddrit.routes.common.cookies import get_default_cookie_settings
 from eddrit.templates import templates
 
 
@@ -41,13 +39,14 @@ async def settings_submit(request: Request) -> Response:
         },
     )
 
+    default_cookie_settings = get_default_cookie_settings()
     for cookie_name, cookie_value in updated_cookies.items():
         res.set_cookie(
             cookie_name,
             cookie_value,
-            secure=not DEBUG,
-            httponly=True,
-            expires=datetime.now(tz=UTC) + timedelta(days=90),
+            secure=default_cookie_settings.secure,
+            httponly=default_cookie_settings.http_only,
+            expires=default_cookie_settings.expiration_date,
         )
 
     return res

@@ -3,6 +3,7 @@ from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
 
 from eddrit.routes.common.context import get_templates_common_context
+from eddrit.routes.common.cookies import get_default_cookie_settings
 from eddrit.templates import templates
 
 
@@ -27,7 +28,15 @@ async def over18_gate_submit(request: Request) -> Response:
     body = await request.form()
     continue_url = str(body.get("continue", "/"))
     res = RedirectResponse(url=continue_url, status_code=302)
-    res.set_cookie("over18", "1", secure=True, httponly=True)
+
+    default_cookie_settings = get_default_cookie_settings()
+    res.set_cookie(
+        "over18",
+        "1",
+        secure=default_cookie_settings.secure,
+        httponly=default_cookie_settings.http_only,
+        expires=default_cookie_settings.expiration_date,
+    )
     return res
 
 

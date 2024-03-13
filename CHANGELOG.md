@@ -1,6 +1,7 @@
-# Version 0.8.2 (not released yet)
+# Version 0.8.2
 
 - Fix settings cookies expiration as reported by [ValiumBear](https://github.com/ValiumBear) [in](https://github.com/corenting/eddrit/issues/143)
+- Fix search page not working
 
 # Version 0.8.1
 

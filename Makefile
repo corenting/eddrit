@@ -11,7 +11,7 @@ init:
 .PHONY: format
 format:
 	$(PYTHON) ruff format $(SRC)
-	$(PYTHON) ruff --fix $(SRC)
+	$(PYTHON) ruff check --fix $(SRC)
 	$(BIOME) format --write $(JS_SRC)
 	$(BIOME) check --apply $(JS_SRC)
 
@@ -19,7 +19,7 @@ format:
 .PHONY: style
 style:
 	$(PYTHON) ruff format --check $(SRC)
-	$(PYTHON) ruff $(SRC)
+	$(PYTHON) ruff check $(SRC)
 	$(PYTHON) pyright -- $(SRC)
 	$(BIOME) lint  $(JS_SRC)
 

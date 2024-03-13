@@ -22,11 +22,24 @@ from eddrit.routes.pages import (
 )
 from eddrit.routes.xhr import routes
 from eddrit.utils.httpx import raise_if_rate_limited
-from eddrit.utils.middlewares import CurrentHostMiddleware, NoReferrerMiddleware
+from eddrit.utils.middlewares import (
+    CookiesRefreshMiddleware,
+    CurrentHostMiddleware,
+    NoReferrerMiddleware,
+)
 
 middlewares = [
     Middleware(NoReferrerMiddleware),
     Middleware(CurrentHostMiddleware),
+    Middleware(
+        CookiesRefreshMiddleware,
+        cookies_to_refresh=[
+            "layout",
+            "nsfw_popular_all",
+            "nsfw_thumbnails" "over18",
+            "thumbnails",
+        ],
+    ),
 ]
 
 exceptions_handlers = {

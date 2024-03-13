@@ -1,3 +1,7 @@
+# Version 0.8.2 (not released yet)
+
+- Fix settings cookies expiration as reported by [ValiumBear](https://github.com/ValiumBear) [in](https://github.com/corenting/eddrit/issues/143)
+
 # Version 0.8.1
 
 - Fix galleries without captions

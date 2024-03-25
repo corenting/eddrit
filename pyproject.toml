@@ -18,8 +18,8 @@ lxml = "^5.1.0"
 python-multipart = "^0.0.9" # for settings form
 starlette = "^0.37.1"
 timeago = "^1.0.16"
-tldextract = "^5.0.0"
-uvicorn = {version = "^0.28.0", extras = ["standard"]}
+tldextract = "^5.1.2"
+uvicorn = {version = "^0.29.0", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
 coverage = {version = "*", extras = ["toml"]}

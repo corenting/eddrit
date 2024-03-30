@@ -16,9 +16,10 @@ Official instance: [eddrit.com](https://eddrit.com)
 
 ## ⚠️ Rate-limiting
 
-By default, eddrit will mimic the official Android app to bypass the rate-limiting (huge thanks to [redlib](https://github.com/redlib-org/redlib) for the implementation).
+By default, eddrit will mimic the official Android app to bypass the rate-limiting (huge thanks to [redlib](https://github.com/redlib-org/redlib) for the implementation) and use the `oauth.reddit.com` domain to
+fetch the data.
 
-If you want to use the .json endpoints directly (**you may encounter rate-limiting or be blocked from Reddit**), you can set the environment variable `SPOOFED_CLIENT` (directly or through an environment variable) to `none`.
+If you want, you can instead use the `old.reddit.com` .json endpoints that don't require authentication (**you may encounter rate-limiting or may be blocked from Reddit**). To enable this mode, set the environment variable `SPOOFED_CLIENT` (directly or through an environment variable) to `none`.
 
 ## Screenshots
 

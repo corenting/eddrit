@@ -5,7 +5,8 @@ from json import JSONDecodeError
 import httpx
 from loguru import logger
 
-from eddrit import models
+from eddrit import config, models
+from eddrit.constants import SpoofedClient
 from eddrit.exceptions import (
     SubredditIsBannedError,
     SubredditIsPrivateError,
@@ -14,6 +15,16 @@ from eddrit.exceptions import (
     UserNotFoundError,
 )
 from eddrit.reddit import parser
+
+
+def get_reddit_base_url() -> str:
+    """
+    Get base URL for call depending on spoof config
+    """
+    if config.SPOOFED_CLIENT == SpoofedClient.OFFICIAL_ANDROID_APP:
+        return "https://oauth.reddit.com"
+
+    return "https://old.reddit.com"
 
 
 async def get_frontpage_information() -> models.Subreddit:
@@ -32,7 +43,10 @@ async def get_frontpage_posts(
     pagination: models.Pagination,
 ) -> tuple[list[models.Post], models.Pagination]:
     ret = await _get_posts_for_url(
-        http_client, "https://old.reddit.com/.json", pagination, is_popular_or_all=True
+        http_client,
+        f"{get_reddit_base_url()}/.json",
+        pagination,
+        is_popular_or_all=True,
     )
     return ret  # type: ignore
 
@@ -40,7 +54,7 @@ async def get_frontpage_posts(
 async def search_posts(
     http_client: httpx.AsyncClient, input_text: str
 ) -> list[models.Post]:
-    res = await http_client.get(f"https://old.reddit.com/search.json?q={input_text}")
+    res = await http_client.get(f"{get_reddit_base_url()}/search.json?q={input_text}")
     posts, _ = parser.parse_posts_and_comments(res.json(), False)
     # Ignore response type as there is no models.PostComment for search posts
     return posts  # type: ignore
@@ -50,7 +64,7 @@ async def search_subreddits(
     http_client: httpx.AsyncClient, input_text: str
 ) -> list[models.Subreddit]:
     res = await http_client.get(
-        f"https://old.reddit.com/subreddits/search.json?q={input_text}"
+        f"{get_reddit_base_url()}/subreddits/search.json?q={input_text}"
     )
     results = res.json()["data"]["children"]
     return [
@@ -105,14 +119,14 @@ async def get_subreddit_or_user_posts(
 
     if is_user:
         if sorting_mode == models.UserSortingMode.NEW:
-            url = f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
+            url = f"{get_reddit_base_url()}/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
         else:
-            url = f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?sort={sorting_mode.value}&t={sorting_period.value}"
+            url = f"{get_reddit_base_url()}/{path_part}/{subreddit_or_username}/.json?sort={sorting_mode.value}&t={sorting_period.value}"
     else:
         if sorting_mode == models.SubredditSortingMode.POPULAR:
-            url = f"https://old.reddit.com/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
+            url = f"{get_reddit_base_url()}/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
         else:
-            url = f"https://old.reddit.com/r/{subreddit_or_username}/{sorting_mode.value}.json?t={sorting_period.value}"
+            url = f"{get_reddit_base_url()}/r/{subreddit_or_username}/{sorting_mode.value}.json?t={sorting_period.value}"
 
     return await _get_posts_for_url(http_client, url, pagination)
 
@@ -120,7 +134,7 @@ async def get_subreddit_or_user_posts(
 async def get_post(
     http_client: httpx.AsyncClient, subreddit: str, post_id: str
 ) -> models.PostWithComments:
-    url = f"https://old.reddit.com/r/{subreddit}/comments/{post_id}/.json"
+    url = f"{get_reddit_base_url()}/r/{subreddit}/comments/{post_id}/.json"
     params = {"limit": 100}
     res = await http_client.get(url, params=params)
 
@@ -136,7 +150,7 @@ async def get_post(
 async def get_comments(
     http_client: httpx.AsyncClient, subreddit: str, post_id: str, comment_id: str
 ) -> Iterable[models.PostComment | models.PostCommentShowMore]:
-    url = f"https://old.reddit.com/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
+    url = f"{get_reddit_base_url()}/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
     params = {"limit": 100}
     res = await http_client.get(url, params=params)
 
@@ -173,7 +187,7 @@ async def _get_posts_for_url(
 async def get_user_information(
     http_client: httpx.AsyncClient, name: str
 ) -> models.User:
-    res = await http_client.get(f"https://old.reddit.com/user/{name}/about/.json")
+    res = await http_client.get(f"{get_reddit_base_url()}/user/{name}/about/.json")
 
     # If user not found, the API redirects us to search endpoint
     if res.status_code == 404:
@@ -186,7 +200,9 @@ async def get_user_information(
 async def _get_subreddit_information(
     http_client: httpx.AsyncClient, name: str
 ) -> models.Subreddit:
-    res = await http_client.get(f"https://old.reddit.com/r/{name}/about/.json")
+    res = await http_client.get(
+        f"{get_reddit_base_url()}/r/{name}/about/.json?raw_json=1"
+    )
 
     # If subreddit not found, the API redirects us to search endpoint
     if res.status_code == 302 and "search" in res.headers["location"]:
@@ -202,7 +218,7 @@ async def _get_multi_information(
     http_client: httpx.AsyncClient, name: str
 ) -> models.Subreddit:
     # Check if there is a redirect to know if it's an NSFW multi
-    res = await http_client.head(f"https://old.reddit.com/r/{name}")
+    res = await http_client.head(f"{get_reddit_base_url()}/r/{name}")
 
     if len(res.history) > 0 and res.history[0].status_code != 200:
         raise SubredditNotFoundError()

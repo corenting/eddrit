@@ -1,3 +1,7 @@
+# Version 0.8.3
+
+- Spoof the official Android app to bypass rate-limiting. Thanks to [redlib](https://github.com/redlib-org/redlib) for the Android app spoofing code.
+
 # Version 0.8.2
 
 - Fix settings cookies expiration as reported by [ValiumBear](https://github.com/ValiumBear) [in](https://github.com/corenting/eddrit/issues/143)

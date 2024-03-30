@@ -2,17 +2,23 @@
 
 ![Build](https://img.shields.io/github/actions/workflow/status/corenting/eddrit/ci.yml?branch=master) ![License](https://img.shields.io/github/license/corenting/eddrit) ![Codecov](https://img.shields.io/codecov/c/github/corenting/eddrit)
 
-An alternative frontend for Reddit, written with Python + [Starlette](https://www.starlette.io/). Inspired by [Nitter](https://github.com/zedeus/nitter), an alternative frontend for Twitter.
+An alternative frontend for Reddit. Inspired by [Nitter](https://github.com/zedeus/nitter), an alternative frontend for Twitter.
+
+Written with Python + [Starlette](https://www.starlette.io/).
 
 - Lightweight
 - No ads
 - Compact design (closer to [old.reddit.com](https://old.reddit.com) than to the redesign)
 - Better mobile support
-- Use the old `.json` API endpoints, no need to register for an OAuth2 identifier for self-hosting
+- No need to register for an OAuth2 identifier for self-hosting: mimic the official Android app by default
 
 Official instance: [eddrit.com](https://eddrit.com)
 
-⚠️ eddrit may get rate-limited by Reddit since they introduced rate-limiting on the API endpoints. In this case, an error message may be displayed.
+## ⚠️ Rate-limiting
+
+By default, eddrit will mimic the official Android app to bypass the rate-limiting (huge thanks to [redlib](https://github.com/redlib-org/redlib) for the implementation).
+
+If you want to use the .json endpoints directly (**you may encounter rate-limiting or be blocked from Reddit**), you can set the environment variable `SPOOFED_CLIENT` (directly or through an environment variable) to `none`.
 
 ## Screenshots
 
@@ -50,4 +56,5 @@ If you wish to support the app, donations are possible [here](https://corenting.
 - [Bootstrap Icons](https://icons.getbootstrap.com/) for the icons used
 - [dash.js](https://github.com/Dash-Industry-Forum/dash.js) for playing videos
 - [Pico.css](https://picocss.com/) for the CSS framework used
+- [redlib](https://github.com/redlib-org/redlib) for the Android app spoofing code
 - [Video.js](https://videojs.com/) for playing videos

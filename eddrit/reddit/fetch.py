@@ -44,7 +44,7 @@ async def get_frontpage_posts(
 ) -> tuple[list[models.Post], models.Pagination]:
     ret = await _get_posts_for_url(
         http_client,
-        f"{get_reddit_base_url()}/.json",
+        f"{get_reddit_base_url()}/.json?geo_filter=GLOBAL",
         pagination,
         is_popular_or_all=True,
     )

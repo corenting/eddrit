@@ -1,10 +1,18 @@
-# eddrit
+<div align="center">
 
-![Build](https://img.shields.io/github/actions/workflow/status/corenting/eddrit/ci.yml?branch=master) ![License](https://img.shields.io/github/license/corenting/eddrit) ![Codecov](https://img.shields.io/codecov/c/github/corenting/eddrit)
+<image src="static/images/logo.svg" height="80">
 
-An alternative frontend for Reddit. Inspired by [Nitter](https://github.com/zedeus/nitter), an alternative frontend for Twitter.
+<hr>
 
-Written with Python + [Starlette](https://www.starlette.io/).
+A lightweight alternative frontend for Reddit.
+
+![GitHub Tag](https://img.shields.io/github/v/tag/corenting/eddrit)
+![Build](https://img.shields.io/github/actions/workflow/status/corenting/eddrit/ci.yml?branch=master)
+![License](https://img.shields.io/github/license/corenting/eddrit)
+
+</div>
+
+**Official instance**: [eddrit.com](https://eddrit.com)
 
 - Lightweight
 - No ads
@@ -12,14 +20,10 @@ Written with Python + [Starlette](https://www.starlette.io/).
 - Better mobile support
 - No need to register for an OAuth2 identifier for self-hosting: mimic the official Android app by default
 
-Official instance: [eddrit.com](https://eddrit.com)
 
-## ⚠️ Rate-limiting
+Inspired by [Nitter](https://github.com/zedeus/nitter), an alternative frontend for Twitter.
 
-By default, eddrit will mimic the official Android app to bypass the rate-limiting (huge thanks to [redlib](https://github.com/redlib-org/redlib) for the implementation) and use the `oauth.reddit.com` domain to
-fetch the data.
-
-If you want, you can instead use the `old.reddit.com` .json endpoints that don't require authentication (**you may encounter rate-limiting or may be blocked from Reddit**). To enable this mode, set the environment variable `SPOOFED_CLIENT` (directly or through an environment variable) to `none`.
+Written with Python & [Starlette](https://www.starlette.io/).
 
 ## Screenshots
 
@@ -47,6 +51,12 @@ You can run the app with gunicorn directly :
 2. Install [Poetry](https://python-poetry.org/) which is used to manage dependencies of the project.
 3. Download the repository and run "make init" to install the dependencies.
 4. You can then run the app through gunicorn, for example with the following command: `poetry run gunicorn eddrit.app:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8080`
+
+## ⚠️ Rate-limiting
+
+By default, eddrit will mimic the official Android app to bypass the rate-limiting (huge thanks to [redlib](https://github.com/redlib-org/redlib) for the implementation) and use the `oauth.reddit.com` domain to fetch the data.
+
+If you want, you can instead use the `old.reddit.com` .json endpoints that don't require authentication (**you may encounter rate-limiting or may be blocked from Reddit**). To enable this mode, set the environment variable `SPOOFED_CLIENT` (directly or through an .env file) to `none`.
 
 ## Donations
 

@@ -10,9 +10,9 @@ A lightweight alternative frontend for Reddit.
 ![Build](https://img.shields.io/github/actions/workflow/status/corenting/eddrit/ci.yml?branch=master)
 ![License](https://img.shields.io/github/license/corenting/eddrit)
 
-</div>
+<a href="https://eddrit.com"><img src="https://raw.githubusercontent.com/corenting/eddrit/master/doc/screenshots/subreddit.png" width="80%"></a>
 
-<center><img src="https://raw.githubusercontent.com/corenting/eddrit/master/doc/screenshots/subreddit.png" width="80%"></center>
+</div>
 
 **Official instance**: [eddrit.com](https://eddrit.com)
 

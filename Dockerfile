@@ -1,9 +1,19 @@
 # Python base (venv and user)
 FROM python:3.12 AS base
 
+# Install dependencies that don't have wheels
+# for some architectures directly so that they can be cached
+RUN /usr/local/bin/pip install --user \
+    uvloop==0.19.0 \
+    lxml==5.2.1 \
+    httptools==0.6.1 \
+    MarkupSafe==2.1.5 \
+    pyyaml==6.0.1
+
 # Install dumb-init
 RUN apt-get update && apt-get install -y dumb-init
 
+# Create user
 RUN useradd -m eddrit && \
     mkdir /app/ && \
     chown -R eddrit /app/

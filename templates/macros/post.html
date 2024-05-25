@@ -49,9 +49,13 @@
                     {# Author / subreddit etc. #}
                     <small class="col">
                         <div class="post-infos">
-                            {{ post.human_score }} points - submitted {{ post.human_date }} by <a
-                                href="{{ url_for('user', path=post.author.name) }}">{{ post.author.name }}</a> {{
-                            common_macros.render_flair(post.author.flair) }} to <a
+                            {{ post.human_score }} points - submitted {{ post.human_date }} by
+                            {% if post.author.name == "[deleted]" %}
+                            {{ post.author.name }}
+                            {% else %}
+                            <a href="{{ url_for('user', path=post.author.name) }}">{{ post.author.name }}</a>
+                            {% endif %}
+                            {{ common_macros.render_flair(post.author.flair) }} to <a
                                 href="{{ url_for('subreddit', path=post.subreddit) }}">r/{{ post.subreddit }}</a>
                         </div>
                         <a href="{{ post.comments_url_path }}">
@@ -113,7 +117,8 @@
             <figure>
                 {% if post.content.captions[loop.index0] %}
                 <div>
-                <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}</figcaption>
+                    <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
+                    </figcaption>
                 </div>
                 {% endif %}
                 <img id="{{ loop.index0 }}" class="post-content-image-or-video post-content-gallery-picture"

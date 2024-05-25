@@ -1,3 +1,9 @@
+# Version 0.8.5
+
+- Docker image: add more architectures
+- Small bugfixes
+- Update dependencies
+
 # Version 0.8.4
 
 - For the popular page, set the geo filter to "everywhere"

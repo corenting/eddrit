@@ -85,7 +85,10 @@ html[data-theme='dark'] .dark-inverted {
   align-items: baseline;
   flex-wrap: wrap;
   gap: var(--pico-nav-link-spacing-horizontal);
+}
 
+.post-sticky {
+  color: green;
 }
 
 .posts-list-pagination-button {

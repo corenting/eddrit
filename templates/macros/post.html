@@ -24,7 +24,7 @@
             {# Title + flairs #}
             <div class="col post-title">
                 <a href="{{ post.url }}">
-                    <strong>{{ post.title }}</strong>
+                    <strong class="{{ 'post-sticky' if post.is_sticky else '' }}">{{ post.title }}</strong>
                 </a>
                 <small>({{ post.domain }}) </small>
                 <small>

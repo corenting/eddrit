@@ -20,7 +20,7 @@ python-multipart = "^0.0.9" # for settings form
 starlette = "^0.37.1"
 timeago = "^1.0.16"
 tldextract = "^5.1.2"
-uvicorn = {version = "^0.29.0", extras = ["standard"]}
+uvicorn = {version = "^0.30.1", extras = ["standard"]}
 
 [tool.poetry.dev-dependencies]
 coverage = {version = "*", extras = ["toml"]}

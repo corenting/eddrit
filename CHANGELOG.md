@@ -1,5 +1,9 @@
 # Version 0.8.6
 
+- Fix multireddits not loading
+
+# Version 0.8.6
+
 - Sticky posts now have a green title
 
 # Version 0.8.5

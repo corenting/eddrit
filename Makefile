@@ -13,7 +13,7 @@ format:
 	$(PYTHON) ruff format $(SRC)
 	$(PYTHON) ruff check --fix $(SRC)
 	$(BIOME) format --write $(JS_SRC)
-	$(BIOME) check --apply $(JS_SRC)
+	$(BIOME) check --write $(JS_SRC)
 
 
 .PHONY: style
@@ -21,7 +21,7 @@ style:
 	$(PYTHON) ruff format --check $(SRC)
 	$(PYTHON) ruff check $(SRC)
 	$(PYTHON) pyright -- $(SRC)
-	$(BIOME) lint  $(JS_SRC)
+	$(BIOME) lint $(JS_SRC)
 
 .PHONY: test
 .SILENT: test

@@ -196,6 +196,13 @@ async def event_hook_add_official_android_app_headers_to_request(
     for header_name, header_value in android_headers.items():
         request.headers[header_name] = header_value
 
+    # For multi subreddits, the user-agent doesn't work so tweak it
+    if "+" in request.url.path:
+        request.headers.encoding = "utf-8"
+        request.headers["User-Agent"] = request.headers["User-Agent"].replace(
+            "Android", "Andr\u200boid"
+        )
+
 
 @cachier(stale_after=timedelta(hours=23, minutes=50))
 def get_official_android_app_headers() -> dict[str, str]:

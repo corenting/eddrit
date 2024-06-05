@@ -1,4 +1,4 @@
-# Version 0.8.6
+# Version 0.8.7
 
 - Fix multireddits not loading
 

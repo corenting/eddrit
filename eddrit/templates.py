@@ -1,5 +1,6 @@
 import json
 from dataclasses import asdict, is_dataclass
+from typing import Any
 
 from starlette.templating import Jinja2Templates
 
@@ -17,7 +18,12 @@ templates.env.globals["global"] = {
     "sorting_periods": [e.value for e in models.SubredditSortingPeriod],
 }
 
+
 # Add a json filter compatible with dataclasses
-templates.env.filters["tojson_dataclass"] = lambda value: json.dumps(
-    asdict(value) if is_dataclass(value) else value, default=str
-)
+def to_json_dataclass(value: Any) -> str:
+    converted = asdict(value) if is_dataclass(value) else value  # type: ignore
+
+    return json.dumps(converted, default=str)
+
+
+templates.env.filters["tojson_dataclass"] = to_json_dataclass

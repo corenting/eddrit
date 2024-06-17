@@ -73,7 +73,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push by digest (Docker Hub)
         id: build_dockerhub
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: ${{ matrix.platform }}
@@ -84,7 +84,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
       - name: Build and push by digest (GHCR)
         id: build_ghcr
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: ${{ matrix.platform }}

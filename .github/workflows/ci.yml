@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Style
-        run: make style
+        run: VALKEY_URL=valkeys://test.invalid make style
       - name: Test
         run: make test
   docker_build:

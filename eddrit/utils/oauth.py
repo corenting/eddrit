@@ -1,12 +1,15 @@
+from datetime import timedelta
+import json
 import random
 from base64 import standard_b64encode
-from datetime import timedelta
+from typing import Any
 from uuid import uuid4
 
 import httpx
-from cachier import cachier
 from loguru import logger
+import valkey
 
+from eddrit.config import VALKEY_URL
 from eddrit.exceptions import RateLimitedError
 
 OFFICIAL_ANDROID_OAUTH_ID = "ohXpoqrZYub1kg"
@@ -175,26 +178,40 @@ OFFICIAL_ANDROID_APP_VERSIONS = [
     "Version 2021.20.0/Build 326964",
 ]
 
+_valkey_connection_pool = valkey.ConnectionPool.from_url(url=VALKEY_URL)
+_valkey_lock_key = "oauth_login_lock"
+_valkey_headers_key = "oauth_headers"
 
-async def event_hook_raise_if_rate_limited_on_response(api_res: httpx.Response) -> None:
-    """Event hook to raise a specific exception if Reddit returns a 429 (rate-limit reached)."""
+async def oauth_after_request(api_res: httpx.Response) -> None:
+    """
+    Event hook to:
+    - Raise a specific exception if Reddit returns a 429 (rate-limit reached).
+    - Refresh oauth credentials if needed
+    """
     if api_res.status_code == 429:
         raise RateLimitedError()
 
+    # Handle rate-limiting
+    logger.debug(f"x-ratelimit-remaining: {api_res.headers.get("x-ratelimit-remaining")} x-ratelimit-reset: {api_res.headers.get("x-ratelimit-reset")} x-ratelimit-used: {api_res.headers.get("x-ratelimit-used")}")
+    rate_limit_remaining = api_res.headers.get("x-ratelimit-remaining")
+    if rate_limit_remaining:
+        rate_limit_remaining_value = float(rate_limit_remaining)
+        if rate_limit_remaining_value < 15:
+            oauth_login()
+    else:
+        logger.debug("Didn't receive x-ratelimit-remaining header in response")
 
-async def event_hook_add_official_android_app_headers_to_request(
+
+async def oauth_before_request(
     request: httpx.Request,
 ) -> None:
     """
     Event hook to add the official Android app headers to the request
     """
-    # Remove our user-agent
-    request.headers.pop("User-Agent")
-
     # Add the Android official app headers
-    android_headers = get_official_android_app_headers()
-    for header_name, header_value in android_headers.items():
-        request.headers[header_name] = header_value
+    request.headers.update(
+        _get_login_headers_from_cache()
+    )
 
     # For multi subreddits, the user-agent doesn't work so tweak it
     if "+" in request.url.path:
@@ -203,47 +220,68 @@ async def event_hook_add_official_android_app_headers_to_request(
             "Android", "Andr\u200boid"
         )
 
-
-@cachier(stale_after=timedelta(hours=23, minutes=50))
-def get_official_android_app_headers() -> dict[str, str]:
+def _get_login_headers_from_cache() -> dict[str, Any]:
     """
-    Get headers matching the official Android app.
+    Get the login headers from cache
     """
+    valkey_client = valkey.Valkey(connection_pool=_valkey_connection_pool)
+    with valkey_client.lock(_valkey_lock_key, blocking_timeout=2):
 
-    # Generate identity: unique ID + random user-agent
-    unique_uuid = str(uuid4())
-    android_app_version = random.choice(OFFICIAL_ANDROID_APP_VERSIONS)  # noqa: S311
-    android_version = random.choice(range(9, 15))  # noqa: S311
-    common_headers = {
-        "Client-Vendor-Id": unique_uuid,
-        "X-Reddit-Device-Id": unique_uuid,
-        "User-Agent": f"Reddit/{android_app_version}/Android {android_version}",
-    }
-    logger.debug(f"Generated headers for official Android app login: {common_headers}")
+        # Check if we have login headers in cache
+        if not valkey_client.exists(_valkey_headers_key):
+            oauth_login()
 
-    # Login
-    client = httpx.Client()  # not async but not supported by cachier
-    id_to_encode = f"{OFFICIAL_ANDROID_OAUTH_ID}:"
-    res = client.post(
-        url="https://accounts.reddit.com/api/access_token",
-        headers={
-            "Authorization": f"Basic {standard_b64encode(id_to_encode.encode()).decode()}",
-            **common_headers,
-        },
-        json={"scopes": ["*", "email"]},
-    )
+        headers_str: bytes = valkey_client.get(_valkey_headers_key) # type: ignore
+    decoded_headers = json.loads(headers_str.decode())
+    return decoded_headers
 
-    if res.is_success:
-        return {
-            **common_headers,
-            "Authorization": f"Bearer {res.json()['access_token']}",
-            "x-reddit-loid": res.headers["x-reddit-loid"],
-            "x-reddit-session": res.headers["x-reddit-session"],
+def oauth_login() -> None:
+    """
+    Perform OAuth login to get headers matching the official Android app.
+    """
+    logger.debug("Performing OAuth login")
+    valkey_client = valkey.Valkey(connection_pool=_valkey_connection_pool)
+
+    with valkey_client.lock(_valkey_lock_key, blocking_timeout=2):
+        # Generate identity: unique ID + random user-agent
+        unique_uuid = str(uuid4())
+        android_app_version = random.choice(OFFICIAL_ANDROID_APP_VERSIONS)  # noqa: S311
+        android_version = random.choice(range(9, 15))  # noqa: S311
+        common_headers = {
+            "Client-Vendor-Id": unique_uuid,
+            "X-Reddit-Device-Id": unique_uuid,
+            "User-Agent": f"Reddit/{android_app_version}/Android {android_version}",
         }
-    else:
-        logger.debug(
-            f"Got {res.status_code} response for official Android app login: {res.json()}"
+        logger.debug(f"Generated headers for official Android app login: {common_headers}")
+
+        # Login
+        client = httpx.Client()  # not async but not supported by cachier
+        id_to_encode = f"{OFFICIAL_ANDROID_OAUTH_ID}:"
+        res = client.post(
+            url="https://accounts.reddit.com/api/access_token",
+            headers={
+                "Authorization": f"Basic {standard_b64encode(id_to_encode.encode()).decode()}",
+                **common_headers,
+            },
+            json={"scopes": ["*", "email"]},
         )
-        raise RuntimeError(
-            "Cannot generate credentials for Reddit by spoofing the official Android app"
-        )
+
+        if res.is_success:
+            oauth_headers =  {
+                **common_headers,
+                "Authorization": f"Bearer {res.json()['access_token']}",
+                "x-reddit-loid": res.headers["x-reddit-loid"],
+                "x-reddit-session": res.headers["x-reddit-session"],
+            }
+            valkey_client.set(
+                _valkey_headers_key,
+                json.dumps(oauth_headers),
+                ex=82800 # 23 hours
+            )
+        else:
+            logger.debug(
+                f"Got {res.status_code} response for official Android app login: {res.json()}"
+            )
+            raise RuntimeError(
+                "Cannot generate credentials for Reddit by spoofing the official Android app"
+            )

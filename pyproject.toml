@@ -9,7 +9,6 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.12"
 aiofiles = "^23.1.0"
-cachier = "^3.0.0"
 environs = "^11.0.0"
 gunicorn = "^22.0.0"
 httpx = {version = "^0.27.0", extras = ["http2"]}
@@ -21,6 +20,7 @@ starlette = "^0.37.1"
 timeago = "^1.0.16"
 tldextract = "^5.1.2"
 uvicorn = {version = "^0.30.1", extras = ["standard"]}
+valkey = {extras = ["hiredis"], version = "^5.1.0b7"}
 
 [tool.poetry.dev-dependencies]
 coverage = {version = "*", extras = ["toml"]}

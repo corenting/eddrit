@@ -9,8 +9,7 @@ from starlette.middleware import Middleware
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
-from eddrit import __version__, config
-from eddrit.constants import SpoofedClient
+from eddrit import config
 from eddrit.routes.common import exception_handlers
 from eddrit.routes.pages import (
     index,
@@ -22,15 +21,14 @@ from eddrit.routes.pages import (
     subreddit_and_user,
 )
 from eddrit.routes.xhr import routes
-from eddrit.utils.api import (
-    event_hook_add_official_android_app_headers_to_request,
-    event_hook_raise_if_rate_limited_on_response,
-    get_official_android_app_headers,
-)
 from eddrit.utils.middlewares import (
     CookiesRefreshMiddleware,
     CurrentHostMiddleware,
     NoReferrerMiddleware,
+)
+from eddrit.utils.oauth import (
+    oauth_after_request,
+    oauth_before_request,
 )
 
 middlewares = [
@@ -62,23 +60,11 @@ class State(typing.TypedDict):
 @contextlib.asynccontextmanager
 async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
     """Init the app lifespan: httpx client etc.."""
-
-    httpx_request_event_hooks = []
-
-    # If spoof client set to official android app, trigger the generation
-    # of the header to avoid blocking on first requests
-    if config.SPOOFED_CLIENT == SpoofedClient.OFFICIAL_ANDROID_APP:
-        get_official_android_app_headers()
-        httpx_request_event_hooks.append(
-            event_hook_add_official_android_app_headers_to_request
-        )
-
     async with httpx.AsyncClient(
-        headers={"User-Agent": f"eddrit:v{__version__}"},
         http2=True,
         event_hooks={
-            "request": httpx_request_event_hooks,
-            "response": [event_hook_raise_if_rate_limited_on_response],
+            "request": [oauth_before_request],
+            "response": [oauth_after_request],
         },
     ) as client:
         yield {"http_client": client}

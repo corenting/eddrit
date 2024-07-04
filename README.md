@@ -67,10 +67,13 @@ For example, with [gunicorn](https://gunicorn.org/):
 ### Configuration
 
 The application can be configured through environment variables (if a `.env` file is present, it will also be read).
-The following configuration parameters are available:
+
+eddrit needs a [valkey](https://github.com/valkey-io/valkey) instance to work. You need specify the connection url with
+the `VALKEY_URL` environment variable (or in your env file).
+
+The following configuration parameters are also available:
 - `DEBUG` (default is `false`): enable [starlette](https://www.starlette.io/) debug mode. Should not be needed outside of development.
 - `LOG_LEVEL` (default is `WARNING`): only log if the message level is superior or equal to this level.
-- `SPOOFED_CLIENT` (default is `android`): use `android` to bypass reddit rate-limiting by spoofing the Android client, or use `none` to use the `old.reddit.com` endpoints that don't need any authentication (but in this case **you will encounter rate-limiting or may be blocked from Reddit if using an hosting provider IP address**).
 
 ## Donations
 

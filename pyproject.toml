@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.12"
-aiofiles = "^23.1.0"
+aiofiles = "^24"
 environs = "^11.0.0"
 gunicorn = "^22.0.0"
 httpx = {version = "^0.27.0", extras = ["http2"]}

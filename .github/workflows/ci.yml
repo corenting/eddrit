@@ -31,9 +31,11 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Style
-        run: VALKEY_URL=valkeys://test.invalid make style
+        run:  make style
       - name: Test
         run: make test
+        env:
+          VALKEY_URL: valkeys://test.invalid
   docker_build:
     name: Build Docker image (${{ matrix.platform }})
     runs-on: ubuntu-latest

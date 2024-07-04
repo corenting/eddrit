@@ -1,4 +1,3 @@
-from datetime import timedelta
 import json
 import random
 from base64 import standard_b64encode
@@ -6,8 +5,8 @@ from typing import Any
 from uuid import uuid4
 
 import httpx
-from loguru import logger
 import valkey
+from loguru import logger
 
 from eddrit.config import VALKEY_URL
 from eddrit.exceptions import RateLimitedError
@@ -72,6 +71,7 @@ _valkey_connection_pool = valkey.ConnectionPool.from_url(url=VALKEY_URL)
 _valkey_lock_key = "oauth_login_lock"
 _valkey_headers_key = "oauth_headers"
 
+
 async def oauth_after_request(api_res: httpx.Response) -> None:
     """
     Event hook to:
@@ -82,7 +82,9 @@ async def oauth_after_request(api_res: httpx.Response) -> None:
         raise RateLimitedError()
 
     # Handle rate-limiting
-    logger.debug(f"x-ratelimit-remaining: {api_res.headers.get("x-ratelimit-remaining")} x-ratelimit-reset: {api_res.headers.get("x-ratelimit-reset")} x-ratelimit-used: {api_res.headers.get("x-ratelimit-used")}")
+    logger.debug(
+        f"x-ratelimit-remaining: {api_res.headers.get("x-ratelimit-remaining")} x-ratelimit-reset: {api_res.headers.get("x-ratelimit-reset")} x-ratelimit-used: {api_res.headers.get("x-ratelimit-used")}"
+    )
     rate_limit_remaining = api_res.headers.get("x-ratelimit-remaining")
     if rate_limit_remaining:
         rate_limit_remaining_value = float(rate_limit_remaining)
@@ -99,9 +101,7 @@ async def oauth_before_request(
     Event hook to add the official Android app headers to the request
     """
     # Add the Android official app headers
-    request.headers.update(
-        _get_login_headers_from_cache()
-    )
+    request.headers.update(_get_login_headers_from_cache())
 
     # For multi subreddits, the user-agent doesn't work so tweak it
     if "+" in request.url.path:
@@ -110,20 +110,21 @@ async def oauth_before_request(
             "Android", "Andr\u200boid"
         )
 
+
 def _get_login_headers_from_cache() -> dict[str, Any]:
     """
     Get the login headers from cache
     """
     valkey_client = valkey.Valkey(connection_pool=_valkey_connection_pool)
     with valkey_client.lock(_valkey_lock_key, blocking_timeout=5):
-
         # Check if we have login headers in cache
         if not valkey_client.exists(_valkey_headers_key):
             oauth_login()
 
-        headers_str: bytes = valkey_client.get(_valkey_headers_key) # type: ignore
+        headers_str: bytes = valkey_client.get(_valkey_headers_key)  # type: ignore
     decoded_headers = json.loads(headers_str.decode())
     return decoded_headers
+
 
 def oauth_login() -> None:
     """
@@ -142,7 +143,9 @@ def oauth_login() -> None:
             "X-Reddit-Device-Id": unique_uuid,
             "User-Agent": f"Reddit/{android_app_version}/Android {android_version}",
         }
-        logger.debug(f"Generated headers for official Android app login: {common_headers}")
+        logger.debug(
+            f"Generated headers for official Android app login: {common_headers}"
+        )
 
         # Login
         client = httpx.Client()  # not async but not supported by cachier
@@ -157,7 +160,7 @@ def oauth_login() -> None:
         )
 
         if res.is_success:
-            oauth_headers =  {
+            oauth_headers = {
                 **common_headers,
                 "Authorization": f"Bearer {res.json()['access_token']}",
                 "x-reddit-loid": res.headers["x-reddit-loid"],
@@ -166,7 +169,7 @@ def oauth_login() -> None:
             valkey_client.set(
                 _valkey_headers_key,
                 json.dumps(oauth_headers),
-                ex=82800 # 23 hours
+                ex=82800,  # 23 hours
             )
         else:
             logger.debug(

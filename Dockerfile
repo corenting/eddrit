@@ -18,7 +18,8 @@ RUN /usr/local/bin/pip install --user \
     lxml==5.2.2 \
     httptools==0.6.1 \
     MarkupSafe==2.1.5 \
-    pyyaml==6.0.1
+    pyyaml==6.0.1 \
+    hiredis==2.3.2
 
 # Dependencies
 WORKDIR /app/

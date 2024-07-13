@@ -1,3 +1,7 @@
+# Version 0.8.8
+
+- Avoid Reddit rate-limiting by refreshing the credentials used if needed
+
 # Version 0.8.7
 
 - Fix multireddits not loading

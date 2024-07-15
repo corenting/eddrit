@@ -142,7 +142,7 @@ def get_post_video_content(
 
         # Sort: best resolution + non-embed first
         parsed_results.sort(
-            key=lambda x: (x.width * x.height, type(x) != models.EmbedPostContent),
+            key=lambda x: (x.width * x.height, type(x) is not models.EmbedPostContent),
             reverse=True,
         )
         logger.debug(
@@ -160,7 +160,7 @@ def get_post_video_content(
         # display the embed as it may have sound
         if (
             embed_content := next(
-                (x for x in parsed_results if type(x) == models.EmbedPostContent), None
+                (x for x in parsed_results if type(x) is models.EmbedPostContent), None
             )
         ) and any(getattr(x, "is_gif", False) for x in parsed_results):
             return embed_content
@@ -168,12 +168,12 @@ def get_post_video_content(
         # If the best content is an embed, just return it as the frontend
         # doesn't handle mix of embed and non embed sources
         best_content = parsed_results[0]
-        if type(best_content) == models.EmbedPostContent:
+        if type(best_content) is models.EmbedPostContent:
             return best_content
 
         # Else return the list of non-embed sources
         videos = [
-            item for item in parsed_results if type(item) != models.EmbedPostContent
+            item for item in parsed_results if type(item) is not models.EmbedPostContent
         ]
         return models.VideoPostContent(
             videos=videos  # type: ignore

@@ -16,10 +16,10 @@ Jinja2 = "^3.1.4"
 loguru = "^0.7.0"
 lxml = "^5.2.2"
 python-multipart = "^0.0.9" # for settings form
-starlette = "^0.37.1"
+starlette = "^0.38.0"
 timeago = "^1.0.16"
 tldextract = "^5.1.2"
-uvicorn = {version = "^0.30.1", extras = ["standard"]}
+uvicorn = {version = "^0.30.3", extras = ["standard"]}
 valkey = {extras = ["hiredis"], version = "^5.1.0b7"}
 
 [tool.poetry.dev-dependencies]

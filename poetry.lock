@@ -1106,13 +1106,13 @@ files = [
 
 [[package]]
 name = "starlette"
-version = "0.38.0"
+version = "0.38.2"
 description = "The little ASGI library that shines."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "starlette-0.38.0-py3-none-any.whl", hash = "sha256:dd58f5854ca4fc476710e48d61b29fa4ff3639d42604a786f9d2091e64b95c7e"},
-    {file = "starlette-0.38.0.tar.gz", hash = "sha256:1ac2291e946a56bb5ca929dbb2332fc0dfd1e609c7e4d4f2056925cc0442874e"},
+    {file = "starlette-0.38.2-py3-none-any.whl", hash = "sha256:4ec6a59df6bbafdab5f567754481657f7ed90dc9d69b0c9ff017907dd54faeff"},
+    {file = "starlette-0.38.2.tar.gz", hash = "sha256:c7c0441065252160993a1a37cf2a73bb64d271b17303e0b0c1eb7191cfb12d75"},
 ]
 
 [package.dependencies]
@@ -1171,13 +1171,13 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "uvicorn"
-version = "0.30.3"
+version = "0.30.5"
 description = "The lightning-fast ASGI server."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "uvicorn-0.30.3-py3-none-any.whl", hash = "sha256:94a3608da0e530cea8f69683aa4126364ac18e3826b6630d1a65f4638aade503"},
-    {file = "uvicorn-0.30.3.tar.gz", hash = "sha256:0d114d0831ff1adbf231d358cbf42f17333413042552a624ea6a9b4c33dcfd81"},
+    {file = "uvicorn-0.30.5-py3-none-any.whl", hash = "sha256:b2d86de274726e9878188fa07576c9ceeff90a839e2b6e25c917fe05f5a6c835"},
+    {file = "uvicorn-0.30.5.tar.gz", hash = "sha256:ac6fdbd4425c5fd17a9fe39daf4d4d075da6fdc80f653e5894cdc2fd98752bee"},
 ]
 
 [package.dependencies]
@@ -1240,20 +1240,20 @@ test = ["Cython (>=0.29.36,<0.30.0)", "aiohttp (==3.9.0b0)", "aiohttp (>=3.8.1)"
 
 [[package]]
 name = "valkey"
-version = "5.1.0b7"
+version = "6.0.0b1"
 description = "Python client for Valkey forked from redis-py"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "valkey-5.1.0b7-py3-none-any.whl", hash = "sha256:e2122f22fd342226078940ed0198bfe1d90f5d5af608de4e438125f3ac3b6a63"},
-    {file = "valkey-5.1.0b7.tar.gz", hash = "sha256:91c4d54e81bf3363b0dc0588bf33f4d080c5affc2aae7818c7e6393909f1fbd3"},
+    {file = "valkey-6.0.0b1-py3-none-any.whl", hash = "sha256:be45166b99940f7f2adefdd7272aec7e5e206000c0ea1b839837f577324f6be9"},
+    {file = "valkey-6.0.0b1.tar.gz", hash = "sha256:3438c37807cad3eb33b17f3d292bfd4cb2cbd4061c1d35653ef613543291fcc8"},
 ]
 
 [package.dependencies]
-hiredis = {version = ">=1.0.0", optional = true, markers = "extra == \"hiredis\""}
+hiredis = {version = ">=1.0.0,<3.0.0", optional = true, markers = "extra == \"hiredis\""}
 
 [package.extras]
-hiredis = ["hiredis (>=1.0.0)"]
+hiredis = ["hiredis (>=1.0.0,<3.0.0)"]
 ocsp = ["cryptography (>=36.0.1)", "pyopenssl (==20.0.1)", "requests (>=2.26.0)"]
 
 [[package]]
@@ -1441,4 +1441,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12"
-content-hash = "70787257cffd492b700cccc127b77ea84ba2fc7c4b49efcbaf9e34feb29e220d"
+content-hash = "e73c8322482f379537d40177fdcbb491f102558366a14596944e6d4445357df4"

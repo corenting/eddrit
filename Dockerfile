@@ -14,12 +14,11 @@ USER eddrit
 # for some architectures directly so that they can be cached.
 # To keep in sync with poetry.lock to speedup CI
 RUN /usr/local/bin/pip install --user \
-    uvloop==0.19.0 \
-    lxml==5.2.2 \
+    uvloop==0.20.0 \
+    lxml==5.3.0 \
     httptools==0.6.1 \
     MarkupSafe==2.1.5 \
-    pyyaml==6.0.1 \
-    hiredis==2.3.2
+    pyyaml==6.0.2
 
 # Dependencies
 WORKDIR /app/
@@ -29,7 +28,7 @@ ENV CPPFLAGS=-I/usr/local/include/python3.12/ \
 RUN /usr/local/bin/pip install --user .
 
 # Prod image (app and default config)
-FROM python:3.12-slim as prod
+FROM python:3.12-slim AS prod
 
 COPY --from=base /home/eddrit/.local /home/eddrit/.local
 COPY --from=base /usr/bin/dumb-init /usr/bin/

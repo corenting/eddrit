@@ -116,7 +116,7 @@ def _get_login_headers_from_cache() -> dict[str, Any]:
     Get the login headers from cache
     """
     valkey_client = valkey.Valkey(connection_pool=_valkey_connection_pool)
-    with valkey_client.lock(_valkey_lock_key, blocking_timeout=5):
+    with valkey_client.lock(_valkey_lock_key, timeout=20, blocking_timeout=5):
         # Check if we have login headers in cache
         if not valkey_client.exists(_valkey_headers_key):
             oauth_login()
@@ -133,7 +133,7 @@ def oauth_login() -> None:
     logger.debug("Performing OAuth login")
     valkey_client = valkey.Valkey(connection_pool=_valkey_connection_pool)
 
-    with valkey_client.lock(_valkey_lock_key, blocking_timeout=5):
+    with valkey_client.lock(_valkey_lock_key, timeout=20, blocking_timeout=5):
         # Generate identity: unique ID + random user-agent
         unique_uuid = str(uuid4())
         android_app_version = random.choice(OFFICIAL_ANDROID_APP_VERSIONS)  # noqa: S311

@@ -22,16 +22,9 @@ class SubredditNotFoundError(SubredditUnavailableError):
     message = "Subreddit not found"
 
 
-class SubredditIsPrivateError(SubredditUnavailableError):
-    message = "Subreddit is private"
-
-
-class SubredditIsQuarantinedError(SubredditUnavailableError):
-    message = "Subreddit is quarantined"
-
-
-class SubredditIsBannedError(SubredditUnavailableError):
-    message = "Subreddit is banned"
+class SubredditCannotBeViewedError(SubredditUnavailableError):
+    def __init__(self, reason: str) -> None:
+        self.message = f"Subreddit is {reason}"
 
 
 class RateLimitedError(Exception):

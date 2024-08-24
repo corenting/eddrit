@@ -8,9 +8,7 @@ from loguru import logger
 from eddrit import models
 from eddrit.constants import REDDIT_BASE_API_URL
 from eddrit.exceptions import (
-    SubredditIsBannedError,
-    SubredditIsPrivateError,
-    SubredditIsQuarantinedError,
+    SubredditCannotBeViewedError,
     SubredditNotFoundError,
     UserNotFoundError,
 )
@@ -232,15 +230,11 @@ def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:
 
     # Check for banned subreddits
     if api_res.status_code == 404 and json.get("reason") == "banned":
-        raise SubredditIsBannedError()
+        raise SubredditCannotBeViewedError("banned")
 
-    # Check for quarantined subreddits
-    if api_res.status_code == 403 and json.get("reason") == "quarantined":
-        raise SubredditIsQuarantinedError()
-
-    # Check for private subreddits
-    if api_res.status_code == 403 and json.get("reason") == "private":
-        raise SubredditIsPrivateError()
+    # Check for subreddits that cannot be viewed (quarantine, privated, gated)
+    if api_res.status_code == 403 and (reason := json.get("reason")):
+        raise SubredditCannotBeViewedError(reason)
 
     # Check for subreddit not found
     if len(api_res.history) > 0 and api_res.history[0].status_code != 200:

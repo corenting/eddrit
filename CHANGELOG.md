@@ -1,3 +1,7 @@
+# Version 0.8.9
+
+- Update User-Agent used for Reddit requests
+
 # Version 0.8.8
 
 - Avoid Reddit rate-limiting by refreshing the credentials used if needed

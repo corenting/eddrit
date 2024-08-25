@@ -13,6 +13,17 @@ from eddrit.exceptions import RateLimitedError
 
 OFFICIAL_ANDROID_OAUTH_ID = "ohXpoqrZYub1kg"
 OFFICIAL_ANDROID_APP_VERSIONS = [
+    "Version 2024.35.0/Build 1857451",
+    "Version 2024.34.0/Build 1837909",
+    "Version 2024.33.0/Build 1819908",
+    "Version 2024.32.1/Build 1813258",
+    "Version 2024.32.0/Build 1809095",
+    "Version 2024.31.0/Build 1786202",
+    "Version 2024.30.0/Build 1770787",
+    "Version 2024.29.0/Build 1747562",
+    "Version 2024.28.1/Build 1741165",
+    "Version 2024.28.0/Build 1737665",
+    "Version 2024.26.1/Build 1717435",
     "Version 2024.26.1/Build 1717435",
     "Version 2024.26.0/Build 1710470",
     "Version 2024.25.3/Build 1703490",
@@ -57,14 +68,6 @@ OFFICIAL_ANDROID_APP_VERSIONS = [
     "Version 2023.44.0/Build 1268622",
     "Version 2023.43.0/Build 1257426",
     "Version 2023.42.0/Build 1245088",
-    "Version 2023.41.1/Build 1239615",
-    "Version 2023.41.0/Build 1233125",
-    "Version 2023.40.0/Build 1221521",
-    "Version 2023.39.1/Build 1221505",
-    "Version 2023.39.0/Build 1211607",
-    "Version 2023.38.0/Build 1198522",
-    "Version 2023.37.0/Build 1182743",
-    "Version 2023.36.0/Build 1168982",
 ]
 
 _valkey_connection_pool = valkey.ConnectionPool.from_url(url=VALKEY_URL)

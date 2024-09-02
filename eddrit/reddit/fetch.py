@@ -123,8 +123,7 @@ async def get_post(
     http_client: httpx.AsyncClient, subreddit: str, post_id: str
 ) -> models.PostWithComments:
     url = f"{REDDIT_BASE_API_URL}/r/{subreddit}/comments/{post_id}/.json"
-    params = {"limit": 100}
-    res = await http_client.get(url, params=params)
+    res = await http_client.get(url)
 
     post = parser.parse_post(
         res.json()[0]["data"]["children"][0]["data"], is_popular_or_all=False
@@ -139,8 +138,7 @@ async def get_comments(
     http_client: httpx.AsyncClient, subreddit: str, post_id: str, comment_id: str
 ) -> Iterable[models.PostComment | models.PostCommentShowMore]:
     url = f"{REDDIT_BASE_API_URL}/r/{subreddit}/comments/{post_id}/comments/{comment_id}/.json"
-    params = {"limit": 100}
-    res = await http_client.get(url, params=params)
+    res = await http_client.get(url)
 
     return parser.parse_comments_tree(res.json()[1]["data"])
 

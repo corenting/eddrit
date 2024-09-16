@@ -32,17 +32,6 @@ test = ["anyio[trio]", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypo
 trio = ["trio (>=0.23)"]
 
 [[package]]
-name = "async-timeout"
-version = "4.0.3"
-description = "Timeout context manager for asyncio programs"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "async-timeout-4.0.3.tar.gz", hash = "sha256:4640d96be84d82d02ed59ea2b7105a0f7b33abe8703703cd0ab0bf87c427522f"},
-    {file = "async_timeout-4.0.3-py3-none-any.whl", hash = "sha256:7405140ff1230c310e51dc27b3145b9092d659ce68ff733fb0cefe3ee42be028"},
-]
-
-[[package]]
 name = "certifi"
 version = "2024.8.30"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -1152,17 +1141,14 @@ test = ["Cython (>=0.29.36,<0.30.0)", "aiohttp (==3.9.0b0)", "aiohttp (>=3.8.1)"
 
 [[package]]
 name = "valkey"
-version = "6.0.0"
+version = "6.0.2"
 description = "Python client for Valkey forked from redis-py"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "valkey-6.0.0-py3-none-any.whl", hash = "sha256:a62519aa2ec89e04af14852dab74f482980b3b3810997718e47547717602dfd1"},
-    {file = "valkey-6.0.0.tar.gz", hash = "sha256:f4a0dfbfff94950aaa5d9ab4d1e296f63df1e6d6924b8a2eafe2cf2e338fdf85"},
+    {file = "valkey-6.0.2-py3-none-any.whl", hash = "sha256:dbbdd65439ee0dc5689502c54f1899504cc7268e85cb7fe8935f062178ff5805"},
+    {file = "valkey-6.0.2.tar.gz", hash = "sha256:dc2e91512b82d1da0b91ab0cdbd8c97c0c0250281728cb32f9398760df9caeae"},
 ]
-
-[package.dependencies]
-async-timeout = {version = ">=4.0.3", markers = "python_version <= \"3.12\""}
 
 [package.extras]
 libvalkey = ["libvalkey (>=4.0.0)"]
@@ -1375,4 +1361,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12"
-content-hash = "16d3f0153d573cc5b75c89fc06478f2e23ae02839cabe987e53f143fd197555d"
+content-hash = "c07a5ab813ce6ae2cc2ad93cd33c99ef28b1c855974acd66942b61f42ecae4f9"

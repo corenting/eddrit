@@ -56,4 +56,4 @@ ENV LOG_LEVEL=WARNING
 # Expose and run app
 EXPOSE 8080
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["gunicorn", "eddrit.app:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8080", "--log-file=-"]
+CMD ["uvicorn", "eddrit.app:app", "--workers", "2", "--host", "0.0.0.0", "--port", "8080"]

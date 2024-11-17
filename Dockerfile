@@ -1,5 +1,5 @@
 # Python base (venv and user)
-FROM python:3.12 AS base
+FROM python:3.13 AS base
 
 # Install dumb-init
 RUN apt-get update && apt-get install -y dumb-init
@@ -14,21 +14,21 @@ USER eddrit
 # for some architectures directly so that they can be cached.
 # To keep in sync with poetry.lock to speedup CI
 RUN /usr/local/bin/pip install --user \
-    uvloop==0.20.0 \
+    uvloop==0.21.0 \
     lxml==5.3.0 \
-    httptools==0.6.1 \
-    MarkupSafe==2.1.5 \
+    httptools==0.6.4 \
+    MarkupSafe==3.0.2 \
     pyyaml==6.0.2
 
 # Dependencies
 WORKDIR /app/
 COPY . /app/
-ENV CPPFLAGS=-I/usr/local/include/python3.12/ \
+ENV CPPFLAGS=-I/usr/local/include/python3.13/ \
     PATH=/home/eddrit/.local/bin:$PATH
 RUN /usr/local/bin/pip install --user .
 
 # Prod image (app and default config)
-FROM python:3.12-slim AS prod
+FROM python:3.13-slim AS prod
 
 COPY --from=base /home/eddrit/.local /home/eddrit/.local
 COPY --from=base /usr/bin/dumb-init /usr/bin/

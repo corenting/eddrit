@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.12"
+python = ">=3.13"
 aiofiles = "^24"
 environs = "^11.0.0"
 httpx = {version = "^0.27.0", extras = ["http2"]}

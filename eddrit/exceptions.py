@@ -1,9 +1,9 @@
-class SubredditUnavailableError(Exception):
+class RedditContentUnavailableError(Exception):
     """
-    Raised when a subreddit is not available.
+    Raised when reddit content is not available.
     """
 
-    message = "Subreddit is not available"
+    message = "Content is not available"
 
 
 class UserUnavailableError(Exception):
@@ -14,17 +14,21 @@ class UserUnavailableError(Exception):
     message = "User is not available"
 
 
-class UserNotFoundError(SubredditUnavailableError):
+class UserNotFoundError(RedditContentUnavailableError):
     message = "User not found"
 
 
-class SubredditNotFoundError(SubredditUnavailableError):
+class SubredditNotFoundError(RedditContentUnavailableError):
     message = "Subreddit not found"
 
 
-class SubredditCannotBeViewedError(SubredditUnavailableError):
+class SubredditCannotBeViewedError(RedditContentUnavailableError):
     def __init__(self, reason: str) -> None:
         self.message = f"Subreddit is {reason}"
+
+
+class WikiPageNotFoundError(RedditContentUnavailableError):
+    message = "Wiki page not found"
 
 
 class RateLimitedError(Exception):

@@ -26,14 +26,21 @@ MEDIA_HOSTING_DOMAINS = ["imgur.com"]
 MEDIA_DOMAINS_TO_DISPLAY_AS_LINK = ["tiktok.com", "twitter.com"]
 
 
+def unescape_html_content(content_html) -> str:
+    """
+    Unescape HTML content so that it can renderer on eddrit.
+    """
+    return (
+        html.unescape(content_html)
+        .replace("<!-- SC_ON -->", "")
+        .replace("<!-- SC_OFF -->", "")
+    )
+
+
 def get_post_content(api_post_data: dict[Hashable, Any]) -> models.PostContentBase:
     # Text posts
     if api_post_data["is_self"] and api_post_data.get("selftext_html"):
-        content = (
-            html.unescape(api_post_data.get("selftext_html", ""))
-            .replace("<!-- SC_ON -->", "")
-            .replace("<!-- SC_OFF -->", "")
-        )
+        content = unescape_html_content(api_post_data.get("selftext_html", ""))
 
         return models.TextPostContent(text=content)
 

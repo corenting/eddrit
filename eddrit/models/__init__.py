@@ -24,3 +24,4 @@ from eddrit.models.subreddit import (
     SubredditSortingPeriod,
 )
 from eddrit.models.user import User, UserSortingMode
+from eddrit.models.wiki import WikiPage

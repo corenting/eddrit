@@ -9,6 +9,7 @@ from eddrit.reddit.fetch import (
     get_subreddit_information,
     get_subreddit_or_user_posts,
     get_user_information,
+    get_wiki_page,
 )
 from eddrit.routes.common.context import (
     get_canonical_url_context,
@@ -38,7 +39,7 @@ async def subreddit_post(request: Request) -> Response:
         post = await get_post(
             request.state.http_client, request.path_params["name"], post_id
         )
-    except exceptions.SubredditUnavailableError as e:
+    except exceptions.RedditContentUnavailableError as e:
         raise HTTPException(status_code=403, detail=e.message)
     except exceptions.RateLimitedError as e:
         raise HTTPException(status_code=429, detail=e.message)
@@ -52,6 +53,30 @@ async def subreddit_post(request: Request) -> Response:
             "about_information": subreddit_infos,
             "post": post,
             "title_link": request.url_for("subreddit", path=post.subreddit),
+            **get_templates_common_context(request),
+            **get_canonical_url_context(request),
+        },
+    )
+
+
+async def wiki_page(request: Request) -> Response:
+    """
+    Endpoint for a wiki page.
+    """
+    subreddit_name = request.path_params["name"]
+    wiki_page_name = request.path_params["page_name"]
+
+    try:
+        wiki_page_item = await get_wiki_page(
+            request.state.http_client, subreddit_name, wiki_page_name
+        )
+    except exceptions.RedditContentUnavailableError as e:
+        raise HTTPException(status_code=403, detail=e.message)
+
+    return templates.TemplateResponse(
+        "wiki_page.html",
+        {
+            "wiki_page": wiki_page_item,
             **get_templates_common_context(request),
             **get_canonical_url_context(request),
         },
@@ -103,7 +128,7 @@ async def subreddit_or_user(request: Request) -> Response:
             sorting_period,
             is_user,
         )
-    except exceptions.SubredditUnavailableError as e:
+    except exceptions.RedditContentUnavailableError as e:
         raise HTTPException(status_code=403, detail=e.message)
     except exceptions.RateLimitedError as e:
         raise HTTPException(status_code=429, detail=e.message)
@@ -135,4 +160,5 @@ routes = [
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}/", endpoint=subreddit_post
     ),
+    Route("/{name:str}/wiki/{page_name:str}", endpoint=wiki_page),
 ]

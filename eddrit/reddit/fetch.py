@@ -11,6 +11,7 @@ from eddrit.exceptions import (
     SubredditCannotBeViewedError,
     SubredditNotFoundError,
     UserNotFoundError,
+    WikiPageNotFoundError,
 )
 from eddrit.reddit import parser
 
@@ -134,6 +135,21 @@ async def get_post(
     )
 
 
+async def get_wiki_page(
+    http_client: httpx.AsyncClient, subreddit: str, page_name: str
+) -> models.WikiPage:
+    url = f"{REDDIT_BASE_API_URL}/r/{subreddit}/wiki/{page_name}.json"
+    res = await http_client.get(url)
+
+    _raise_if_content_is_not_available(res)
+
+    json_content = res.json()
+    content = parser.unescape_html_content(json_content["data"]["content_html"])
+    return models.WikiPage(
+        content_html=content, page_name=page_name, subreddit_name=subreddit
+    )
+
+
 async def get_comments(
     http_client: httpx.AsyncClient, subreddit: str, post_id: str, comment_id: str
 ) -> Iterable[models.PostComment | models.PostCommentShowMore]:
@@ -194,7 +210,7 @@ async def _get_subreddit_information(
     if res.status_code == 302 and "search" in res.headers["location"]:
         raise SubredditNotFoundError()
 
-    _raise_if_subreddit_is_not_available(res)
+    _raise_if_content_is_not_available(res)
 
     json = res.json()
     return parser.parse_subreddit_information(name, json["data"]["over18"], json)
@@ -213,7 +229,7 @@ async def _get_multi_information(
     return parser.parse_subreddit_information(name, over18)
 
 
-def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:
+def _raise_if_content_is_not_available(api_res: httpx.Response) -> None:
     """Raise an exception if the subreddit is not available (banned, private etc.)"""
 
     try:
@@ -225,6 +241,10 @@ def _raise_if_subreddit_is_not_available(api_res: httpx.Response) -> None:
             api_content=api_res.text,
         )
         return None
+
+    # Check for not found wiki pages
+    if api_res.status_code == 404 and json.get("reason") == "PAGE_NOT_FOUND":
+        raise WikiPageNotFoundError()
 
     # Check for banned subreddits
     if api_res.status_code == 404 and json.get("reason") == "banned":

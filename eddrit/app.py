@@ -39,7 +39,8 @@ middlewares = [
         cookies_to_refresh=[
             "layout",
             "nsfw_popular_all",
-            "nsfw_thumbnails" "over18",
+            "nsfw_thumbnails",
+            "over18",
             "thumbnails",
         ],
     ),
@@ -76,7 +77,7 @@ app = Starlette(
     routes=[
         Mount("/static", app=StaticFiles(directory="static"), name="static"),
         Mount("/meta", routes=meta.routes, name="meta"),
-        Mount("/r", routes=subreddit_user_and_wiki.routes, name="wiki"),
+        Mount("/r", routes=subreddit_user_and_wiki.routes, name="subreddit"),
         Mount("/user", routes=subreddit_user_and_wiki.routes, name="user"),
         Mount("/xhr", routes=routes, name="api"),
         Mount(

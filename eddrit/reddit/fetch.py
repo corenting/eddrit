@@ -193,7 +193,7 @@ async def get_user_information(
 
     # If user not found, the API redirects us to search endpoint
     if res.status_code == 404:
-        raise UserNotFoundError()
+        raise UserNotFoundError(res.status_code)
 
     json = res.json()
     return parser.parse_user_information(json)
@@ -208,7 +208,7 @@ async def _get_subreddit_information(
 
     # If subreddit not found, the API redirects us to search endpoint
     if res.status_code == 302 and "search" in res.headers["location"]:
-        raise SubredditNotFoundError()
+        raise SubredditNotFoundError(status_code=404)
 
     _raise_if_content_is_not_available(res)
 
@@ -223,7 +223,7 @@ async def _get_multi_information(
     res = await http_client.head(f"{REDDIT_BASE_API_URL}/r/{name}")
 
     if len(res.history) > 0 and res.history[0].status_code != 200:
-        raise SubredditNotFoundError()
+        raise SubredditNotFoundError(status_code=404)
 
     over18 = res.status_code == 302 and "over18" in res.headers["location"]
     return parser.parse_subreddit_information(name, over18)
@@ -244,20 +244,20 @@ def _raise_if_content_is_not_available(api_res: httpx.Response) -> None:
 
     # Check for not found wiki pages
     if api_res.status_code == 404 and json.get("reason") == "PAGE_NOT_FOUND":
-        raise WikiPageNotFoundError()
+        raise WikiPageNotFoundError(status_code=api_res.status_code)
 
     # Check for banned subreddits
     if api_res.status_code == 404 and json.get("reason") == "banned":
-        raise SubredditCannotBeViewedError("banned")
+        raise SubredditCannotBeViewedError(api_res.status_code, "banned")
 
     # Check for subreddits that cannot be viewed (quarantine, privated, gated)
     if api_res.status_code == 403 and (reason := json.get("reason")):
-        raise SubredditCannotBeViewedError(reason)
+        raise SubredditCannotBeViewedError(api_res.status_code, reason)
 
     # Check for subreddit not found
     if len(api_res.history) > 0 and api_res.history[0].status_code != 200:
-        raise SubredditNotFoundError()
+        raise SubredditNotFoundError(status_code=api_res.status_code)
 
     # If error, consider we didn't find the subreddit
     if json.get("error") == 404:
-        raise SubredditNotFoundError()
+        raise SubredditNotFoundError(status_code=api_res.status_code)

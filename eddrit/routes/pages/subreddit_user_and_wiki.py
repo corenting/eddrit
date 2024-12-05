@@ -1,9 +1,8 @@
-from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
 
-from eddrit import exceptions, models
+from eddrit import models
 from eddrit.reddit.fetch import (
     get_post,
     get_subreddit_information,
@@ -31,18 +30,13 @@ async def subreddit_post(request: Request) -> Response:
     """
     Endpoint for a post page.
     """
-    try:
-        subreddit_infos = await get_subreddit_information(
-            request.state.http_client, request.path_params["name"]
-        )
-        post_id = request.path_params["post_id"]
-        post = await get_post(
-            request.state.http_client, request.path_params["name"], post_id
-        )
-    except exceptions.RedditContentUnavailableError as e:
-        raise HTTPException(status_code=403, detail=e.message)
-    except exceptions.RateLimitedError as e:
-        raise HTTPException(status_code=429, detail=e.message)
+    subreddit_infos = await get_subreddit_information(
+        request.state.http_client, request.path_params["name"]
+    )
+    post_id = request.path_params["post_id"]
+    post = await get_post(
+        request.state.http_client, request.path_params["name"], post_id
+    )
 
     if _should_redirect_to_age_check(request, post.over18):
         return _redirect_to_age_check(request)
@@ -66,12 +60,9 @@ async def wiki_page(request: Request) -> Response:
     subreddit_name = request.path_params["name"]
     wiki_page_name = request.path_params["page_name"]
 
-    try:
-        wiki_page_item = await get_wiki_page(
-            request.state.http_client, subreddit_name, wiki_page_name
-        )
-    except exceptions.RedditContentUnavailableError as e:
-        raise HTTPException(status_code=403, detail=e.message)
+    wiki_page_item = await get_wiki_page(
+        request.state.http_client, subreddit_name, wiki_page_name
+    )
 
     return templates.TemplateResponse(
         "wiki_page.html",
@@ -101,38 +92,32 @@ async def subreddit_or_user(request: Request) -> Response:
         request.query_params.get("t", "month" if not is_user else "all")
     )
 
-    try:
-        # Get information
-        if is_user:
-            information = await get_user_information(
-                request.state.http_client, request.path_params["name"]
-            )
-        else:
-            information = await get_subreddit_information(
-                request.state.http_client, request.path_params["name"]
-            )
-
-        if _should_redirect_to_age_check(request, information.over18):
-            return _redirect_to_age_check(request)
-
-        request_pagination = models.Pagination(
-            before_post_id=request.query_params.get("before"),
-            after_post_id=request.query_params.get("after"),
+    # Get information
+    if is_user:
+        information = await get_user_information(
+            request.state.http_client, request.path_params["name"]
+        )
+    else:
+        information = await get_subreddit_information(
+            request.state.http_client, request.path_params["name"]
         )
 
-        posts, response_pagination = await get_subreddit_or_user_posts(
-            request.state.http_client,
-            request.path_params["name"],
-            request_pagination,
-            sorting_mode,
-            sorting_period,
-            is_user,
-        )
-    except exceptions.RedditContentUnavailableError as e:
-        raise HTTPException(status_code=403, detail=e.message)
-    except exceptions.RateLimitedError as e:
-        raise HTTPException(status_code=429, detail=e.message)
+    if _should_redirect_to_age_check(request, information.over18):
+        return _redirect_to_age_check(request)
 
+    request_pagination = models.Pagination(
+        before_post_id=request.query_params.get("before"),
+        after_post_id=request.query_params.get("after"),
+    )
+
+    posts, response_pagination = await get_subreddit_or_user_posts(
+        request.state.http_client,
+        request.path_params["name"],
+        request_pagination,
+        sorting_mode,
+        sorting_period,
+        is_user,
+    )
     return templates.TemplateResponse(
         "posts_list.html",
         {

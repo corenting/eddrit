@@ -1,5 +1,6 @@
 import datetime
 import html
+import re
 from collections.abc import Hashable, Iterable
 from typing import Any
 
@@ -25,15 +26,31 @@ MEDIA_HOSTING_DOMAINS = ["imgur.com"]
 # Media domains to display as links (embed that cannot be displayed, scripts needed etc.)
 MEDIA_DOMAINS_TO_DISPLAY_AS_LINK = ["tiktok.com", "twitter.com"]
 
+WIKI_LINKS_REGEX = re.compile(r'href="https:\/\/old\.reddit\.com\/r\/(.*)\/wiki\/(.*)"')
+
+
+def clean_content(initial_content: str) -> str:
+    """
+    Clean text content:
+    - Unescape HTML content so that it can renderer on eddrit.
+    - Replace reddit links to eddrit links for supported links
+    """
+    content = (
+        html.unescape(initial_content)
+        .replace("<!-- SC_ON -->", "")
+        .replace("<!-- SC_OFF -->", "")
+    )
+
+    # Replace all match of regex in content
+    content = WIKI_LINKS_REGEX.sub(r'href="/r/\1/wiki/\2"', content)
+
+    return content
+
 
 def get_post_content(api_post_data: dict[Hashable, Any]) -> models.PostContentBase:
     # Text posts
     if api_post_data["is_self"] and api_post_data.get("selftext_html"):
-        content = (
-            html.unescape(api_post_data.get("selftext_html", ""))
-            .replace("<!-- SC_ON -->", "")
-            .replace("<!-- SC_OFF -->", "")
-        )
+        content = clean_content(api_post_data.get("selftext_html", ""))
 
         return models.TextPostContent(text=content)
 
@@ -237,7 +254,7 @@ def _parse_comment(comment: dict[Hashable, Any]) -> models.PostComment:
         is_submitter=data["is_submitter"],
         is_admin=data.get("distinguished", "") == "admin",
         is_moderator=data.get("distinguished", "") == "moderator",
-        content=html.unescape(data["body_html"]),
+        content=clean_content(data["body_html"]),
         human_date=timeago.format(
             datetime.datetime.fromtimestamp(data["created_utc"], tz=datetime.UTC),
             utc_now,

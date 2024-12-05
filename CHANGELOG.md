@@ -1,3 +1,7 @@
+# Version 0.9.0
+
+- Added basic wiki support (fix #215)
+
 # Version 0.8.9
 
 - Update User-Agent used for Reddit requests

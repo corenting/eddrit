@@ -18,7 +18,7 @@ from eddrit.routes.pages import (
     root_files,
     search,
     settings,
-    subreddit_and_user,
+    subreddit_user_and_wiki,
 )
 from eddrit.routes.xhr import routes
 from eddrit.utils.middlewares import (
@@ -39,7 +39,8 @@ middlewares = [
         cookies_to_refresh=[
             "layout",
             "nsfw_popular_all",
-            "nsfw_thumbnails" "over18",
+            "nsfw_thumbnails",
+            "over18",
             "thumbnails",
         ],
     ),
@@ -76,8 +77,8 @@ app = Starlette(
     routes=[
         Mount("/static", app=StaticFiles(directory="static"), name="static"),
         Mount("/meta", routes=meta.routes, name="meta"),
-        Mount("/r", routes=subreddit_and_user.routes, name="subreddit"),
-        Mount("/user", routes=subreddit_and_user.routes, name="user"),
+        Mount("/r", routes=subreddit_user_and_wiki.routes, name="subreddit"),
+        Mount("/user", routes=subreddit_user_and_wiki.routes, name="user"),
         Mount("/xhr", routes=routes, name="api"),
         Mount(
             "/",

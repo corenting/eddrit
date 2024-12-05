@@ -3,9 +3,8 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-<article>ℹ️ <a href="https://old.reddit.com/r/{{wiki_page.subreddit_name}}/wiki/{{wiki_page.page_name}}">Click here to see the page on old.reddit.com</a></article>
-
 <article>
+    <p>ℹ️ <a href="https://old.reddit.com/r/{{wiki_page.subreddit_name}}/wiki/{{wiki_page.page_name}}">Click here to see the page on old.reddit.com</a></p>
     {{ wiki_page.content_html |safe }}
 </article>
 {% endblock %}

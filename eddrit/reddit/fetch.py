@@ -144,7 +144,8 @@ async def get_wiki_page(
     _raise_if_content_is_not_available(res)
 
     json_content = res.json()
-    content = parser.unescape_html_content(json_content["data"]["content_html"])
+    content = parser.clean_content(json_content["data"]["content_html"])
+
     return models.WikiPage(
         content_html=content, page_name=page_name, subreddit_name=subreddit
     )

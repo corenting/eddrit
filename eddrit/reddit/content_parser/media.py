@@ -181,6 +181,6 @@ def get_post_video_content(
 
     except Exception:
         logger.exception(
-            f"Post \"{api_post_data['title']}\": could not parse video content, falling back to link"
+            f'Post "{api_post_data["title"]}": could not parse video content, falling back to link'
         )
         return models.LinkPostContent()

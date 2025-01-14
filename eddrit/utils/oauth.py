@@ -87,7 +87,7 @@ async def oauth_after_request(api_res: httpx.Response) -> None:
 
     # Handle rate-limiting
     logger.debug(
-        f"x-ratelimit-remaining: {api_res.headers.get("x-ratelimit-remaining")} x-ratelimit-reset: {api_res.headers.get("x-ratelimit-reset")} x-ratelimit-used: {api_res.headers.get("x-ratelimit-used")}"
+        f"x-ratelimit-remaining: {api_res.headers.get('x-ratelimit-remaining')} x-ratelimit-reset: {api_res.headers.get('x-ratelimit-reset')} x-ratelimit-used: {api_res.headers.get('x-ratelimit-used')}"
     )
     rate_limit_remaining = api_res.headers.get("x-ratelimit-remaining")
     if rate_limit_remaining:

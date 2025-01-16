@@ -8,6 +8,7 @@ from loguru import logger
 from eddrit import models
 from eddrit.constants import REDDIT_BASE_API_URL
 from eddrit.exceptions import (
+    RateLimitedError,
     SubredditCannotBeViewedError,
     SubredditNotFoundError,
     UserNotFoundError,
@@ -232,6 +233,10 @@ async def _get_multi_information(
 
 def _raise_if_content_is_not_available(api_res: httpx.Response) -> None:
     """Raise an exception if the subreddit is not available (banned, private etc.)"""
+
+    # Check for HTML 403 blocked page
+    if api_res.status_code == 403 and "blocked by network security" in api_res.text:
+        raise RateLimitedError()
 
     try:
         json = api_res.json()

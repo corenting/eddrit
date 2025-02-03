@@ -34,9 +34,10 @@ async def get_frontpage_posts(
 ) -> tuple[list[models.Post], models.Pagination]:
     ret = await _get_posts_for_url(
         http_client,
-        f"{REDDIT_BASE_API_URL}/.json?geo_filter=GLOBAL",
+        f"{REDDIT_BASE_API_URL}/r/popular/hot.json",
         pagination,
         is_popular_or_all=True,
+        extra_req_params={"geo_filter": "GLOBAL"},
     )
     return ret  # type: ignore
 
@@ -118,7 +119,15 @@ async def get_subreddit_or_user_posts(
         else:
             url = f"{REDDIT_BASE_API_URL}/r/{subreddit_or_username}/{sorting_mode.value}.json?t={sorting_period.value}"
 
-    return await _get_posts_for_url(http_client, url, pagination)
+    # If it's the popular subreddit (aka the homepage), use global geo filter
+    # in case the /r/popular URL is used instead of the / one.
+    extra_params = {}
+    if subreddit_or_username == "popular":
+        extra_params["geo_filter"] = "GLOBAL"
+
+    return await _get_posts_for_url(
+        http_client, url, pagination, extra_req_params=extra_params
+    )
 
 
 async def get_post(
@@ -166,6 +175,7 @@ async def _get_posts_for_url(
     url: str,
     pagination: models.Pagination,
     is_popular_or_all: bool = False,
+    extra_req_params: dict | None = None,
 ) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
     params: dict[str, str | int] = {}
     if pagination.before_post_id:
@@ -173,8 +183,10 @@ async def _get_posts_for_url(
     elif pagination.after_post_id:
         params = {"after": pagination.after_post_id, "count": 25}
 
-    res = await http_client.get(url, params=params)
+    if extra_req_params:
+        params |= extra_req_params
 
+    res = await http_client.get(url, params=params)
     try:
         json_res = res.json()
     except JSONDecodeError:

@@ -1,3 +1,7 @@
+# Version 0.9.1
+
+- Fix frontpage geo filter not being set, resulting in the instance country being used. It now uses the "global" geofilter
+
 # Version 0.9.0
 
 - Added basic wiki support (fix #215)

@@ -17,7 +17,7 @@ env:
 jobs:
   ci:
     name: Style and test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
           VALKEY_URL: valkeys://test.invalid
   docker_build:
     name: Build Docker image (${{ matrix.platform }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: ci
     strategy:
       fail-fast: false
@@ -114,7 +114,7 @@ jobs:
           retention-days: 1
   docker_merge:
     name: Merge and push Docker images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs:
       - docker_build
     if: ${{ github.event_name != 'pull_request' }}
@@ -156,7 +156,7 @@ jobs:
           registry: ghcr
   create-release:
     name: Create release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs:
       - docker_merge
     if: startsWith(github.ref, 'refs/tags/v')

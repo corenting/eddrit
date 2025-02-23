@@ -1,7 +1,17 @@
 {% import "macros/post.html" as post_macros with context %}
 {% import "macros/comments.html" as comments_macros with context %}
 
-{% set title = about_information.title %}
+{% set title = post.title ~ " | " ~ about_information.title %}
+{% set description = post.title ~ " | " ~ about_information.title %}
+
+{% if true %}
+
+    {% if post.content.type == 'picture' %}
+        {% set image = post.url %}
+    {% elif post.content.type == 'gallery' %}
+        {% set image = post.content.pictures[0].url %}
+    {% endif %}
+{% endif %}
 
 {% extends "base.html" %}
 

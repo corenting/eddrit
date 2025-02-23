@@ -221,6 +221,7 @@ def parse_user_information(api_response: dict[Hashable, Any]) -> models.User:
         name=api_response["data"]["name"],
         flair=None,
         over18=api_response["data"]["subreddit"]["over_18"],
+        public_description=api_response["data"]["subreddit"]["public_description"],
     )
 
 

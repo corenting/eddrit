@@ -1,8 +1,13 @@
 {% import "macros/post.html" as post_macros with context %}
 {% import "macros/comments.html" as comments_macros with context %}
 
-{% set title = about_information.title %}
 {% set is_user_page = '/user' in request.raw_path.decode('utf-8') %}
+{% set title = about_information.title if not is_user_page else about_information.name %}
+
+{% if about_information.public_description %}
+{% set description = about_information.public_description %}
+{% endif %}
+
 {% set default_sorting_mode = 'hot' if not is_user_page else 'new' %}
 {% set default_sorting_period = 'month' if not is_user_page else 'all' %}
 {% set sorting_modes = global.subreddit_sorting_modes if not is_user_page else global.user_sorting_modes %}

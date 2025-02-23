@@ -11,6 +11,7 @@ class User:
 
     # only on user pages
     over18: bool = False
+    public_description: str = ""
 
 
 class UserSortingMode(Enum):

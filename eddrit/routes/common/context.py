@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from starlette.requests import Request
 
 from eddrit import models
-from eddrit.models.settings import LayoutMode, ThumbnailsMode
+from eddrit.models.settings import LayoutMode, Theme, ThumbnailsMode
 from eddrit.routes.common.cookies import get_bool_setting_value_from_cookie
 
 EnumTypeVar = TypeVar("EnumTypeVar", bound=Enum)
@@ -51,6 +51,9 @@ def get_templates_common_context(
         ThumbnailsMode,
         ThumbnailsMode.SUBREDDIT_PREFERENCE,
     )
+    theme = _get_setting_with_default_fallback(
+        cookies_source, "theme", Theme, Theme.SYSTEM
+    )
 
     settings = models.Settings(
         layout=layout,
@@ -61,6 +64,7 @@ def get_templates_common_context(
         nsfw_thumbnails=get_bool_setting_value_from_cookie(
             "nsfw_thumbnails", cookies_source
         ),
+        theme=theme,
     )
 
     return {

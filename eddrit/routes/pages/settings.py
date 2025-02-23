@@ -25,7 +25,7 @@ async def settings_submit(request: Request) -> Response:
         # and we can set directly
         if setting_value in ["on", "off"]:
             value_to_save = "1" if setting_value == "on" else "0"
-        # Else it's a radio, save value directly
+        # Else it's a radio, save value directly (with lower for theme)
         else:
             value_to_save = str(setting_value)
 

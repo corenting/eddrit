@@ -12,6 +12,11 @@ class LayoutMode(Enum):
     WIDE = "wide"
     COMPACT = "compact"
 
+class Theme(Enum):
+    SYSTEM = "" # unset
+    LIGHT = "light"
+    DARK = "dark"
+
 
 @dataclass
 class Settings:
@@ -19,3 +24,4 @@ class Settings:
     thumbnails: ThumbnailsMode
     nsfw_popular_all: bool
     nsfw_thumbnails: bool
+    theme: Theme

@@ -8,8 +8,8 @@ from loguru import logger
 from eddrit import models
 from eddrit.constants import REDDIT_BASE_API_URL
 from eddrit.exceptions import (
-    RateLimitedError,
     ContentCannotBeViewedError,
+    RateLimitedError,
     SubredditNotFoundError,
     UserNotFoundError,
     WikiPageNotFoundError,

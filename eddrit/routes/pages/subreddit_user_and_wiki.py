@@ -2,10 +2,7 @@ from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
 
-from starlette.exceptions import HTTPException
-
 from eddrit import models
-from eddrit.exceptions import ContentCannotBeViewedError
 from eddrit.models.link import Link
 from eddrit.reddit.fetch import (
     get_post,
@@ -124,12 +121,9 @@ async def subreddit_or_user(request: Request) -> Response:
     )
 
     # Get links
-    links:list[Link] = []
-    if not is_user and information.wiki_enabled:
-        links.append(Link(
-            name="Wiki",
-            target=f"/r/{request.path_params["name"]}/wiki"
-        ))
+    links: list[Link] = []
+    if not is_user and information.wiki_enabled:  # type: ignore
+        links.append(Link(name="Wiki", target=f"/r/{request.path_params['name']}/wiki"))
 
     return templates.TemplateResponse(
         "posts_list.html",
@@ -162,5 +156,4 @@ routes = [
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}/", endpoint=subreddit_post
     ),
-
 ]

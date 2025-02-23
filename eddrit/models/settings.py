@@ -12,8 +12,9 @@ class LayoutMode(Enum):
     WIDE = "wide"
     COMPACT = "compact"
 
+
 class Theme(Enum):
-    SYSTEM = "" # unset
+    SYSTEM = ""  # unset
     LIGHT = "light"
     DARK = "dark"
 

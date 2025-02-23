@@ -10,6 +10,7 @@ class Subreddit:
     public_description: str | None
     over18: bool
     icon_url: str | None
+    wiki_enabled: bool
 
 
 class SubredditSortingMode(Enum):

@@ -9,7 +9,7 @@ from eddrit import models
 from eddrit.constants import REDDIT_BASE_API_URL
 from eddrit.exceptions import (
     RateLimitedError,
-    SubredditCannotBeViewedError,
+    ContentCannotBeViewedError,
     SubredditNotFoundError,
     UserNotFoundError,
     WikiPageNotFoundError,
@@ -25,6 +25,7 @@ async def get_frontpage_information() -> models.Subreddit:
         name="popular",
         over18=False,
         icon_url=None,
+        wiki_enabled=False,
     )
 
 
@@ -80,6 +81,7 @@ async def get_subreddit_information(
             public_description=None,
             over18=False,
             icon_url=None,
+            wiki_enabled=False,
         )
     elif subreddit_name == "popular":
         return await get_frontpage_information()
@@ -266,11 +268,11 @@ def _raise_if_content_is_not_available(api_res: httpx.Response) -> None:
 
     # Check for banned subreddits
     if api_res.status_code == 404 and json.get("reason") == "banned":
-        raise SubredditCannotBeViewedError(api_res.status_code, "banned")
+        raise ContentCannotBeViewedError(api_res.status_code, "banned")
 
     # Check for subreddits that cannot be viewed (quarantine, privated, gated)
     if api_res.status_code == 403 and (reason := json.get("reason")):
-        raise SubredditCannotBeViewedError(api_res.status_code, reason)
+        raise ContentCannotBeViewedError(api_res.status_code, reason)
 
     # Check for subreddit not found
     if len(api_res.history) > 0 and api_res.history[0].status_code != 200:

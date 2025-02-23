@@ -61,9 +61,9 @@
                     {% set sorting_mode_url =url_for('subreddit', path=about_information.name ~ '/' ~ sorting_mode) %}
                 {% endif %}
             {% endif %}
-            <li class="post-sorting-item col">
+            <li class="post-button-list-item col">
                 <a role="button"
-                    class="post-sorting-button {{ 'secondary' if current_sorting_mode.value != sorting_mode else '' }}"
+                    class="post-button {{ 'secondary' if current_sorting_mode.value != sorting_mode else '' }}"
                     href="{{ sorting_mode_url }}">
                     {{ sorting_mode | capitalize }}
                 </a>
@@ -109,9 +109,9 @@
                 {% endif %}
 
             {% endif %}
-            <li class="post-sorting-item col">
+            <li class="post-button-list-item col">
                 <a role="button"
-                    class="post-sorting-button {{ 'secondary' if current_sorting_period.value != sorting_period else '' }}"
+                    class="post-button {{ 'secondary' if current_sorting_period.value != sorting_period else '' }}"
                     href="{{ sorting_period_url }}">
                     {{ sorting_period | capitalize }}
                 </a>
@@ -122,6 +122,25 @@
     {% endif %}
 
 </details>
+
+{% if links | length > 0 %}
+<details>
+    <summary>Links</summary>
+    <nav>
+        <ul class="row">
+            {% for link in links %}
+            <li class="post-button-list-item col">
+                <a role="button"
+                    class="post-button"
+                    href="{{link.target}}">
+                    {{link.name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+</details>
+{% endif %}
 
 {# No posts message if end of lists (in sorting mode for example) #}
 {% if posts | length == 0 %}

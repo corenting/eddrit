@@ -25,10 +25,10 @@ class SubredditNotFoundError(RedditContentUnavailableError):
     detail = "Subreddit not found"
 
 
-class SubredditCannotBeViewedError(RedditContentUnavailableError):
+class ContentCannotBeViewedError(RedditContentUnavailableError):
     def __init__(self, status_code: int, reason: str) -> None:
         super().__init__(status_code)
-        self.detail = f"Subreddit is {reason}"
+        self.detail = f"Content cannot be viewed ({reason})"
 
 
 class WikiPageNotFoundError(RedditContentUnavailableError):

@@ -209,6 +209,7 @@ def parse_subreddit_information(
         name=name,
         over18=over18,
         icon_url=icon_url,
+        wiki_enabled=api_response["data"]["wiki_enabled"] if api_response else False
     )
 
 

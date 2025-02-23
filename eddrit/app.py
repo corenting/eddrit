@@ -1,6 +1,5 @@
 import contextlib
 import typing
-
 import httpx
 import uvicorn
 from starlette.applications import Starlette
@@ -8,6 +7,7 @@ from starlette.exceptions import HTTPException
 from starlette.middleware import Middleware
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
+from starlette.routing import Route
 
 from eddrit import config
 from eddrit.routes.common import exception_handlers
@@ -20,6 +20,7 @@ from eddrit.routes.pages import (
     settings,
     subreddit_user_and_wiki,
 )
+from starlette.responses import RedirectResponse
 from eddrit.routes.xhr import routes
 from eddrit.utils.middlewares import (
     CookiesRefreshMiddleware,
@@ -71,10 +72,14 @@ async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
         yield {"http_client": client}
 
 
+def favicon_route(request):
+    return RedirectResponse('static/favicon.ico')
+
 app = Starlette(
     lifespan=lifespan,
     debug=config.DEBUG,
     routes=[
+        Route("/favicon.ico", endpoint=favicon_route),
         Mount("/static", app=StaticFiles(directory="static"), name="static"),
         Mount("/meta", routes=meta.routes, name="meta"),
         Mount("/r", routes=subreddit_user_and_wiki.routes, name="subreddit"),

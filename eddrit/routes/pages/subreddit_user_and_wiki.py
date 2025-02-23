@@ -2,7 +2,11 @@ from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
 
+from starlette.exceptions import HTTPException
+
 from eddrit import models
+from eddrit.exceptions import ContentCannotBeViewedError
+from eddrit.models.link import Link
 from eddrit.reddit.fetch import (
     get_post,
     get_subreddit_information,
@@ -118,9 +122,19 @@ async def subreddit_or_user(request: Request) -> Response:
         sorting_period,
         is_user,
     )
+
+    # Get links
+    links:list[Link] = []
+    if not is_user and information.wiki_enabled:
+        links.append(Link(
+            name="Wiki",
+            target=f"/r/{request.path_params["name"]}/wiki"
+        ))
+
     return templates.TemplateResponse(
         "posts_list.html",
         {
+            "links": links,
             **get_posts_pages_common_context(
                 response_pagination,
                 posts,

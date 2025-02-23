@@ -6,7 +6,8 @@ import uvicorn
 from starlette.applications import Starlette
 from starlette.exceptions import HTTPException
 from starlette.middleware import Middleware
-from starlette.routing import Mount
+from starlette.responses import RedirectResponse
+from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from eddrit import config
@@ -71,10 +72,15 @@ async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
         yield {"http_client": client}
 
 
+def favicon_route(request):
+    return RedirectResponse("static/favicon.ico")
+
+
 app = Starlette(
     lifespan=lifespan,
     debug=config.DEBUG,
     routes=[
+        Route("/favicon.ico", endpoint=favicon_route),
         Mount("/static", app=StaticFiles(directory="static"), name="static"),
         Mount("/meta", routes=meta.routes, name="meta"),
         Mount("/r", routes=subreddit_user_and_wiki.routes, name="subreddit"),

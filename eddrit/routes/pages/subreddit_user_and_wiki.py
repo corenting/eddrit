@@ -3,6 +3,7 @@ from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
 
 from eddrit import models
+from eddrit.models.link import Link
 from eddrit.reddit.fetch import (
     get_post,
     get_subreddit_information,
@@ -58,7 +59,7 @@ async def wiki_page(request: Request) -> Response:
     Endpoint for a wiki page.
     """
     subreddit_name = request.path_params["name"]
-    wiki_page_name = request.path_params["page_name"]
+    wiki_page_name = request.path_params.get("page_name", "index")
 
     wiki_page_item = await get_wiki_page(
         request.state.http_client, subreddit_name, wiki_page_name
@@ -82,7 +83,7 @@ async def subreddit_or_user(request: Request) -> Response:
 
     # Get sorting mode
     sorting_mode = (
-        models.SubredditSortingMode(request.path_params.get("sorting_mode", "popular"))
+        models.SubredditSortingMode(request.path_params.get("sorting_mode", "hot"))
         if not is_user
         else models.UserSortingMode(request.query_params.get("sort", "new"))
     )
@@ -118,9 +119,16 @@ async def subreddit_or_user(request: Request) -> Response:
         sorting_period,
         is_user,
     )
+
+    # Get links
+    links: list[Link] = []
+    if not is_user and information.wiki_enabled:  # type: ignore
+        links.append(Link(name="Wiki", target=f"/r/{request.path_params['name']}/wiki"))
+
     return templates.TemplateResponse(
         "posts_list.html",
         {
+            "links": links,
             **get_posts_pages_common_context(
                 response_pagination,
                 posts,
@@ -135,6 +143,9 @@ async def subreddit_or_user(request: Request) -> Response:
 
 
 routes = [
+    Route("/{name:str}/wiki", endpoint=wiki_page),
+    Route("/{name:str}/wiki/", endpoint=wiki_page),
+    Route("/{name:str}/wiki/{page_name:str}", endpoint=wiki_page),
     Route("/{name:str}", endpoint=subreddit_or_user),
     Route("/{name:str}/{sorting_mode:str}", endpoint=subreddit_or_user),
     Route(
@@ -145,5 +156,4 @@ routes = [
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}/", endpoint=subreddit_post
     ),
-    Route("/{name:str}/wiki/{page_name:str}", endpoint=wiki_page),
 ]

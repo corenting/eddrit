@@ -1,3 +1,11 @@
+# Version 0.9.2
+
+- Use cookies for theme so that it works without Javascript + avoid flash of theme change on reloads
+- Rename "popular" sorting mode to "hot" like on Reddit
+- Fix display of settings link button
+- Add wiki link to subreddit if available
+- Fix r/<subreddit>/wiki links not working
+
 # Version 0.9.1
 
 - Fix frontpage geo filter not being set, resulting in the instance country being used. It now uses the "global" geofilter

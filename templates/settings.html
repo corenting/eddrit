@@ -16,6 +16,12 @@ checked
 {% endif %}
 {% endmacro %}
 
+{% macro setting_theme_selected(theme) %}
+{% if settings.theme.value == theme %}
+selected
+{% endif %}
+{% endmacro %}
+
 
 {% set title = "Settings" %}
 
@@ -32,20 +38,18 @@ checked
 {# Theme #}
 <article class="needs-js">
     <header>Settings</header>
-    <div class="row settings-item align-items-baseline">
-        <div class="col-3">
-            Choose the theme you want to use on eddrit
-        </div>
-        <div class="col-5">
-            <select id="settings-theme-select">
-                <option selected>System</option>
-                <option>Light</option>
-                <option>Dark</option>
-            </select>
-        </div>
-    </div>
-
     <form action="/settings" method="post">
+        <fieldset>
+            <legend>Theme</legend>
+            <label for="theme">
+                <select name="theme" id="theme">
+                    <option {{ setting_theme_selected("") }} value="">System</option>
+                    <option {{ setting_theme_selected("light") }} value="light">Light</option>
+                    <option {{ setting_theme_selected("dark") }} value="dark">Dark</option>
+                </select>
+                Choose the theme you want to use on eddrit
+            </label>
+        </fieldset>
         <fieldset>
             <legend>Layout</legend>
             <label for="wide">

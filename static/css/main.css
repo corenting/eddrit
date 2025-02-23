@@ -96,11 +96,11 @@ html[data-theme='dark'] .dark-inverted {
   margin-right: var(--pico-spacing);
 }
 
-.post-sorting-button {
+.post-button {
   width: 10rem;
 }
 
-.post-sorting-item {
+.post-button-list-item {
   flex-grow: 0;
 }
 

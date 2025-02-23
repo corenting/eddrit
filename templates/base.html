@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ settings.theme.value }}">
 
 <head>
     {% block head %}
@@ -76,7 +76,6 @@
     </div>
 </body>
 <script type="text/javascript" src="{{ url_for('static', path='js/main.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', path='js/theme.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', path='vendors/dashjs/dash.all.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', path='vendors/videojs/video.min.js') }}"></script>
 

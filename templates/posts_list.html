@@ -3,7 +3,7 @@
 
 {% set title = about_information.title %}
 {% set is_user_page = '/user' in request.raw_path.decode('utf-8') %}
-{% set default_sorting_mode = 'popular' if not is_user_page else 'new' %}
+{% set default_sorting_mode = 'hot' if not is_user_page else 'new' %}
 {% set default_sorting_period = 'month' if not is_user_page else 'all' %}
 {% set sorting_modes = global.subreddit_sorting_modes if not is_user_page else global.user_sorting_modes %}
 

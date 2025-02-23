@@ -13,7 +13,7 @@ class Subreddit:
 
 
 class SubredditSortingMode(Enum):
-    POPULAR = "popular"
+    HOT = "hot"
     NEW = "new"
     RISING = "rising"
     CONTROVERSIAL = "controversial"

@@ -114,7 +114,7 @@ async def get_subreddit_or_user_posts(
         else:
             url = f"{REDDIT_BASE_API_URL}/{path_part}/{subreddit_or_username}/.json?sort={sorting_mode.value}&t={sorting_period.value}"
     else:
-        if sorting_mode == models.SubredditSortingMode.POPULAR:
+        if sorting_mode == models.SubredditSortingMode.HOT:
             url = f"{REDDIT_BASE_API_URL}/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
         else:
             url = f"{REDDIT_BASE_API_URL}/r/{subreddit_or_username}/{sorting_mode.value}.json?t={sorting_period.value}"

@@ -17,7 +17,7 @@ async def index(request: Request) -> Response:
     # Get sorting mode
     try:
         sorting_mode = models.SubredditSortingMode(
-            request.path_params.get("sorting_mode", "popular")
+            request.path_params.get("sorting_mode", "hot")
         )
     except ValueError:
         raise HTTPException(

@@ -135,8 +135,9 @@ async def subreddit_or_user(request: Request) -> Response:
 
 
 routes = [
-    Route("/{name:str}/wiki/{page_name:str}", endpoint=wiki_page),
+    Route("/{name:str}/wiki", endpoint=wiki_page),
     Route("/{name:str}/wiki/", endpoint=wiki_page),
+    Route("/{name:str}/wiki/{page_name:str}", endpoint=wiki_page),
     Route("/{name:str}", endpoint=subreddit_or_user),
     Route("/{name:str}/{sorting_mode:str}", endpoint=subreddit_or_user),
     Route(

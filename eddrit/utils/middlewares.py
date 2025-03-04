@@ -26,29 +26,32 @@ class CookiesRefreshMiddleware:
             if message["type"] == "http.response.start":
                 initial_request = Request(scope)
                 headers = MutableHeaders(scope=message)
-                cookie_default_settings = get_default_cookie_settings()
 
-                for cookie_name, cookie_value in initial_request.cookies.items():
-                    if cookie_name not in self.cookies_to_refresh:
-                        continue
+                # If the endpoint is setting cookies, don't refresh
+                if "set-cookie" not in headers:
+                    cookie_default_settings = get_default_cookie_settings()
+                    for cookie_name, cookie_value in initial_request.cookies.items():
+                        if cookie_name not in self.cookies_to_refresh:
+                            continue
 
-                    # Same code as Response.set_cookie from starlette
-                    updated_cookie = http.cookies.SimpleCookie()
-                    updated_cookie[cookie_name] = cookie_value
-                    updated_cookie[cookie_name]["expires"] = format_datetime(
-                        cookie_default_settings.expiration_date, usegmt=True
-                    )
-                    updated_cookie[cookie_name]["path"] = "/"
-                    updated_cookie[cookie_name]["secure"] = (
-                        cookie_default_settings.secure
-                    )
-                    updated_cookie[cookie_name]["httponly"] = (
-                        cookie_default_settings.http_only
-                    )
-                    updated_cookie[cookie_name]["samesite"] = "lax"
-                    headers.append(
-                        key="set-cookie", value=updated_cookie.output(header="").strip()
-                    )
+                        # Same code as Response.set_cookie from starlette
+                        updated_cookie = http.cookies.SimpleCookie()
+                        updated_cookie[cookie_name] = cookie_value
+                        updated_cookie[cookie_name]["expires"] = format_datetime(
+                            cookie_default_settings.expiration_date, usegmt=True
+                        )
+                        updated_cookie[cookie_name]["path"] = "/"
+                        updated_cookie[cookie_name]["secure"] = (
+                            cookie_default_settings.secure
+                        )
+                        updated_cookie[cookie_name]["httponly"] = (
+                            cookie_default_settings.http_only
+                        )
+                        updated_cookie[cookie_name]["samesite"] = "lax"
+                        headers.append(
+                            key="set-cookie",
+                            value=updated_cookie.output(header="").strip(),
+                        )
 
             await send(message)
 

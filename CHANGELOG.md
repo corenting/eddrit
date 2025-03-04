@@ -1,3 +1,9 @@
+# Version 0.9.3
+
+- Fix issue with settings not saving
+- Fix displayed post title being too long
+- Add opengraph tags for better links previews when sharing eddrit links
+
 # Version 0.9.2
 
 - Use cookies for theme so that it works without Javascript + avoid flash of theme change on reloads

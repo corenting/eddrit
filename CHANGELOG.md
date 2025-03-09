@@ -1,3 +1,7 @@
+# Version 0.9.4
+
+- Fix issue with sorting parameters not working
+
 # Version 0.9.3
 
 - Fix issue with settings not saving

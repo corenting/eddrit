@@ -1,6 +1,6 @@
 {% import "macros/common.html" as common_macros with context %}
 
-{% macro render_post_card(post, subreddit_show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
+{% macro render_post_card(post, show_if_post_is_sticky, subreddit_show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
 <article class="container-fluid">
     <div class="row">
         {# Thumbnail (first column) #}
@@ -24,7 +24,7 @@
             {# Title + flairs #}
             <div class="col post-title">
                 <a href="{{ post.url }}">
-                    <strong class="{{ 'post-sticky' if post.is_sticky else '' }}">{{ post.title }}</strong>
+                    <strong class="{{ 'post-sticky' if show_if_post_is_sticky and post.is_sticky else '' }}">{{ post.title }}</strong>
                 </a>
                 <small>({{ post.domain }}) </small>
                 <small>

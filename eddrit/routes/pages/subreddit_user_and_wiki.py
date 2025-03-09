@@ -8,6 +8,7 @@ from eddrit.reddit.fetch import (
     get_post,
     get_subreddit_information,
     get_subreddit_or_user_posts,
+    get_subreddit_or_user_posts_rss_feed,
     get_user_information,
     get_wiki_page,
 )
@@ -75,9 +76,19 @@ async def wiki_page(request: Request) -> Response:
     )
 
 
-async def subreddit_or_user(request: Request) -> Response:
-    """
-    Endpoint for a subreddit or an user page.
+def _get_request_context_for_subreddit_or_user(
+    request: Request,
+) -> tuple[
+    bool,
+    models.SubredditSortingMode | models.UserSortingMode,
+    models.SubredditSortingPeriod,
+    models.Pagination,
+]:
+    """Get tuple with request context about subreddit or user request, with the following items:
+    1. is_user -> if it's for an user page and not a subreddit
+    2. sorting_mode (hot, new etc.)
+    3. sorting period (month, all time etc.)
+    4. pagination details
     """
     is_user = request.url.path.startswith("/user")
 
@@ -102,6 +113,23 @@ async def subreddit_or_user(request: Request) -> Response:
         )
     )
 
+    # Get pagination
+    request_pagination = models.Pagination(
+        before_post_id=request.query_params.get("before"),
+        after_post_id=request.query_params.get("after"),
+    )
+
+    return (is_user, sorting_mode, sorting_period, request_pagination)
+
+
+async def subreddit_or_user(request: Request) -> Response:
+    """
+    Endpoint for a subreddit or an user page.
+    """
+    is_user, sorting_mode, sorting_period, pagination = (
+        _get_request_context_for_subreddit_or_user(request)
+    )
+
     # Get information
     if is_user:
         information = await get_user_information(
@@ -115,15 +143,10 @@ async def subreddit_or_user(request: Request) -> Response:
     if _should_redirect_to_age_check(request, information.over18):
         return _redirect_to_age_check(request)
 
-    request_pagination = models.Pagination(
-        before_post_id=request.query_params.get("before"),
-        after_post_id=request.query_params.get("after"),
-    )
-
     posts, response_pagination = await get_subreddit_or_user_posts(
         request.state.http_client,
         request.path_params["name"],
-        request_pagination,
+        pagination,
         sorting_mode,
         sorting_period,
         is_user,
@@ -151,17 +174,43 @@ async def subreddit_or_user(request: Request) -> Response:
     )
 
 
+async def subreddit_or_user_rss(request: Request) -> Response:
+    instance_scheme_and_netloc = f"{request.url.scheme}://{request.url.netloc}"
+    is_user, sorting_mode, sorting_period, pagination = (
+        _get_request_context_for_subreddit_or_user(request)
+    )
+
+    rss_feed = await get_subreddit_or_user_posts_rss_feed(
+        request.state.http_client,
+        request.path_params["name"],
+        pagination,
+        sorting_mode,
+        sorting_period,
+        is_user,
+        instance_scheme_and_netloc,
+    )
+
+    return Response(content=rss_feed, media_type="application/atom+xml")
+
+
 routes = [
+    # Wiki (register with trailing slash too: the permalinks given by reddit for these URLs have a trailing slash
+    # so we want to avoid an extra redirect)
     Route("/{name:str}/wiki", endpoint=wiki_page),
     Route("/{name:str}/wiki/", endpoint=wiki_page),
     Route("/{name:str}/wiki/{page_name:str}", endpoint=wiki_page),
+    # Subreddit
+    Route("/{name:str}.rss", endpoint=subreddit_or_user_rss),
+    Route("/{name:str}/.rss", endpoint=subreddit_or_user_rss),
     Route("/{name:str}", endpoint=subreddit_or_user),
+    # Subreddit (with sorting mode)
+    Route("/{name:str}/{sorting_mode:str}.rss", endpoint=subreddit_or_user_rss),
+    Route("/{name:str}/{sorting_mode:str}/.rss", endpoint=subreddit_or_user_rss),
     Route("/{name:str}/{sorting_mode:str}", endpoint=subreddit_or_user),
+    # Comments
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}", endpoint=subreddit_post
     ),
-    # register with trailing slash too: the permalinks given by reddit for these URLs have a trailing slash
-    # so we want to avoid an extra redirect
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}/", endpoint=subreddit_post
     ),

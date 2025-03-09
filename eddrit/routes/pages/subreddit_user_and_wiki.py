@@ -83,14 +83,23 @@ async def subreddit_or_user(request: Request) -> Response:
 
     # Get sorting mode
     sorting_mode = (
-        models.SubredditSortingMode(request.path_params.get("sorting_mode", "hot"))
+        models.SubredditSortingMode(
+            request.path_params.get("sorting_mode", models.SubredditSortingMode.HOT)
+        )
         if not is_user
-        else models.UserSortingMode(request.query_params.get("sort", "new"))
+        else models.UserSortingMode(
+            request.query_params.get("sort", models.UserSortingMode.NEW)
+        )
     )
 
     # Get sorting period
     sorting_period = models.SubredditSortingPeriod(
-        request.query_params.get("t", "month" if not is_user else "all")
+        request.query_params.get(
+            "t",
+            models.SubredditSortingPeriod.DAY
+            if not is_user
+            else models.SubredditSortingPeriod.ALL,
+        )
     )
 
     # Get information

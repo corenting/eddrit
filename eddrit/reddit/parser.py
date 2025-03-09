@@ -122,7 +122,7 @@ def get_post_url(data: dict[Hashable, Any]) -> str:
 
 
 def parse_posts_and_comments(
-    api_response: dict[Hashable, Any], is_popular_or_all: bool
+    api_response: dict[Hashable, Any],
 ) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
     """ "
     Parse posts from API response.
@@ -134,7 +134,7 @@ def parse_posts_and_comments(
         data = item["data"]
 
         if item["kind"] == "t3":
-            res.append(parse_post(data, is_popular_or_all))
+            res.append(parse_post(data))
         else:
             res.append(_parse_comment(item))
 
@@ -147,7 +147,7 @@ def parse_posts_and_comments(
     )
 
 
-def parse_post(post_data: dict[Hashable, Any], is_popular_or_all: bool) -> models.Post:
+def parse_post(post_data: dict[Hashable, Any]) -> models.Post:
     utc_now = datetime.datetime.now(tz=datetime.UTC)
 
     # Get post thumbnail
@@ -173,7 +173,7 @@ def parse_post(post_data: dict[Hashable, Any], is_popular_or_all: bool) -> model
         flair=get_post_flair(post_data),
         content=get_post_content(post_data),
         url=get_post_url(post_data),
-        is_sticky=post_data["stickied"] and not is_popular_or_all,
+        is_sticky=post_data["stickied"],
         comments_count=post_data["num_comments"],
         comments_url_path=post_data["permalink"],
         spoiler=post_data["spoiler"],

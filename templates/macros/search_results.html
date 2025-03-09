@@ -41,6 +41,6 @@
 
 {% macro render_posts_search_results(posts) %}
 {% for post in posts %}
-{{ post_macros.render_post_card(post, True, False, False) }}
+{{ post_macros.render_post_card(post, True, True, False, False) }}
 {% endfor %}
 {% endmacro %}

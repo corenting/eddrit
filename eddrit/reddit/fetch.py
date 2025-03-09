@@ -38,7 +38,7 @@ async def get_frontpage_posts(
         f"{REDDIT_BASE_API_URL}/r/popular/hot.json",
         pagination,
         is_popular_or_all=True,
-        extra_req_params={"geo_filter": "GLOBAL"},
+        query_params={"geo_filter": "GLOBAL"},
     )
     return ret  # type: ignore
 
@@ -110,25 +110,28 @@ async def get_subreddit_or_user_posts(
     # when not needed
     path_part = "user" if is_user else "r"
 
+    query_params = {}
     if is_user:
-        if sorting_mode == models.UserSortingMode.NEW:
-            url = f"{REDDIT_BASE_API_URL}/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
-        else:
-            url = f"{REDDIT_BASE_API_URL}/{path_part}/{subreddit_or_username}/.json?sort={sorting_mode.value}&t={sorting_period.value}"
+        url = f"{REDDIT_BASE_API_URL}/{path_part}/{subreddit_or_username}/.json"
+        query_params["t"] = sorting_period.value
+        if sorting_mode != models.UserSortingMode.NEW:
+            query_params["sort"] = sorting_mode.value
+
     else:
         if sorting_mode == models.SubredditSortingMode.HOT:
-            url = f"{REDDIT_BASE_API_URL}/{path_part}/{subreddit_or_username}/.json?t={sorting_period.value}"
+            url = f"{REDDIT_BASE_API_URL}/{path_part}/{subreddit_or_username}/.json"
+            query_params["t"] = sorting_period.value
         else:
-            url = f"{REDDIT_BASE_API_URL}/r/{subreddit_or_username}/{sorting_mode.value}.json?t={sorting_period.value}"
+            url = f"{REDDIT_BASE_API_URL}/{path_part}/{subreddit_or_username}/{sorting_mode.value}.json"
+            query_params["t"] = sorting_period.value
 
     # If it's the popular subreddit (aka the homepage), use global geo filter
     # in case the /r/popular URL is used instead of the / one.
-    extra_params = {}
     if subreddit_or_username == "popular":
-        extra_params["geo_filter"] = "GLOBAL"
+        query_params["geo_filter"] = "GLOBAL"
 
     return await _get_posts_for_url(
-        http_client, url, pagination, extra_req_params=extra_params
+        http_client, url, pagination, query_params=query_params
     )
 
 
@@ -177,7 +180,7 @@ async def _get_posts_for_url(
     url: str,
     pagination: models.Pagination,
     is_popular_or_all: bool = False,
-    extra_req_params: dict | None = None,
+    query_params: dict | None = None,
 ) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
     params: dict[str, str | int] = {}
     if pagination.before_post_id:
@@ -185,8 +188,8 @@ async def _get_posts_for_url(
     elif pagination.after_post_id:
         params = {"after": pagination.after_post_id, "count": 25}
 
-    if extra_req_params:
-        params |= extra_req_params
+    if query_params:
+        params |= query_params
 
     res = await http_client.get(url, params=params)
     try:

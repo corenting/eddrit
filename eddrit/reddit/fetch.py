@@ -163,7 +163,7 @@ async def get_subreddit_or_user_posts(
     return await _get_posts_for_url(http_client, url, query_params=query_params)
 
 
-async def get_subreddit_or_user_posts_rss_feed(
+async def get_subreddit_or_user_rss_feed(
     http_client: httpx.AsyncClient,
     subreddit_or_username: str,
     pagination: models.Pagination,
@@ -172,6 +172,11 @@ async def get_subreddit_or_user_posts_rss_feed(
     is_user: bool,
     eddrit_instance_scheme_and_netloc: str,
 ) -> str:
+    """
+    Get the RSS feed for a subreddit or an user page.
+
+    Returns the RSS feed as text.
+    """
     url, query_params = _get_url_and_query_parameters_for_subreddit_or_user(
         subreddit_or_username, sorting_mode, pagination, sorting_period, is_user
     )
@@ -188,7 +193,7 @@ async def _get_rss_feed_from_reddit(
     eddrit_instance_scheme_and_netloc: str,
 ) -> str:
     """
-    Get RSS feed from reddit, replace links and return it
+    Get RSS feed from reddit, replace links to point to current instance and return it.
     """
     url = url.removesuffix(".json")
     url += ".rss"
@@ -203,17 +208,24 @@ async def _get_rss_feed_from_reddit(
     return rss_feed_content
 
 
-def _get_url_for_post(subreddit: str, post_id: str):
+def _get_url_for_post(subreddit: str, post_id: str, is_user: bool):
     """
     Get the URL to query to fetch a post
     """
-    return f"{REDDIT_BASE_API_URL}/r/{subreddit}/comments/{post_id}/.json"
+    path_part = "user" if is_user else "r"
+    return f"{REDDIT_BASE_API_URL}/{path_part}/{subreddit}/comments/{post_id}/.json"
 
 
 async def get_post(
-    http_client: httpx.AsyncClient, subreddit: str, post_id: str
+    http_client: httpx.AsyncClient,
+    subreddit_or_username: str,
+    post_id: str,
+    is_user: bool,
 ) -> models.PostWithComments:
-    url = _get_url_for_post(subreddit, post_id)
+    """
+    Get a post in a subreddit or an user page
+    """
+    url = _get_url_for_post(subreddit_or_username, post_id, is_user)
     res = await http_client.get(url)
 
     post = parser.parse_post(res.json()[0]["data"]["children"][0]["data"])
@@ -225,11 +237,12 @@ async def get_post(
 
 async def get_post_rss(
     http_client: httpx.AsyncClient,
-    subreddit: str,
+    subreddit_or_username: str,
     post_id: str,
     eddrit_instance_scheme_and_netloc: str,
+    is_user: bool,
 ) -> str:
-    url = _get_url_for_post(subreddit, post_id)
+    url = _get_url_for_post(subreddit_or_username, post_id, is_user)
     url = url.removesuffix(".json")
     url += ".rss"
     return await _get_rss_feed_from_reddit(

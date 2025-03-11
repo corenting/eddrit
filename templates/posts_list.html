@@ -166,7 +166,7 @@ accordingly #}
 {# TODO: add display of comments #}
 
 {% if post_or_comment.children is not defined %}
-{{ post_macros.render_post_card(post_or_comment, about_information.show_thumbnails, about_information.over18, False) }}
+{{ post_macros.render_post_card(post_or_comment, not global.subreddit_is_homepage(about_information.title), about_information.show_thumbnails, about_information.over18, False) }}
 {% else %}
 {{ comments_macros.render_comment_card(post_or_comment, about_information.show_thumbnails, about_information.over18,
 False) }}

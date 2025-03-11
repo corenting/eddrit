@@ -16,7 +16,7 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-{{ post_macros.render_post_card(post, about_information.show_thumbnails, about_information.over18, True) }}
+{{ post_macros.render_post_card(post, True, about_information.show_thumbnails, about_information.over18, True) }}
 <hr />
 {{ comments_macros.render_comments(about_information.name, post.id, post.comments) }}
 {% endblock %}

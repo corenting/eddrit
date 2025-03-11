@@ -33,12 +33,13 @@ async def get_frontpage_posts(
     http_client: httpx.AsyncClient,
     pagination: models.Pagination,
 ) -> tuple[list[models.Post], models.Pagination]:
+    query_params = {"geo_filter": "GLOBAL"}
+    query_params |= _get_pagination_query_parameters(pagination)
+
     ret = await _get_posts_for_url(
         http_client,
         f"{REDDIT_BASE_API_URL}/r/popular/hot.json",
-        pagination,
-        is_popular_or_all=True,
-        query_params={"geo_filter": "GLOBAL"},
+        query_params=query_params,
     )
     return ret  # type: ignore
 
@@ -47,7 +48,8 @@ async def search_posts(
     http_client: httpx.AsyncClient, input_text: str
 ) -> list[models.Post]:
     res = await http_client.get(f"{REDDIT_BASE_API_URL}/search.json?q={input_text}")
-    posts, _ = parser.parse_posts_and_comments(res.json(), False)
+    posts, _ = parser.parse_posts_and_comments(res.json())
+
     # Ignore response type as there is no models.PostComment for search posts
     return posts  # type: ignore
 
@@ -93,21 +95,27 @@ async def get_subreddit_information(
     return await _get_subreddit_information(http_client, subreddit_name)
 
 
-async def get_subreddit_or_user_posts(
-    http_client: httpx.AsyncClient,
-    subreddit_or_username: str,
+def _get_pagination_query_parameters(
     pagination: models.Pagination,
+) -> dict:
+    params = {}
+    if pagination.before_post_id:
+        params["before"] = pagination.before_post_id
+    elif pagination.after_post_id:
+        params["after"] = pagination.after_post_id
+        params["count"] = 25
+
+    return params
+
+
+def _get_url_and_query_parameters_for_subreddit_or_user(
+    subreddit_or_username: str,
     sorting_mode: models.SubredditSortingMode | models.UserSortingMode,
+    pagination: models.Pagination,
     sorting_period: models.SubredditSortingPeriod,
     is_user: bool,
-) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
-    """
-    Get posts for a subreddit (or an user if is_user is set).
-
-    Will include post comments if it's an user.
-    """
-    # Always add sorting period as it is ignored
-    # when not needed
+) -> tuple[str, dict]:
+    """Get URL and query parameters to use for subreddit or user posts query."""
     path_part = "user" if is_user else "r"
 
     query_params = {}
@@ -130,23 +138,102 @@ async def get_subreddit_or_user_posts(
     if subreddit_or_username == "popular":
         query_params["geo_filter"] = "GLOBAL"
 
-    return await _get_posts_for_url(
-        http_client, url, pagination, query_params=query_params
+    query_params |= _get_pagination_query_parameters(pagination)
+
+    return (url, query_params)
+
+
+async def get_subreddit_or_user_posts(
+    http_client: httpx.AsyncClient,
+    subreddit_or_username: str,
+    pagination: models.Pagination,
+    sorting_mode: models.SubredditSortingMode | models.UserSortingMode,
+    sorting_period: models.SubredditSortingPeriod,
+    is_user: bool,
+) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
+    """
+    Get posts for a subreddit (or an user if is_user is set).
+
+    Will include post comments if it's an user.
+    """
+    url, query_params = _get_url_and_query_parameters_for_subreddit_or_user(
+        subreddit_or_username, sorting_mode, pagination, sorting_period, is_user
     )
+
+    return await _get_posts_for_url(http_client, url, query_params=query_params)
+
+
+async def get_subreddit_or_user_posts_rss_feed(
+    http_client: httpx.AsyncClient,
+    subreddit_or_username: str,
+    pagination: models.Pagination,
+    sorting_mode: models.SubredditSortingMode | models.UserSortingMode,
+    sorting_period: models.SubredditSortingPeriod,
+    is_user: bool,
+    eddrit_instance_scheme_and_netloc: str,
+) -> str:
+    url, query_params = _get_url_and_query_parameters_for_subreddit_or_user(
+        subreddit_or_username, sorting_mode, pagination, sorting_period, is_user
+    )
+
+    return await _get_rss_feed_from_reddit(
+        http_client, url, query_params, eddrit_instance_scheme_and_netloc
+    )
+
+
+async def _get_rss_feed_from_reddit(
+    http_client: httpx.AsyncClient,
+    url: str,
+    query_params: dict,
+    eddrit_instance_scheme_and_netloc: str,
+) -> str:
+    """
+    Get RSS feed from reddit, replace links and return it
+    """
+    url = url.removesuffix(".json")
+    url += ".rss"
+
+    res = await http_client.get(url, params=query_params)
+    _raise_if_content_is_not_available(res, is_json=False)
+
+    rss_feed_content = res.text
+    rss_feed_content = rss_feed_content.replace(
+        "https://www.reddit.com", eddrit_instance_scheme_and_netloc
+    )
+    return rss_feed_content
+
+
+def _get_url_for_post(subreddit: str, post_id: str):
+    """
+    Get the URL to query to fetch a post
+    """
+    return f"{REDDIT_BASE_API_URL}/r/{subreddit}/comments/{post_id}/.json"
 
 
 async def get_post(
     http_client: httpx.AsyncClient, subreddit: str, post_id: str
 ) -> models.PostWithComments:
-    url = f"{REDDIT_BASE_API_URL}/r/{subreddit}/comments/{post_id}/.json"
+    url = _get_url_for_post(subreddit, post_id)
     res = await http_client.get(url)
 
-    post = parser.parse_post(
-        res.json()[0]["data"]["children"][0]["data"], is_popular_or_all=False
-    )
+    post = parser.parse_post(res.json()[0]["data"]["children"][0]["data"])
 
     return models.PostWithComments(
         **asdict(post), comments=parser.parse_comments_tree(res.json()[1]["data"])
+    )
+
+
+async def get_post_rss(
+    http_client: httpx.AsyncClient,
+    subreddit: str,
+    post_id: str,
+    eddrit_instance_scheme_and_netloc: str,
+) -> str:
+    url = _get_url_for_post(subreddit, post_id)
+    url = url.removesuffix(".json")
+    url += ".rss"
+    return await _get_rss_feed_from_reddit(
+        http_client, url, {}, eddrit_instance_scheme_and_netloc
     )
 
 
@@ -178,20 +265,9 @@ async def get_comments(
 async def _get_posts_for_url(
     http_client: httpx.AsyncClient,
     url: str,
-    pagination: models.Pagination,
-    is_popular_or_all: bool = False,
     query_params: dict | None = None,
 ) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
-    params: dict[str, str | int] = {}
-    if pagination.before_post_id:
-        params = {"before": pagination.before_post_id, "count": 25}
-    elif pagination.after_post_id:
-        params = {"after": pagination.after_post_id, "count": 25}
-
-    if query_params:
-        params |= query_params
-
-    res = await http_client.get(url, params=params)
+    res = await http_client.get(url, params=query_params)
     try:
         json_res = res.json()
     except JSONDecodeError:
@@ -202,7 +278,7 @@ async def _get_posts_for_url(
         )
         raise
     else:
-        return parser.parse_posts_and_comments(json_res, is_popular_or_all)
+        return parser.parse_posts_and_comments(json_res)
 
 
 async def get_user_information(
@@ -248,33 +324,41 @@ async def _get_multi_information(
     return parser.parse_subreddit_information(name, over18)
 
 
-def _raise_if_content_is_not_available(api_res: httpx.Response) -> None:
+def _raise_if_content_is_not_available(
+    api_res: httpx.Response, is_json: bool = True
+) -> None:
     """Raise an exception if the subreddit is not available (banned, private etc.)"""
 
     # Check for HTML 403 blocked page
     if api_res.status_code == 403 and "blocked by network security" in api_res.text:
         raise RateLimitedError()
 
-    try:
-        json = api_res.json()
-    except JSONDecodeError:
-        logger.exception(
-            "Cannot parse JSON from response with status code {api_status_code} and content {api_content}",
-            api_status_code=api_res.status_code,
-            api_content=api_res.text,
-        )
-        return None
+    json = {}
+    if is_json:
+        try:
+            json = api_res.json()
+        except JSONDecodeError:
+            logger.exception(
+                "Cannot parse JSON from response with status code {api_status_code} and content {api_content}",
+                api_status_code=api_res.status_code,
+                api_content=api_res.text,
+            )
+            return None
 
     # Check for not found wiki pages
-    if api_res.status_code == 404 and json.get("reason") == "PAGE_NOT_FOUND":
+    if (
+        api_res.status_code == 404
+        and is_json
+        and json.get("reason") == "PAGE_NOT_FOUND"
+    ):
         raise WikiPageNotFoundError(status_code=api_res.status_code)
 
     # Check for banned subreddits
-    if api_res.status_code == 404 and json.get("reason") == "banned":
+    if api_res.status_code == 404 and is_json and json.get("reason") == "banned":
         raise ContentCannotBeViewedError(api_res.status_code, "banned")
 
     # Check for subreddits that cannot be viewed (quarantine, privated, gated)
-    if api_res.status_code == 403 and (reason := json.get("reason")):
+    if api_res.status_code == 403 and is_json and (reason := json.get("reason")):
         raise ContentCannotBeViewedError(api_res.status_code, reason)
 
     # Check for subreddit not found
@@ -282,5 +366,5 @@ def _raise_if_content_is_not_available(api_res: httpx.Response) -> None:
         raise SubredditNotFoundError(status_code=api_res.status_code)
 
     # If error, consider we didn't find the subreddit
-    if json.get("error") == 404:
+    if is_json and json.get("error") == 404:
         raise SubredditNotFoundError(status_code=api_res.status_code)

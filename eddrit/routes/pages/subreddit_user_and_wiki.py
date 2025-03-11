@@ -9,7 +9,7 @@ from eddrit.reddit.fetch import (
     get_post_rss,
     get_subreddit_information,
     get_subreddit_or_user_posts,
-    get_subreddit_or_user_posts_rss_feed,
+    get_subreddit_or_user_rss_feed,
     get_user_information,
     get_wiki_page,
 )
@@ -40,16 +40,25 @@ def _get_rss_feed_url(request: Request) -> str:
     return str(request.url).replace(request.url.path, f"{request.url.path}.rss")
 
 
-async def subreddit_post(request: Request) -> Response:
+async def subreddit_or_user_post(request: Request) -> Response:
     """
     Endpoint for a post page.
     """
-    subreddit_infos = await get_subreddit_information(
-        request.state.http_client, request.path_params["name"]
-    )
+    is_user = request.url.path.startswith("/user")
+
+    # Get information
+    if is_user:
+        information = await get_user_information(
+            request.state.http_client, request.path_params["name"]
+        )
+    else:
+        information = await get_subreddit_information(
+            request.state.http_client, request.path_params["name"]
+        )
+
     post_id = request.path_params["post_id"]
     post = await get_post(
-        request.state.http_client, request.path_params["name"], post_id
+        request.state.http_client, request.path_params["name"], post_id, is_user
     )
 
     if _should_redirect_to_age_check(request, post.over18):
@@ -58,7 +67,7 @@ async def subreddit_post(request: Request) -> Response:
     return templates.TemplateResponse(
         "post.html",
         {
-            "about_information": subreddit_infos,
+            "about_information": information,
             "post": post,
             "title_link": request.url_for("subreddit", path=post.subreddit),
             **get_templates_common_context(request),
@@ -68,10 +77,11 @@ async def subreddit_post(request: Request) -> Response:
     )
 
 
-async def subreddit_post_rss(request: Request) -> Response:
+async def subreddit_or_user_post_rss(request: Request) -> Response:
     """
     Endpoint for a post RSS feed.
     """
+    is_user = request.url.path.startswith("/user")
     post_id = request.path_params["post_id"]
 
     rss_feed = await get_post_rss(
@@ -79,6 +89,7 @@ async def subreddit_post_rss(request: Request) -> Response:
         request.path_params["name"],
         post_id,
         _get_instance_scheme_and_netloc(request),
+        is_user,
     )
     return Response(content=rss_feed, media_type="application/atom+xml")
 
@@ -208,7 +219,7 @@ async def subreddit_or_user_rss(request: Request) -> Response:
         _get_request_context_for_subreddit_or_user(request)
     )
 
-    rss_feed = await get_subreddit_or_user_posts_rss_feed(
+    rss_feed = await get_subreddit_or_user_rss_feed(
         request.state.http_client,
         request.path_params["name"],
         pagination,
@@ -227,27 +238,29 @@ routes = [
     Route("/{name:str}/wiki", endpoint=wiki_page),
     Route("/{name:str}/wiki/", endpoint=wiki_page),
     Route("/{name:str}/wiki/{page_name:str}", endpoint=wiki_page),
-    # Subreddit
+    # Subreddit or user
     Route("/{name:str}.rss", endpoint=subreddit_or_user_rss),
     Route("/{name:str}/.rss", endpoint=subreddit_or_user_rss),
     Route("/{name:str}", endpoint=subreddit_or_user),
-    # Subreddit (with sorting mode)
+    # Subreddit or user (with sorting mode)
     Route("/{name:str}/{sorting_mode:str}.rss", endpoint=subreddit_or_user_rss),
     Route("/{name:str}/{sorting_mode:str}/.rss", endpoint=subreddit_or_user_rss),
     Route("/{name:str}/{sorting_mode:str}", endpoint=subreddit_or_user),
     # Post
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}.rss",
-        endpoint=subreddit_post_rss,
+        endpoint=subreddit_or_user_post_rss,
     ),
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}/.rss",
-        endpoint=subreddit_post_rss,
+        endpoint=subreddit_or_user_post_rss,
     ),
     Route(
-        "/{name:str}/comments/{post_id:str}/{post_title:str}", endpoint=subreddit_post
+        "/{name:str}/comments/{post_id:str}/{post_title:str}",
+        endpoint=subreddit_or_user_post,
     ),
     Route(
-        "/{name:str}/comments/{post_id:str}/{post_title:str}/", endpoint=subreddit_post
+        "/{name:str}/comments/{post_id:str}/{post_title:str}/",
+        endpoint=subreddit_or_user_post,
     ),
 ]

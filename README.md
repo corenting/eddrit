@@ -21,6 +21,7 @@ A lightweight alternative frontend for Reddit.
 - Compact design (closer to [old.reddit.com](https://old.reddit.com) than to the redesign)
 - Better mobile support
 - No need to register for an OAuth2 identifier for self-hosting: mimic the official Android app by default to bypass rate-limiting.
+- Basic RSS support (for subreddits and posts): fetch the original RSS feed from Reddit, and rewrite the URLs to point to the current eddrit instance.
 
 Inspired by [Nitter](https://github.com/zedeus/nitter), an alternative frontend for Twitter.
 

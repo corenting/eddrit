@@ -4,8 +4,7 @@
 {% set title = post.title | truncate(52) ~ " | " ~ about_information.title %}
 {% set description = post.title ~ " | " ~ about_information.title %}
 
-{% if true %}
-
+{% if post.content.type == 'picture' %}
     {% if post.content.type == 'picture' %}
         {% set image = post.url %}
     {% elif post.content.type == 'gallery' %}

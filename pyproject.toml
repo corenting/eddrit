@@ -1,6 +1,6 @@
 [project]
 name = "eddrit"
-version = "0.9.4"
+version = "0.9.5"
 description = "Alternative Reddit frontend"
 authors = [
     { name = "corenting", email = "corenting@gmail.com" },

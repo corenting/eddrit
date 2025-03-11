@@ -223,6 +223,20 @@ async def get_post(
     )
 
 
+async def get_post_rss(
+    http_client: httpx.AsyncClient,
+    subreddit: str,
+    post_id: str,
+    eddrit_instance_scheme_and_netloc: str,
+) -> str:
+    url = _get_url_for_post(subreddit, post_id)
+    url = url.removesuffix(".json")
+    url += ".rss"
+    return await _get_rss_feed_from_reddit(
+        http_client, url, {}, eddrit_instance_scheme_and_netloc
+    )
+
+
 async def get_wiki_page(
     http_client: httpx.AsyncClient, subreddit: str, page_name: str
 ) -> models.WikiPage:

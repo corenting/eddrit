@@ -8,6 +8,10 @@
     <title>{{ title }} | eddrit</title>
     <meta property="og:site_name" content="eddrit">
 
+    {% if rss_feed_url is defined %}
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="{{ rss_feed_url }}" />
+    {% endif %}
+
     {% if opengraph_title is defined %}
     <meta property="og:title" content="{{ title }}" />
     {% endif %}

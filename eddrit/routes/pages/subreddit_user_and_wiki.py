@@ -6,6 +6,7 @@ from eddrit import models
 from eddrit.models.link import Link
 from eddrit.reddit.fetch import (
     get_post,
+    get_post_rss,
     get_subreddit_information,
     get_subreddit_or_user_posts,
     get_subreddit_or_user_posts_rss_feed,
@@ -26,6 +27,17 @@ def _redirect_to_age_check(request: Request) -> RedirectResponse:
 
 def _should_redirect_to_age_check(request: Request, over18: bool) -> bool:
     return over18 and request.cookies.get("over18", "0") != "1"
+
+
+def _get_instance_scheme_and_netloc(request: Request) -> str:
+    return f"{request.url.scheme}://{request.url.netloc}"
+
+
+def _get_rss_feed_url(request: Request) -> str:
+    """
+    Get the URL equivalent to the current request but for the RSS feed
+    """
+    return str(request.url).replace(request.url.path, f"{request.url.path}.rss")
 
 
 async def subreddit_post(request: Request) -> Response:
@@ -51,8 +63,24 @@ async def subreddit_post(request: Request) -> Response:
             "title_link": request.url_for("subreddit", path=post.subreddit),
             **get_templates_common_context(request),
             **get_canonical_url_context(request),
+            "rss_feed_url": _get_rss_feed_url(request),
         },
     )
+
+
+async def subreddit_post_rss(request: Request) -> Response:
+    """
+    Endpoint for a post RSS feed.
+    """
+    post_id = request.path_params["post_id"]
+
+    rss_feed = await get_post_rss(
+        request.state.http_client,
+        request.path_params["name"],
+        post_id,
+        _get_instance_scheme_and_netloc(request),
+    )
+    return Response(content=rss_feed, media_type="application/atom+xml")
 
 
 async def wiki_page(request: Request) -> Response:
@@ -170,12 +198,12 @@ async def subreddit_or_user(request: Request) -> Response:
             ),
             **get_templates_common_context(request),
             **get_canonical_url_context(request),
+            "rss_feed_url": _get_rss_feed_url(request),
         },
     )
 
 
 async def subreddit_or_user_rss(request: Request) -> Response:
-    instance_scheme_and_netloc = f"{request.url.scheme}://{request.url.netloc}"
     is_user, sorting_mode, sorting_period, pagination = (
         _get_request_context_for_subreddit_or_user(request)
     )
@@ -187,7 +215,7 @@ async def subreddit_or_user_rss(request: Request) -> Response:
         sorting_mode,
         sorting_period,
         is_user,
-        instance_scheme_and_netloc,
+        _get_instance_scheme_and_netloc(request),
     )
 
     return Response(content=rss_feed, media_type="application/atom+xml")
@@ -207,7 +235,15 @@ routes = [
     Route("/{name:str}/{sorting_mode:str}.rss", endpoint=subreddit_or_user_rss),
     Route("/{name:str}/{sorting_mode:str}/.rss", endpoint=subreddit_or_user_rss),
     Route("/{name:str}/{sorting_mode:str}", endpoint=subreddit_or_user),
-    # Comments
+    # Post
+    Route(
+        "/{name:str}/comments/{post_id:str}/{post_title:str}.rss",
+        endpoint=subreddit_post_rss,
+    ),
+    Route(
+        "/{name:str}/comments/{post_id:str}/{post_title:str}/.rss",
+        endpoint=subreddit_post_rss,
+    ),
     Route(
         "/{name:str}/comments/{post_id:str}/{post_title:str}", endpoint=subreddit_post
     ),

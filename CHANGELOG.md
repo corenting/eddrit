@@ -1,3 +1,8 @@
+# Version 0.9.5
+
+- Add basic RSS support (for subreddits and posts): fetch the original RSS feed from Reddit, and rewrite the URLs to point to the current eddrit instance.
+- Add support for posts on users profiles
+
 # Version 0.9.4
 
 - Fix issue with sorting parameters not working

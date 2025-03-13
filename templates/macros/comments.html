@@ -43,33 +43,33 @@
     {% if comment.parent_id != post_id %}
     <noscript>
         <li class="post-comment-list-item">
-            <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
+            <article class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
                 <a href="https://old.reddit.com{{ request.path }}">{{ comment.show_more_count }} more
                     comments cannot be displayed, click here to see them on old.reddit.com</a>
-            </div>
+            </article>
         </li>
     </noscript>
     <li class="needs-js post-comment-list-item" id="comment-{{ comment.parent_id }}-more">
-        <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
+        <article class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
             <a
                 onclick="fetchCommentsChildren('{{ subreddit_name }}', '{{ post_id }}', '{{ comment.parent_id }}', '{{ comment.id }}', '{{ depth }}');">Show
                 more ( {{ comment.show_more_count }} hidden )...</a>
-        </div>
+        </article>
     </li>
 
     {% else %}
     <li class="post-comment-list-item">
-        <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
+        <article class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
             <a href="https://old.reddit.com{{ request.path }}">{{ comment.show_more_count }} more
                 comments cannot be displayed, click here to see them on old.reddit.com</a>
-        </div>
+        </article>
     </li>
     {% endif %}
 
     {# Normal comment #}
     {% else %}
     <li id="comment-{{ comment.id }}" class="post-comment-list-item">
-        <div class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
+        <article class="post-comment-content {{ 'post-comment-content-inverse' if depth % 2 == 0 else ''}}">
             <div class="post-comment-title">
                 <a id="comment-{{ comment.id }}-toggle" onclick="toggleCommentVisibility('{{ comment.id }}');">[-]</a>
                 {{ render_author(comment, subreddit_name) }}
@@ -83,9 +83,14 @@
             <div id="comment-{{ comment.id }}-content">
                 {{ comment.content | safe }}
             </div>
-        </div>
-        <div id="comment-{{ comment.id }}-children">
-            {{ render_comments(subreddit_name, post_id, comment.children, depth + 1) }}
+        </article>
+        <div class="post-children-container">
+            {% if comment.children | length > 0 %}
+                <div class="post-border"></div>
+            {% endif %}
+            <div id="comment-{{ comment.id }}-children" class="post-children">
+                {{ render_comments(subreddit_name, post_id, comment.children, depth + 1) }}
+            </div>
         </div>
     </li>
     {% endif %}

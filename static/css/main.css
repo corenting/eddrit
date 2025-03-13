@@ -109,7 +109,7 @@ html[data-theme='dark'] .dark-inverted {
 }
 
 .post-flair {
-  border: var(--pico-border-width) solid var(--pico-border-color);
+  border: var(--pico-border-width) solid var(--pico-muted-border-color);
   border-radius: var(--pico-border-radius);
   padding-left: var(--pico-border-radius);
   padding-right: var(--pico-border-radius);
@@ -209,7 +209,10 @@ html[data-theme='dark'] .dark-inverted {
 
 .post-comment-content {
   background-color: var(--pico-table-row-stripped-background-color);
-  padding: var(--pico-border-radius);
+  padding: calc(var(--pico-border-radius) * 2);
+
+  margin: 0.5rem;
+  margin-bottom: 0;
 }
 
 .post-comment-content-inverse {
@@ -223,7 +226,23 @@ html[data-theme='dark'] .dark-inverted {
 
 .post-comments-tree {
   /* Override padding left to reduce nested comments width */
-  padding-left: calc(var(--pico-spacing) / 2.5);
+  padding-left: calc(var(--pico-spacing) / 1.5);
+}
+
+.post-border {
+  content: "";
+  background-color: var(--pico-muted-border-color);
+  width: 2px;
+  margin-left: calc(var(--pico-spacing) * 1.5);
+  margin-bottom: var(--pico-spacing);
+}
+
+.post-children-container {
+  display: flex;
+}
+
+.post-children {
+  flex: 1;
 }
 
 /* VideoJS */

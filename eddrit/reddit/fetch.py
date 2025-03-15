@@ -29,21 +29,6 @@ async def get_frontpage_information() -> models.Subreddit:
     )
 
 
-async def get_frontpage_posts(
-    http_client: httpx.AsyncClient,
-    pagination: models.Pagination,
-) -> tuple[list[models.Post], models.Pagination]:
-    query_params = {"geo_filter": "GLOBAL"}
-    query_params |= _get_pagination_query_parameters(pagination)
-
-    ret = await _get_posts_for_url(
-        http_client,
-        f"{REDDIT_BASE_API_URL}/r/popular/hot.json",
-        query_params=query_params,
-    )
-    return ret  # type: ignore
-
-
 async def search_posts(
     http_client: httpx.AsyncClient, input_text: str
 ) -> list[models.Post]:

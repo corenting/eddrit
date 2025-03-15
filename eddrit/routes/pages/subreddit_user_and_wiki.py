@@ -18,6 +18,7 @@ from eddrit.routes.common.context import (
     get_posts_pages_common_context,
     get_templates_common_context,
 )
+from eddrit.routes.common.request import get_instance_scheme_and_netloc
 from eddrit.templates import templates
 
 
@@ -27,10 +28,6 @@ def _redirect_to_age_check(request: Request) -> RedirectResponse:
 
 def _should_redirect_to_age_check(request: Request, over18: bool) -> bool:
     return over18 and request.cookies.get("over18", "0") != "1"
-
-
-def _get_instance_scheme_and_netloc(request: Request) -> str:
-    return f"{request.url.scheme}://{request.url.netloc}"
 
 
 def _get_rss_feed_url(request: Request) -> str:
@@ -88,7 +85,7 @@ async def subreddit_or_user_post_rss(request: Request) -> Response:
         request.state.http_client,
         request.path_params["name"],
         post_id,
-        _get_instance_scheme_and_netloc(request),
+        get_instance_scheme_and_netloc(request),
         is_user,
     )
     return Response(content=rss_feed, media_type="application/atom+xml")
@@ -226,7 +223,7 @@ async def subreddit_or_user_rss(request: Request) -> Response:
         sorting_mode,
         sorting_period,
         is_user,
-        _get_instance_scheme_and_netloc(request),
+        get_instance_scheme_and_netloc(request),
     )
 
     return Response(content=rss_feed, media_type="application/atom+xml")

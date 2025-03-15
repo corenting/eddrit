@@ -1,3 +1,8 @@
+# Version 0.9.6
+
+- Better display of comments on a post page
+- Add RSS feeds for frontpage
+
 # Version 0.9.5
 
 - Add basic RSS support (for subreddits and posts): fetch the original RSS feed from Reddit, and rewrite the URLs to point to the current eddrit instance.

@@ -30,6 +30,7 @@ class PostVideo:
     width: int
     height: int
     video_format: PostVideoFormat | None = None
+    poster_url: str | None = None
 
 
 @dataclass
@@ -99,7 +100,7 @@ class GalleryPostContent(PostContentBase):
 
     type: PostContentType = PostContentType.GALLERY
 
-    pictures: Iterable[PostPicture]
+    contents: Iterable[PostPicture | PostVideo]
     captions: Iterable[str]
 
 

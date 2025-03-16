@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 from loguru import logger
 
 from eddrit import models
+from eddrit.models.post import PostVideoFormat
 from eddrit.reddit.content_parser import video_parsers
 from eddrit.utils.urls import get_domain_and_suffix_from_url
 
@@ -82,26 +83,50 @@ def get_post_gallery_content(
             for id, caption in sorted_image_ids_and_captions
         ]
 
-        pictures = [
-            _get_gallery_picture(item) for item, _ in sorted_image_metadata_and_caption
+        contents = [
+            _get_gallery_content(item) for item, _ in sorted_image_metadata_and_caption
         ]
         captions = [caption for _, caption in sorted_image_metadata_and_caption]
 
-        return models.GalleryPostContent(pictures=pictures, captions=captions)
+        return models.GalleryPostContent(contents=contents, captions=captions)
     except Exception:
+        logger.opt(exception=True).warning(
+            "Could not fetch gallery content, fallback to link"
+        )
         return models.LinkPostContent()
 
 
-def _get_gallery_picture(picture_api_data: dict[str, Any]) -> models.PostPicture:
+def _get_gallery_content(
+    picture_api_data: dict[str, Any],
+) -> models.PostPicture | models.PostVideo:
     # Get width and height
-    width = picture_api_data["s"]["y"]
-    height = picture_api_data["s"]["x"]
+    height = picture_api_data["s"]["y"]
+    width = picture_api_data["s"]["x"]
 
-    # Get direct URL by switching domain and removing query parameters
-    old_url = urlparse(picture_api_data["s"]["u"])
-    new_url = f"{old_url.scheme}://i.redd.it{old_url.path}"
-
-    return models.PostPicture(width=width, height=height, url=new_url)
+    # For galleries with pictures
+    if "u" in picture_api_data["s"]:
+        # Get direct URL by switching domain and removing query parameters
+        old_url = urlparse(picture_api_data["s"]["u"])
+        new_url = f"{old_url.scheme}://i.redd.it{old_url.path}"
+        return models.PostPicture(width=width, height=height, url=new_url)
+    # For galleries with GIFs
+    elif "mp4" in picture_api_data["s"]:
+        return models.PostVideo(
+            url=html.unescape(picture_api_data["s"]["mp4"]),
+            is_gif=True,
+            width=width,
+            height=height,
+            video_format=PostVideoFormat.MP4,
+            poster_url=picture_api_data["s"].get("gif", None),
+        )
+    elif "gif" in picture_api_data["s"]:
+        return models.PostPicture(
+            url=picture_api_data["s"]["gif"],
+            width=width,
+            height=height,
+        )
+    else:
+        raise ValueError("Cannot parse gallery content")
 
 
 def get_post_video_content(

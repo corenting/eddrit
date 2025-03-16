@@ -21,8 +21,10 @@ templates.env.globals["global"] = {
 
 # Add a json filter compatible with dataclasses
 def to_json_dataclass(value: Any) -> str:
-    converted = asdict(value) if is_dataclass(value) else value  # type: ignore
-
+    if type(value) is list:
+        converted = [asdict(item) if is_dataclass(item) else item for item in value]  # type: ignore
+    else:
+        converted = asdict(value) if is_dataclass(value) else value  # type: ignore
     return json.dumps(converted, default=str)
 
 

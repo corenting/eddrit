@@ -1,6 +1,14 @@
 {% import "macros/common.html" as common_macros with context %}
 
-{% macro render_post_card(post, show_if_post_is_sticky, subreddit_show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
+{% macro render_video_item(post_id, videos) %}
+<div class="post-content-image-or-video needs-js"
+    style="{{ 'width: fit-content' if videos[0].width < videos[0].height else 'height: fit-content;'}} ">
+    <video class="video-js" id="video-{{ post_id }}" data-videos='{{ videos | tojson_dataclass }}' />
+</div>
+{% endmacro %}
+
+{% macro render_post_card(post, show_if_post_is_sticky, subreddit_show_thumbnails, always_show_over18_thumbnail,
+content_expanded) %}
 <article class="container-fluid">
     <div class="row">
         {# Thumbnail (first column) #}
@@ -24,7 +32,8 @@
             {# Title + flairs #}
             <div class="col post-title">
                 <a href="{{ post.url }}">
-                    <strong class="{{ 'post-sticky' if show_if_post_is_sticky and post.is_sticky else '' }}">{{ post.title }}</strong>
+                    <strong class="{{ 'post-sticky' if show_if_post_is_sticky and post.is_sticky else '' }}">{{
+                        post.title }}</strong>
                 </a>
                 <small>({{ post.domain }}) </small>
                 <small>
@@ -108,31 +117,41 @@
         <div class="post-content-gallery-buttons">
             <a class="post-content-gallery-button  post-content-gallery-previous-button" href="#!"
                 onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button" disabled>Previous</a>
-            <div class="post-content-gallery-numbers">1 / {{ post.content.pictures | length }}</div>
+            <div class="post-content-gallery-numbers">1 / {{ post.content.contents | length }}</div>
             <a class="post-content-gallery-button  post-content-gallery-next-button" href="#!"
                 onclick="onGalleryButtonClick('{{ post.id }}', 1);" role="button">Next</a>
         </div>
-        {% for picture in post.content.pictures %}
-        <a href="{{ post.url }}">
-            <figure>
+        {% for item in post.content.contents %}
+            {# If is_gif is defined it's a video) #}
+            {% if item.is_gif is defined %}
                 {% if post.content.captions[loop.index0] %}
-                <div>
-                    <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
-                    </figcaption>
-                </div>
+                    <div>
+                        <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
+                        </figcaption>
+                    </div>
                 {% endif %}
-                <img id="{{ loop.index0 }}" class="post-content-image-or-video post-content-gallery-picture"
-                    height="{{ picture.height }}" width="{{ picture.width }}" src="{{ picture.url }}" />
-            </figure>
-        </a>
+                <div id="{{ loop.index0 }}" class="post-content-gallery-picture">
+                    {{ render_video_item(post.id, [item]) }}
+                </div>
+            {% else %}
+            <a href="{{ post.url }}">
+                <figure>
+                    {% if post.content.captions[loop.index0] %}
+                    <div>
+                        <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
+                        </figcaption>
+                    </div>
+                    {% endif %}
+                    <img id="{{ loop.index0 }}" class="post-content-image-or-video post-content-gallery-picture"
+                        height="{{ item.height }}" width="{{ item.width }}" src="{{ item.url }}" />
+                </figure>
+            </a>
+            {% endif %}
         {% endfor %}
     </div>
     {% endif %}
     {% if post.content.type.value == 'video' %}
-    <div class="post-content-image-or-video needs-js"
-        style="{{ 'width: fit-content' if post.content.videos[0].width < post.content.videos[0].height else 'height: fit-content;'}} ">
-        <video class="video-js" id="video-{{ post.id }}" data-content='{{ post.content | tojson_dataclass }}' />
-    </div>
+        {{ render_video_item(post.id, post.content.videos) }}
     {% endif %}
     {% if post.content.type.value == 'embed' %}
     <div class="post-content-image-or-video">

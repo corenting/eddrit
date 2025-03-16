@@ -82,12 +82,14 @@ function setupVideo(videoElement) {
 		return;
 	}
 
-	const videos = JSON.parse(videoElement.getAttribute("data-content")).videos;
+	const videos = JSON.parse(videoElement.getAttribute("data-videos"));
+
 	const player = videojs(videoElement, {
 		controls: true,
 		fill: true,
 		autoplay: false,
 		loop: false,
+		poster: videos[0].poster_url,
 		sources: videos.map((x) => {
 			return {
 				src: x.url,

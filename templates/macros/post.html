@@ -84,12 +84,12 @@ content_expanded) %}
         <div class="" id="content-{{ post.id }}" style="display: {{ 'inherit' if content_expanded else 'none' }};">
             <template id="content-{{ post.id }}-template">
                 <div id="content-{{ post.id }}-preview">
-                    {{ render_content(post) }}
+                    {{ render_content(post, expanded=False) }}
                 </div>
             </template>
             {% if content_expanded %}
             <div id="content-{{ post.id }}-preview">
-                {{ render_content(post) }}
+                {{ render_content(post, expanded=True) }}
             </div>
             {% endif %}
         </div>
@@ -98,7 +98,7 @@ content_expanded) %}
 </article>
 {% endmacro %}
 
-{% macro render_content(post) %}
+{% macro render_content(post, expanded) %}
 <div class="post-content">
     {% if post.content.type.value == 'text' %}
     <div class="post-content-text">
@@ -106,10 +106,11 @@ content_expanded) %}
     </div>
     {% endif %}
     {% if post.content.type.value == 'picture' %}
+    {# Put src in data-src (here and below) if not expanded to avoid Firefox and setting it up later in JS to avoid Firefox loading all the ressources in templates #}
     <a href="{{ post.url }}">
-        <img height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}"
+        <img loading="lazy" height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}"
             style="{{ 'width: fit-content' if post.content.picture.width < post.content.picture.height else 'height: fit-content;'}}"
-            class="post-content-image-or-video" src="{{ post.content.picture.url }}" />
+            class="post-content-image-or-video" data-src="{{ post.content.picture.url }}" {{ "src=" ~ post.content.picture.url if expanded else ""}}  />
     </a>
     {% endif %}
     {% if post.content.type.value == 'gallery' %}
@@ -143,7 +144,7 @@ content_expanded) %}
                             </figcaption>
                         {% endif %}
                         <img class="post-content-image-or-video"
-                            height="{{ item.height }}" width="{{ item.width }}" src="{{ item.url }}" />
+                            height="{{ item.height }}" width="{{ item.width }}" data-src="{{ item.url }}" {{ "src=" ~ item.url if expanded else ""}}  />
                     </figure>
                 </a>
                 {% endif %}

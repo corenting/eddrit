@@ -1,18 +1,30 @@
+// If content has an image, set src from data-src
+// as it was put there to avoid Firefox loading it when the template is not used
+function setSrcForContentImageIfNeeded(content) {
+	const imageElements = content.children[0].getElementsByTagName("img");
+	if (imageElements.length > 0) {
+		if (imageElements[0].src === undefined || imageElements[0].src === "") {
+			imageElements[0].src = imageElements[0].dataset.src;
+		}
+	}
+}
+
 // Toggle content button logic
 function togglePostVisibility(postId) {
 	// Get root elements
 	const rootElement = document.getElementById(`content-${postId}`);
 	const buttonLink = document.getElementById(`post-preview-button-${postId}`);
 
-	// Get content HTML from attribute
-	const contentTemplate = document.getElementById(`content-${postId}-template`);
-
 	if (rootElement.style.display === "none") {
 		rootElement.style.display = "inherit";
 		buttonLink.innerText = "-";
 
-		// Copy template and append it
+		// Get content HTML from template and copy it to append
+		const contentTemplate = document.getElementById(
+			`content-${postId}-template`,
+		);
 		const content = contentTemplate.content.cloneNode(true);
+		setSrcForContentImageIfNeeded(content);
 		rootElement.appendChild(content);
 
 		setupVideo(document.getElementById(`video-${postId}`));
@@ -130,6 +142,8 @@ function displayGalleryElement(postId, currentIndex) {
 	content.children[0].dataset.currentIndex = currentIndex;
 	content.children[0].id = `post-${postId}-content-displayed-gallery-item`;
 
+	setSrcForContentImageIfNeeded(content);
+
 	// Get container node, clean it and put content
 	const container = document.getElementById(
 		`post-${postId}-content-gallery-item`,
@@ -199,6 +213,7 @@ function onGalleryButtonClick(postId, move) {
 }
 
 function initPage() {
+	console.info("Page loaded, setting up media");
 	// Init video players
 	const videoElements = document.getElementsByClassName("video-js");
 	for (let i = 0; i < videoElements.length; ++i) {

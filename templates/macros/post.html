@@ -107,7 +107,7 @@
     <div id="gallery-{{ post.id }}" class="needs-js post-content-gallery">
         <div class="post-content-gallery-buttons">
             <a class="post-content-gallery-button  post-content-gallery-previous-button" href="#!"
-                onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button">Previous</a>
+                onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button" disabled>Previous</a>
             <div class="post-content-gallery-numbers">1 / {{ post.content.pictures | length }}</div>
             <a class="post-content-gallery-button  post-content-gallery-next-button" href="#!"
                 onclick="onGalleryButtonClick('{{ post.id }}', 1);" role="button">Next</a>

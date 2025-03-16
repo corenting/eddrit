@@ -183,7 +183,6 @@ function onGalleryButtonClick(postId, move) {
 	const previousButton = parentElement.getElementsByClassName(
 		"post-content-gallery-previous-button",
 	)[0];
-	previousButton.setAttribute("disabled", newIndex === 0);
 	if (newIndex === 0) {
 		previousButton.setAttribute("disabled", "");
 	} else {

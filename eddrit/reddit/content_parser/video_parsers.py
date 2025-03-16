@@ -30,6 +30,17 @@ def _cleanup_embed(content: str) -> str:
 
     return lxml.html.tostring(content_parsed).decode("utf-8")  # type: ignore
 
+def _try_get_poster_url(api_post_data: dict[Hashable, Any]) -> str | None:
+    """
+    Try to get a poster URL for embed and videos
+    """
+    poster_url = None
+    try:
+        poster_url = html.unescape(api_post_data["preview"]["images"][0]["source"]["url"])
+    except:
+        pass
+    return poster_url
+
 
 def get_domains_with_special_embed_handling() -> dict[str, Callable]:
     """Return dict of domain associated with parsing function
@@ -43,8 +54,8 @@ def get_twitch_embed(api_post_data: dict[Hashable, Any]) -> models.EmbedPostCont
     a Content-Security-Policy preventing including it.
     """
 
-    # There are two format of clips URLs
-    if "clips.twitch.tv" in api_post_data:
+    # There are different formats of clips URLs
+    if "clips.twitch.tv" in api_post_data["url"]:
         embed_url = api_post_data["url"].replace(
             "clips.twitch.tv/", "clips.twitch.tv/embed?clip="
         )
@@ -59,7 +70,10 @@ def get_twitch_embed(api_post_data: dict[Hashable, Any]) -> models.EmbedPostCont
     parent = get_current_host()
     embed_code = f'<iframe src="{embed_url}&parent={parent}" frameborder="0" allowfullscreen="true" scrolling="no" height="378" width="620"></iframe>'
     return models.EmbedPostContent(
-        url=_cleanup_embed(embed_code), width=378, height=620
+        url=_cleanup_embed(embed_code),
+        width=378,
+        height=620,
+        poster_url=_try_get_poster_url(api_post_data)
     )
 
 
@@ -79,6 +93,7 @@ def get_imgur_gif(api_post_data: dict[Hashable, Any]) -> models.PostVideo:
         height=video_item["height"],
         is_gif=True,
         video_format=models.PostVideoFormat.MP4,
+        poster_url=_try_get_poster_url(api_post_data)
     )
 
 
@@ -93,6 +108,7 @@ def get_embed_content(api_post_data: dict[Hashable, Any]) -> models.EmbedPostCon
         url=_cleanup_embed(content),
         width=embed_data["width"],
         height=embed_data["height"] or 0,
+        poster_url=_try_get_poster_url(api_post_data)
     )
 
 
@@ -107,6 +123,7 @@ def get_secure_media_reddit_video(
         height=reddit_video["height"],
         is_gif=reddit_video["is_gif"],
         video_format=models.PostVideoFormat.DASH,
+        poster_url=_try_get_poster_url(api_post_data)
     )
 
 
@@ -120,6 +137,7 @@ def get_external_video(api_post_data: dict[Hashable, Any]) -> models.PostVideo:
         height=video["height"],
         is_gif="gif" in api_post_data["preview"]["images"][0]["variants"],
         video_format=models.PostVideoFormat.MP4,
+        poster_url=_try_get_poster_url(api_post_data)
     )
 
 
@@ -134,4 +152,5 @@ def get_reddit_video_preview(api_post_data: dict[Hashable, Any]) -> models.PostV
         height=reddit_video["height"],
         is_gif=reddit_video["is_gif"],
         video_format=models.PostVideoFormat.DASH,
+        poster_url=_try_get_poster_url(api_post_data)
     )

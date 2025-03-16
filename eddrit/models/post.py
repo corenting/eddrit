@@ -92,6 +92,7 @@ class EmbedPostContent(PostContentBase):
     width: int
     height: int
     url: str
+    poster_url: str | None = None
 
 
 @dataclass(kw_only=True)

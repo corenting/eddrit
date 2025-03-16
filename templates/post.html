@@ -12,6 +12,9 @@
 {# Gallery video with a poster URL (if is_gif is defined it's a video) #}
 {% elif post.content.type == 'gallery' and post.content.contents[0].is_gif is defined and post.content.contents[0].poster_url %}
     {% set opengraph_image = post.content.contents[0].poster_url %}
+{# Embed #}
+{% elif post.content.type == 'embed' and post.content.poster_url %}
+    {% set opengraph_image = post.content.poster_url %}
 {% endif %}
 
 {% extends "base.html" %}

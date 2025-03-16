@@ -1,18 +1,30 @@
+// If content has an image, set src from data-src
+// as it was put there to avoid Firefox loading it when the template is not used
+function setSrcForContentImageIfNeeded(content) {
+	const imageElements = content.children[0].getElementsByTagName("img");
+	if (imageElements.length > 0) {
+		if (imageElements[0].src === undefined || imageElements[0].src === "") {
+			imageElements[0].src = imageElements[0].dataset.src;
+		}
+	}
+}
+
 // Toggle content button logic
 function togglePostVisibility(postId) {
 	// Get root elements
 	const rootElement = document.getElementById(`content-${postId}`);
 	const buttonLink = document.getElementById(`post-preview-button-${postId}`);
 
-	// Get content HTML from attribute
-	const contentTemplate = document.getElementById(`content-${postId}-template`);
-
 	if (rootElement.style.display === "none") {
 		rootElement.style.display = "inherit";
 		buttonLink.innerText = "-";
 
-		// Copy template and append it
+		// Get content HTML from template and copy it to append
+		const contentTemplate = document.getElementById(
+			`content-${postId}-template`,
+		);
 		const content = contentTemplate.content.cloneNode(true);
+		setSrcForContentImageIfNeeded(content);
 		rootElement.appendChild(content);
 
 		setupVideo(document.getElementById(`video-${postId}`));
@@ -82,12 +94,14 @@ function setupVideo(videoElement) {
 		return;
 	}
 
-	const videos = JSON.parse(videoElement.getAttribute("data-content")).videos;
+	const videos = JSON.parse(videoElement.getAttribute("data-videos"));
+
 	const player = videojs(videoElement, {
 		controls: true,
 		fill: true,
 		autoplay: false,
 		loop: false,
+		poster: videos[0].poster_url,
 		sources: videos.map((x) => {
 			return {
 				src: x.url,
@@ -118,72 +132,69 @@ function setupVideo(videoElement) {
 	});
 }
 
+// Gallery: display or not element
+function displayGalleryElement(postId, currentIndex) {
+	// Get content template and create content node
+	const contentTemplate = document.getElementById(
+		`post-${postId}-content-gallery-template-${currentIndex}`,
+	);
+	const content = contentTemplate.content.cloneNode(true);
+	content.children[0].dataset.currentIndex = currentIndex;
+	content.children[0].id = `post-${postId}-content-displayed-gallery-item`;
+
+	setSrcForContentImageIfNeeded(content);
+
+	// Get container node, clean it and put content
+	const container = document.getElementById(
+		`post-${postId}-content-gallery-item`,
+	);
+	container.innerHTML = "";
+	container.appendChild(content);
+
+	// Init video players if gallery post is a video
+	const videoElements = document.getElementsByClassName("video-js");
+	for (let i = 0; i < videoElements.length; ++i) {
+		const video = videoElements[i];
+		setupVideo(video);
+	}
+}
+
 // Gallery setup
 function setupGallery(galleryElement) {
 	if (!galleryElement) {
 		return;
 	}
 
-	// Hide all elements except first
-	const picturesElements = galleryElement.getElementsByClassName(
-		"post-content-gallery-picture",
-	);
-	const captionsElements = galleryElement.getElementsByClassName(
-		"post-content-gallery-caption",
-	);
-	for (let i = 1; i < picturesElements.length; ++i) {
-		picturesElements[i].style.display = "none";
-
-		if (captionsElements[i]) {
-			captionsElements[i].style.display = "none";
-		}
-	}
-
-	// Mask previous button
-	const previousButton = galleryElement.getElementsByClassName(
-		"post-content-gallery-previous-button",
-	)[0];
-	previousButton.removeAttribute("href");
+	displayGalleryElement(galleryElement.dataset.postId, 0); // display the first element
 }
 
 // On gallery button click
 function onGalleryButtonClick(postId, move) {
 	const parentElement = document.getElementById(`gallery-${postId}`);
-	const picturesElements = [
-		...parentElement.getElementsByClassName("post-content-gallery-picture"),
-	];
-	const captionsElements = [
-		...parentElement.getElementsByClassName("post-content-gallery-caption"),
-	];
+	const totalLength = Number.parseInt(parentElement.dataset.totalLength);
 
 	// Get current displayed and current index
-	const currentDisplayedElement = picturesElements.find((element) => {
-		return element.style.display !== "none";
-	});
-	const currentIndex = Number.parseInt(currentDisplayedElement.id);
+	const currentDisplayedElement = document.getElementById(
+		`post-${postId}-content-displayed-gallery-item`,
+	);
+	const currentIndex = Number.parseInt(
+		currentDisplayedElement.dataset.currentIndex,
+	);
 	const newIndex = currentIndex + move;
 
 	// Update text
 	const textElement = parentElement.getElementsByClassName(
 		"post-content-gallery-numbers",
 	)[0];
-	textElement.innerHTML = `${newIndex + 1} / ${picturesElements.length}`;
+	textElement.innerHTML = `${newIndex + 1} / ${totalLength}`;
 
-	// Display correct picture
-	for (let i = 0; i < picturesElements.length; ++i) {
-		const displayMode = i === newIndex ? "unset" : "none";
-		picturesElements[i].style.display = displayMode;
-
-		if (captionsElements[i]) {
-			captionsElements[i].style.display = displayMode;
-		}
-	}
+	// Display correct content
+	displayGalleryElement(postId, newIndex);
 
 	// Previous button
 	const previousButton = parentElement.getElementsByClassName(
 		"post-content-gallery-previous-button",
 	)[0];
-	previousButton.setAttribute("disabled", newIndex === 0);
 	if (newIndex === 0) {
 		previousButton.setAttribute("disabled", "");
 	} else {
@@ -194,7 +205,7 @@ function onGalleryButtonClick(postId, move) {
 	const nextButton = parentElement.getElementsByClassName(
 		"post-content-gallery-next-button",
 	)[0];
-	if (newIndex === picturesElements.length - 1) {
+	if (newIndex === totalLength - 1) {
 		nextButton.setAttribute("disabled", "");
 	} else {
 		nextButton.removeAttribute("disabled");
@@ -202,6 +213,7 @@ function onGalleryButtonClick(postId, move) {
 }
 
 function initPage() {
+	console.info("Page loaded, setting up media");
 	// Init video players
 	const videoElements = document.getElementsByClassName("video-js");
 	for (let i = 0; i < videoElements.length; ++i) {

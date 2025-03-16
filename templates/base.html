@@ -12,15 +12,17 @@
     <link rel="alternate" type="application/atom+xml" title="RSS" href="{{ rss_feed_url }}" />
     {% endif %}
 
-    {% if opengraph_title is defined %}
+    {% if title is defined %}
     <meta property="og:title" content="{{ title }}" />
     {% endif %}
     {% if description is defined %}
     <meta name="description" content="{{ description | truncate(140) }}">
+    <meta property="og:description" content="{{ description | truncate(140) }}" />
     {% endif %}
 
-    {% if image is defined %}
-    <meta property="og:image" content="{{ image }}" />
+    {% if opengraph_image is defined %}
+    <meta property="og:image" content="{{ opengraph_image }}" />
+    <meta name="twitter:card" content="summary_large_image">
     {% else %}
     <meta property="og:image" content="{{ url_for('static', path='images/logo_padded.png') }}" />
     {% endif %}

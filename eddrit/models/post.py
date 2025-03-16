@@ -30,6 +30,7 @@ class PostVideo:
     width: int
     height: int
     video_format: PostVideoFormat | None = None
+    poster_url: str | None = None
 
 
 @dataclass
@@ -91,6 +92,7 @@ class EmbedPostContent(PostContentBase):
     width: int
     height: int
     url: str
+    poster_url: str | None = None
 
 
 @dataclass(kw_only=True)
@@ -99,7 +101,7 @@ class GalleryPostContent(PostContentBase):
 
     type: PostContentType = PostContentType.GALLERY
 
-    pictures: Iterable[PostPicture]
+    contents: Iterable[PostPicture | PostVideo]
     captions: Iterable[str]
 
 
@@ -122,6 +124,7 @@ class PostComment:
     comments_count: str
     link_title: str
     link_url: str | None
+    current_comment_url: str | None
     over18: bool
 
 

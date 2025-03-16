@@ -1,6 +1,14 @@
 {% import "macros/common.html" as common_macros with context %}
 
-{% macro render_post_card(post, show_if_post_is_sticky, subreddit_show_thumbnails, always_show_over18_thumbnail, content_expanded) %}
+{% macro render_video_item(post_id, videos) %}
+<div class="post-content-image-or-video needs-js"
+    style="{{ 'width: fit-content' if videos[0].width < videos[0].height else 'height: fit-content;'}} ">
+    <video class="video-js" id="video-{{ post_id }}" data-videos='{{ videos | tojson_dataclass }}' />
+</div>
+{% endmacro %}
+
+{% macro render_post_card(post, show_if_post_is_sticky, subreddit_show_thumbnails, always_show_over18_thumbnail,
+content_expanded) %}
 <article class="container-fluid">
     <div class="row">
         {# Thumbnail (first column) #}
@@ -24,7 +32,8 @@
             {# Title + flairs #}
             <div class="col post-title">
                 <a href="{{ post.url }}">
-                    <strong class="{{ 'post-sticky' if show_if_post_is_sticky and post.is_sticky else '' }}">{{ post.title }}</strong>
+                    <strong class="{{ 'post-sticky' if show_if_post_is_sticky and post.is_sticky else '' }}">{{
+                        post.title }}</strong>
                 </a>
                 <small>({{ post.domain }}) </small>
                 <small>
@@ -75,12 +84,12 @@
         <div class="" id="content-{{ post.id }}" style="display: {{ 'inherit' if content_expanded else 'none' }};">
             <template id="content-{{ post.id }}-template">
                 <div id="content-{{ post.id }}-preview">
-                    {{ render_content(post) }}
+                    {{ render_content(post, expanded=False) }}
                 </div>
             </template>
             {% if content_expanded %}
             <div id="content-{{ post.id }}-preview">
-                {{ render_content(post) }}
+                {{ render_content(post, expanded=True) }}
             </div>
             {% endif %}
         </div>
@@ -89,7 +98,7 @@
 </article>
 {% endmacro %}
 
-{% macro render_content(post) %}
+{% macro render_content(post, expanded) %}
 <div class="post-content">
     {% if post.content.type.value == 'text' %}
     <div class="post-content-text">
@@ -97,42 +106,54 @@
     </div>
     {% endif %}
     {% if post.content.type.value == 'picture' %}
+    {# Put src in data-src (here and below) if not expanded to avoid Firefox and setting it up later in JS to avoid Firefox loading all the ressources in templates #}
     <a href="{{ post.url }}">
-        <img height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}"
+        <img loading="lazy" height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}"
             style="{{ 'width: fit-content' if post.content.picture.width < post.content.picture.height else 'height: fit-content;'}}"
-            class="post-content-image-or-video" src="{{ post.content.picture.url }}" />
+            class="post-content-image-or-video" data-src="{{ post.content.picture.url }}" {{ "src=" ~ post.content.picture.url if expanded else ""}}  />
     </a>
     {% endif %}
     {% if post.content.type.value == 'gallery' %}
-    <div id="gallery-{{ post.id }}" class="needs-js post-content-gallery">
+    <div id="gallery-{{ post.id }}" class="needs-js post-content-gallery" data-post-id="{{ post.id }}" data-total-length="{{post.content.contents | length}}">
         <div class="post-content-gallery-buttons">
             <a class="post-content-gallery-button  post-content-gallery-previous-button" href="#!"
-                onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button">Previous</a>
-            <div class="post-content-gallery-numbers">1 / {{ post.content.pictures | length }}</div>
+                onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button" disabled>Previous</a>
+            <div class="post-content-gallery-numbers">1 / {{ post.content.contents | length }}</div>
             <a class="post-content-gallery-button  post-content-gallery-next-button" href="#!"
                 onclick="onGalleryButtonClick('{{ post.id }}', 1);" role="button">Next</a>
         </div>
-        {% for picture in post.content.pictures %}
-        <a href="{{ post.url }}">
-            <figure>
-                {% if post.content.captions[loop.index0] %}
-                <div>
-                    <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
-                    </figcaption>
-                </div>
+        {% for item in post.content.contents %}
+            {# content will be put in this div by JS using the template #}
+            <div id="post-{{ post.id }}-content-gallery-item">
+            </div>
+            <template id="post-{{ post.id }}-content-gallery-template-{{ loop.index0 }}">
+                {# If is_gif is defined it's a video) #}
+                {% if item.is_gif is defined %}
+                    {% if post.content.captions[loop.index0] %}
+                        <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
+                        </figcaption>
+                    {% endif %}
+                    <div>
+                        {{ render_video_item(post.id, [item]) }}
+                    </div>
+                {% else %}
+                <a href="{{ post.url }}">
+                    <figure>
+                        {% if post.content.captions[loop.index0] %}
+                            <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
+                            </figcaption>
+                        {% endif %}
+                        <img class="post-content-image-or-video"
+                            height="{{ item.height }}" width="{{ item.width }}" data-src="{{ item.url }}" {{ "src=" ~ item.url if expanded else ""}}  />
+                    </figure>
+                </a>
                 {% endif %}
-                <img id="{{ loop.index0 }}" class="post-content-image-or-video post-content-gallery-picture"
-                    height="{{ picture.height }}" width="{{ picture.width }}" src="{{ picture.url }}" />
-            </figure>
-        </a>
+            </template>
         {% endfor %}
     </div>
     {% endif %}
     {% if post.content.type.value == 'video' %}
-    <div class="post-content-image-or-video needs-js"
-        style="{{ 'width: fit-content' if post.content.videos[0].width < post.content.videos[0].height else 'height: fit-content;'}} ">
-        <video class="video-js" id="video-{{ post.id }}" data-content='{{ post.content | tojson_dataclass }}' />
-    </div>
+        {{ render_video_item(post.id, post.content.videos) }}
     {% endif %}
     {% if post.content.type.value == 'embed' %}
     <div class="post-content-image-or-video">

@@ -2,14 +2,19 @@
 {% import "macros/comments.html" as comments_macros with context %}
 
 {% set title = post.title | truncate(52) ~ " | " ~ about_information.title %}
-{% set description = post.title ~ " | " ~ about_information.title %}
 
+{# Normal picture post #}
 {% if post.content.type == 'picture' %}
-    {% if post.content.type == 'picture' %}
-        {% set image = post.url %}
-    {% elif post.content.type == 'gallery' %}
-        {% set image = post.content.pictures[0].url %}
-    {% endif %}
+    {% set opengraph_image = post.url %}
+{# Gallery picture (if is_gif is not defined it's not a video) #}
+{% elif post.content.type == 'gallery' and not post.content.contents[0].is_gif is defined %}
+    {% set opengraph_image = post.content.contents[0].url %}
+{# Gallery video with a poster URL (if is_gif is defined it's a video) #}
+{% elif post.content.type == 'gallery' and post.content.contents[0].is_gif is defined and post.content.contents[0].poster_url %}
+    {% set opengraph_image = post.content.contents[0].poster_url %}
+{# Embed #}
+{% elif post.content.type == 'embed' and post.content.poster_url %}
+    {% set opengraph_image = post.content.poster_url %}
 {% endif %}
 
 {% extends "base.html" %}

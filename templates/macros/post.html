@@ -113,7 +113,7 @@ content_expanded) %}
     </a>
     {% endif %}
     {% if post.content.type.value == 'gallery' %}
-    <div id="gallery-{{ post.id }}" class="needs-js post-content-gallery">
+    <div id="gallery-{{ post.id }}" class="needs-js post-content-gallery" data-post-id="{{ post.id }}" data-total-length="{{post.content.contents | length}}">
         <div class="post-content-gallery-buttons">
             <a class="post-content-gallery-button  post-content-gallery-previous-button" href="#!"
                 onclick="onGalleryButtonClick('{{ post.id }}', -1);" role="button" disabled>Previous</a>
@@ -122,31 +122,32 @@ content_expanded) %}
                 onclick="onGalleryButtonClick('{{ post.id }}', 1);" role="button">Next</a>
         </div>
         {% for item in post.content.contents %}
-            {# If is_gif is defined it's a video) #}
-            {% if item.is_gif is defined %}
-                {% if post.content.captions[loop.index0] %}
-                    <div>
-                        <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
-                        </figcaption>
-                    </div>
-                {% endif %}
-                <div id="{{ loop.index0 }}" class="post-content-gallery-picture">
-                    {{ render_video_item(post.id, [item]) }}
-                </div>
-            {% else %}
-            <a href="{{ post.url }}">
-                <figure>
+            {# content will be put in this div by JS using the template #}
+            <div id="post-{{ post.id }}-content-gallery-item">
+            </div>
+            <template id="post-{{ post.id }}-content-gallery-template-{{ loop.index0 }}">
+                {# If is_gif is defined it's a video) #}
+                {% if item.is_gif is defined %}
                     {% if post.content.captions[loop.index0] %}
-                    <div>
                         <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
                         </figcaption>
-                    </div>
                     {% endif %}
-                    <img id="{{ loop.index0 }}" class="post-content-image-or-video post-content-gallery-picture"
-                        height="{{ item.height }}" width="{{ item.width }}" src="{{ item.url }}" />
-                </figure>
-            </a>
-            {% endif %}
+                    <div>
+                        {{ render_video_item(post.id, [item]) }}
+                    </div>
+                {% else %}
+                <a href="{{ post.url }}">
+                    <figure>
+                        {% if post.content.captions[loop.index0] %}
+                            <figcaption class="post-content-gallery-caption">{{ post.content.captions[loop.index0] }}
+                            </figcaption>
+                        {% endif %}
+                        <img class="post-content-image-or-video"
+                            height="{{ item.height }}" width="{{ item.width }}" src="{{ item.url }}" />
+                    </figure>
+                </a>
+                {% endif %}
+            </template>
         {% endfor %}
     </div>
     {% endif %}

@@ -120,66 +120,62 @@ function setupVideo(videoElement) {
 	});
 }
 
+// Gallery: display or not element
+function displayGalleryElement(postId, currentIndex) {
+	// Get content template and create content node
+	const contentTemplate = document.getElementById(
+		`post-${postId}-content-gallery-template-${currentIndex}`,
+	);
+	const content = contentTemplate.content.cloneNode(true);
+	content.children[0].dataset.currentIndex = currentIndex;
+	content.children[0].id = `post-${postId}-content-displayed-gallery-item`;
+
+	// Get container node, clean it and put content
+	const container = document.getElementById(
+		`post-${postId}-content-gallery-item`,
+	);
+	container.innerHTML = "";
+	container.appendChild(content);
+
+	// Init video players if gallery post is a video
+	const videoElements = document.getElementsByClassName("video-js");
+	for (let i = 0; i < videoElements.length; ++i) {
+		const video = videoElements[i];
+		setupVideo(video);
+	}
+}
+
 // Gallery setup
 function setupGallery(galleryElement) {
 	if (!galleryElement) {
 		return;
 	}
 
-	// Hide all elements except first
-	const picturesElements = galleryElement.getElementsByClassName(
-		"post-content-gallery-picture",
-	);
-	const captionsElements = galleryElement.getElementsByClassName(
-		"post-content-gallery-caption",
-	);
-	for (let i = 1; i < picturesElements.length; ++i) {
-		picturesElements[i].style.display = "none";
-
-		if (captionsElements[i]) {
-			captionsElements[i].style.display = "none";
-		}
-	}
-
-	// Mask previous button
-	const previousButton = galleryElement.getElementsByClassName(
-		"post-content-gallery-previous-button",
-	)[0];
-	previousButton.removeAttribute("href");
+	displayGalleryElement(galleryElement.dataset.postId, 0); // display the first element
 }
 
 // On gallery button click
 function onGalleryButtonClick(postId, move) {
 	const parentElement = document.getElementById(`gallery-${postId}`);
-	const picturesElements = [
-		...parentElement.getElementsByClassName("post-content-gallery-picture"),
-	];
-	const captionsElements = [
-		...parentElement.getElementsByClassName("post-content-gallery-caption"),
-	];
+	const totalLength = Number.parseInt(parentElement.dataset.totalLength);
 
 	// Get current displayed and current index
-	const currentDisplayedElement = picturesElements.find((element) => {
-		return element.style.display !== "none";
-	});
-	const currentIndex = Number.parseInt(currentDisplayedElement.id);
+	const currentDisplayedElement = document.getElementById(
+		`post-${postId}-content-displayed-gallery-item`,
+	);
+	const currentIndex = Number.parseInt(
+		currentDisplayedElement.dataset.currentIndex,
+	);
 	const newIndex = currentIndex + move;
 
 	// Update text
 	const textElement = parentElement.getElementsByClassName(
 		"post-content-gallery-numbers",
 	)[0];
-	textElement.innerHTML = `${newIndex + 1} / ${picturesElements.length}`;
+	textElement.innerHTML = `${newIndex + 1} / ${totalLength}`;
 
-	// Display correct picture
-	for (let i = 0; i < picturesElements.length; ++i) {
-		const displayMode = i === newIndex ? "unset" : "none";
-		picturesElements[i].style.display = displayMode;
-
-		if (captionsElements[i]) {
-			captionsElements[i].style.display = displayMode;
-		}
-	}
+	// Display correct content
+	displayGalleryElement(postId, newIndex);
 
 	// Previous button
 	const previousButton = parentElement.getElementsByClassName(
@@ -195,7 +191,7 @@ function onGalleryButtonClick(postId, move) {
 	const nextButton = parentElement.getElementsByClassName(
 		"post-content-gallery-next-button",
 	)[0];
-	if (newIndex === picturesElements.length - 1) {
+	if (newIndex === totalLength - 1) {
 		nextButton.setAttribute("disabled", "");
 	} else {
 		nextButton.removeAttribute("disabled");

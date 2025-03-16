@@ -1,3 +1,14 @@
+# Version 0.10.0
+
+- Add support for galleries with GIFs
+- Better links previews when sharing links for posts with GIFs or videos
+- Various fixes:
+    - Fix Firefox loading the pictures from all the posts in a subreddit or user posts list view, even if they were hidden.
+    - Fix comments sometimes overflowing on mobile, which resulted in an horizontal scroll appearing
+    - Fix some Twitch links displayed as pictures instead of using the embedded player
+    - On posts with a pictures gallery, only load the image from the current tab, and not all of them and fix the previous button being enabled on the first picture
+    - On a user page, fix links to comments on "Full comments" links
+
 # Version 0.9.6
 
 - Better display of comments on a post page

@@ -245,6 +245,13 @@ def _parse_comment(comment: dict[Hashable, Any]) -> models.PostComment:
     else:
         link_url = None
 
+    current_comment_url = data.get("permalink")
+    # TODO: for now we don't support links to a specific comment,
+    # so replace by a link to the comments page.
+    # Can be removed after support is added
+    if current_comment_url:
+        current_comment_url = current_comment_url.rsplit("/", 2)[0]
+
     return models.PostComment(
         id=data["id"],
         parent_id=comment["data"]["parent_id"].replace("t1_", "").replace("t3_", ""),
@@ -268,6 +275,7 @@ def _parse_comment(comment: dict[Hashable, Any]) -> models.PostComment:
         comments_count=data.get("num_comments"),
         subreddit=data["subreddit"],
         children=childrens,
+        current_comment_url=current_comment_url,
     )
 
 

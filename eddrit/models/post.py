@@ -124,6 +124,7 @@ class PostComment:
     comments_count: str
     link_title: str
     link_url: str | None
+    current_comment_url: str | None
     over18: bool
 
 

@@ -98,8 +98,8 @@ function setupVideo(videoElement) {
 
 	const player = videojs(videoElement, {
 		controls: true,
-		fill: true,
 		autoplay: false,
+		fill: true,
 		loop: false,
 		sources: videos.map((x) => {
 			return {

@@ -101,7 +101,6 @@ function setupVideo(videoElement) {
 		fill: true,
 		autoplay: false,
 		loop: false,
-		poster: videos[0].poster_url,
 		sources: videos.map((x) => {
 			return {
 				src: x.url,

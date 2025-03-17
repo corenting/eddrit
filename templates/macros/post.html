@@ -1,9 +1,8 @@
 {% import "macros/common.html" as common_macros with context %}
 
 {% macro render_video_item(post_id, videos) %}
-<div class="post-content-image-or-video needs-js"
-    style="{{ 'width: fit-content' if videos[0].width < videos[0].height else 'height: fit-content;'}} ">
-    <video class="video-js" id="video-{{ post_id }}" data-videos='{{ videos | tojson_dataclass }}' />
+<div class="post-content-image-or-video needs-js" style="height: {{ videos[0].height }}px; width:{{ videos[0].width }}px">
+<video class="video-js" id="video-{{ post_id }}" data-videos='{{ videos | tojson_dataclass }}' />
 </div>
 {% endmacro %}
 
@@ -109,7 +108,6 @@ content_expanded) %}
     {# Put src in data-src (here and below) if not expanded to avoid Firefox and setting it up later in JS to avoid Firefox loading all the ressources in templates #}
     <a href="{{ post.url }}">
         <img loading="lazy" height="{{ post.content.picture.height }}" width="{{ post.content.picture.width }}"
-            style="{{ 'width: fit-content' if post.content.picture.width < post.content.picture.height else 'height: fit-content;'}}"
             class="post-content-image-or-video" data-src="{{ post.content.picture.url }}" {{ "src=" ~ post.content.picture.url if expanded else ""}}  />
     </a>
     {% endif %}

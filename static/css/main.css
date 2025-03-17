@@ -157,10 +157,10 @@ html[data-theme='dark'] .dark-inverted {
 }
 
 .post-content-image-or-video {
-  /* Use a fixed height for media and contain the object */
-  height: var(--post-content);
+  max-height: var(--post-content);
   object-position: top left;
   object-fit: contain;
+  max-width: 100%;
 }
 
 .post-content-iframe {
@@ -244,19 +244,7 @@ html[data-theme='dark'] .dark-inverted {
 
 .post-children {
   flex: 1;
-}
-
-/* VideoJS */
-
-/* Remove black bars in fill mode in video post content */
-.video-js {
-  background: transparent !important;
-}
-
-/* Align video to the top left in video post content */
-.vjs-tech {
-  object-position: top left;
-  position: relative !important;
+  width: 100%;
 }
 
 /* Settings */

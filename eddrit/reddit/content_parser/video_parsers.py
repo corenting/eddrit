@@ -25,8 +25,6 @@ def _cleanup_embed(content: str) -> str:
     content_parsed = lxml.html.fromstring(content)
     for elt in content_parsed.iter("iframe"):
         elt.attrib["class"] = "post-content-iframe"
-        elt.attrib.pop("width", None)
-        elt.attrib.pop("height", None)
         elt.attrib.pop("style", None)
 
     return lxml.html.tostring(content_parsed).decode("utf-8")  # type: ignore

@@ -1,3 +1,7 @@
+# Version 0.10.1
+
+- Better fix for comments overflowing
+
 # Version 0.10.0
 
 - Add support for galleries with GIFs

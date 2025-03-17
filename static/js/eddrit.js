@@ -98,10 +98,9 @@ function setupVideo(videoElement) {
 
 	const player = videojs(videoElement, {
 		controls: true,
-		fill: true,
 		autoplay: false,
+		fill: true,
 		loop: false,
-		poster: videos[0].poster_url,
 		sources: videos.map((x) => {
 			return {
 				src: x.url,

@@ -66,7 +66,6 @@ async def subreddit_or_user_post(request: Request) -> Response:
         {
             "about_information": information,
             "post": post,
-            "title_link": request.url_for("subreddit", path=post.subreddit),
             **get_templates_common_context(request),
             **get_canonical_url_context(request),
             "rss_feed_url": _get_rss_feed_url(request),

@@ -1,3 +1,8 @@
+# Version 0.10.2
+
+- Prefix URLs for static (icons, JS etc.) with the app version to facilitate caching static directory
+when deploying eddrit
+
 # Version 0.10.1
 
 - Better fix for comments overflowing

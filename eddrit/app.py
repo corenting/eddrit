@@ -76,12 +76,19 @@ def favicon_route(request):
     return RedirectResponse("static/favicon.ico")
 
 
+static_files = StaticFiles(directory="static")
 app = Starlette(
     lifespan=lifespan,
     debug=config.DEBUG,
     routes=[
         Route("/favicon.ico", endpoint=favicon_route),
-        Mount("/static", app=StaticFiles(directory="static"), name="static"),
+        # static_with_key alow the frontend to include a key
+        # in the path to allow cache-bursting if
+        # there is any cache in front of eddrit
+        Mount("/static_with_key/{key:str}", app=static_files, name="static_with_key"),
+        Mount(
+            "/static", app=static_files, name="static"
+        ),  # normal static path for existing links
         Mount("/meta", routes=meta.routes, name="meta"),
         Mount("/r", routes=subreddit_user_and_wiki.routes, name="subreddit"),
         Mount("/user", routes=subreddit_user_and_wiki.routes, name="user"),

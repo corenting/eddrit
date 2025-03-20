@@ -24,40 +24,40 @@
     <meta property="og:image" content="{{ opengraph_image }}" />
     <meta name="twitter:card" content="summary_large_image">
     {% else %}
-    <meta property="og:image" content="{{ url_for('static', path='images/logo_padded.png') }}" />
+    <meta property="og:image" content="{{ url_for('static_with_key', key=global.app_version, path='images/logo_padded.png') }}" />
     {% endif %}
 
-    <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', path='favicon/favicon-57x57.png') }}">
-    <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', path='favicon/favicon-60x60.png') }}">
-    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', path='favicon/favicon-72x72.png') }}">
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static', path='favicon/favicon-76x76.png') }}">
-    <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static', path='favicon/favicon-114x114.png') }}">
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', path='favicon/favicon-120x120.png') }}">
-    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static', path='favicon/favicon-144x144.png') }}">
-    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', path='favicon/favicon-152x152.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', path='favicon/favicon-180x114.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='favicon/favicon-16x16.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='favicon/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', path='favicon/favicon-96x96.png') }}">
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-57x57.png') }}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-60x60.png') }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-72x72.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-76x76.png') }}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-114x114.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-120x120.png') }}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-144x144.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-180x114.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-96x96.png') }}">
     <link rel="icon" type="image/png" sizes="192x192"
-        href="{{ url_for('static', path='favicon/favicon-192x192.png') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', path='favicon/favicon.ico') }}">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='favicon/favicon.ico') }}">
+        href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-192x192.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon.ico') }}">
 
     <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="{{ url_for('static', path='favicon/favicon-144x144.png') }}">
-    <meta name="msapplication-config" content="{{ url_for('static', path='browserconfig.xml') }}">
+    <meta name="msapplication-TileImage" content="{{ url_for('static_with_key', key=global.app_version, path='favicon/favicon-144x144.png') }}">
+    <meta name="msapplication-config" content="{{ url_for('static_with_key', key=global.app_version, path='browserconfig.xml') }}">
 
-    <link rel="manifest" href="{{ url_for('static', path='manifest.json') }}">
+    <link rel="manifest" href="{{ url_for('static_with_key', key=global.app_version, path='manifest.json') }}">
     <meta name="theme-color" content="#ffffff">
 
     {% if canonical_url is defined %}
     <link rel="canonical" href="{{ canonical_url }}" />
     {% endif %}
-    <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='vendors/videojs/video-js-min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static_with_key', key=global.app_version, path='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static_with_key', key=global.app_version, path='vendors/videojs/video-js-min.css') }}">
     <noscript>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/nojs.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static_with_key', key=global.app_version, path='css/nojs.css') }}">
     </noscript>
     {% endblock %}
 </head>
@@ -96,8 +96,8 @@
         {% include 'footer.html' %}
     </div>
 </body>
-<script type="text/javascript" src="{{ url_for('static', path='js/eddrit.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', path='vendors/dashjs/dash.all.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', path='vendors/videojs/video.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static_with_key', key=global.app_version, path='js/eddrit.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static_with_key', key=global.app_version, path='vendors/dashjs/dash.all.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static_with_key', key=global.app_version, path='vendors/videojs/video.min.js') }}"></script>
 
 </html>

@@ -15,10 +15,10 @@ content_expanded) %}
         subreddit_show_thumbnails) %}
         <span class="col-auto">
             {% if post.over18 and not settings.nsfw_thumbnails and not always_show_over18_thumbnail %}
-            <img src="{{ url_for('static', path='images/icons/slash-circle.svg') }}"
+            <img src="{{ url_for('static_with_key', key=global.app_version, path='images/icons/slash-circle.svg') }}"
                 class="post-image-thumbnail post-image-thumbnail-default dark-inverted" height="60" width="60">
             {% elif post.thumbnail_is_icon %}
-            <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static', path='' )) }}"
+            <img src="{{ post.thumbnail_url | replace("$STATIC_RES_PATH", url_for('static_with_key', key=global.app_version, path='' )) }}"
                 class="post-image-thumbnail post-image-thumbnail-default dark-inverted" height="60" width="60">
             {% else %}
             <img src="{{ post.thumbnail_url }}" class="post-image-thumbnail" height="60" width="60">
@@ -68,7 +68,7 @@ content_expanded) %}
                         </div>
                         <a href="{{ post.comments_url_path }}">
                             <span><img class="dark-inverted"
-                                    src="{{ url_for('static', path='images/icons/chat-left.svg') }}" />
+                                    src="{{ url_for('static_with_key', key=global.app_version, path='images/icons/chat-left.svg') }}" />
                             </span>
                             <small>{{ post.comments_count }} comments</small>
                         </a>

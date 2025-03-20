@@ -1,5 +1,5 @@
 <a class="phone-only" href="{{ url_for('root', path='') }}">
-    <img src="{{ url_for('static', path='images/logo.svg') }}" width="132" height="28">
+    <img src="{{ url_for('static_with_key', key=global.app_version, path='images/logo.svg') }}" width="132" height="28">
 </a>
 
 <nav class="align-items-baseline">
@@ -7,7 +7,7 @@
         {# Logo #}
         <li class="desktop-only">
             <a href="{{ url_for('root', path='') }}">
-                <img src="{{ url_for('static', path='images/logo.svg') }}" width="132" height="28">
+                <img src="{{ url_for('static_with_key', key=global.app_version, path='images/logo.svg') }}" width="132" height="28">
             </a>
         </li>
 

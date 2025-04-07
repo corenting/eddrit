@@ -1,3 +1,7 @@
+# Version 0.11.0
+
+- Update login code to reduce the number of requests blocked by Reddit (not fully fixed though)
+
 # Version 0.10.2
 
 - Prefix URLs for static (icons, JS etc.) with the app version to facilitate caching static directory

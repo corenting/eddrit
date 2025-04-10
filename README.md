@@ -78,7 +78,7 @@ The following configuration parameters are also available:
 
 ## Donations
 
-If you wish to support the app, donations are possible [here](https://corenting.fr/donate).
+If you wish to support the app, donations are possible on [Github Sponsors](https://github.com/sponsors/corenting/) or [here](https://corenting.fr/donate).
 
 ## Credits
 

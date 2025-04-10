@@ -17,6 +17,13 @@ class UserUnavailableError(Exception):
     detail = "User is not available"
 
 
+class UserSuspendedError(RedditContentUnavailableError):
+    detail = "User suspended"
+
+class UserBlockedError(RedditContentUnavailableError):
+    detail = "User blocked"
+
+
 class UserNotFoundError(RedditContentUnavailableError):
     detail = "User not found"
 

@@ -292,11 +292,10 @@ async def get_user_information(
 
     json = res.json()
 
-    if json.get('data', {}).get('is_suspended', False):
+    if json.get("data", {}).get("is_suspended", False):
         raise UserSuspendedError(res.status_code)
-    if json.get('data', {}).get('is_blocked', False):
+    if json.get("data", {}).get("is_blocked", False):
         raise UserBlockedError(res.status_code)
-
 
     return parser.parse_user_information(json)
 

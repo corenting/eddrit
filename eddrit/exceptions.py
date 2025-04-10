@@ -20,6 +20,7 @@ class UserUnavailableError(Exception):
 class UserSuspendedError(RedditContentUnavailableError):
     detail = "User suspended"
 
+
 class UserBlockedError(RedditContentUnavailableError):
     detail = "User blocked"
 

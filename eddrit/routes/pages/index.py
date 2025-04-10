@@ -1,3 +1,4 @@
+from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
@@ -25,15 +26,19 @@ def _get_request_context_for_index(
     """
     Get common request context for the index page.
     """
-    # Get sorting mode
-    sorting_mode = models.SubredditSortingMode(
-        request.path_params.get("sorting_mode", models.SubredditSortingMode.HOT)
-    )
+    try:
+        # Get sorting mode
+        sorting_mode = models.SubredditSortingMode(
+            request.path_params.get("sorting_mode", models.SubredditSortingMode.HOT)
+        )
 
-    # Get sorting period
-    sorting_period = models.SubredditSortingPeriod(
-        request.query_params.get("t", models.SubredditSortingPeriod.DAY)
-    )
+        # Get sorting period
+        sorting_period = models.SubredditSortingPeriod(
+            request.query_params.get("t", models.SubredditSortingPeriod.DAY)
+        )
+    # In this case it's probably just a wrong URL on the index, return 404
+    except Exception:
+        raise HTTPException(status_code=404)
 
     request_pagination = models.Pagination(
         before_post_id=request.query_params.get("before"),

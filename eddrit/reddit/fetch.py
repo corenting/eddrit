@@ -11,7 +11,9 @@ from eddrit.exceptions import (
     ContentCannotBeViewedError,
     RateLimitedError,
     SubredditNotFoundError,
+    UserBlockedError,
     UserNotFoundError,
+    UserSuspendedError,
     WikiPageNotFoundError,
 )
 from eddrit.reddit import parser
@@ -289,6 +291,12 @@ async def get_user_information(
         raise UserNotFoundError(res.status_code)
 
     json = res.json()
+
+    if json.get("data", {}).get("is_suspended", False):
+        raise UserSuspendedError(res.status_code)
+    if json.get("data", {}).get("is_blocked", False):
+        raise UserBlockedError(res.status_code)
+
     return parser.parse_user_information(json)
 
 

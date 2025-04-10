@@ -15,7 +15,7 @@ USER eddrit
 # To keep in sync with poetry.lock to speedup CI
 RUN /usr/local/bin/pip install --user \
     uvloop==0.21.0 \
-    lxml==5.3.1 \
+    lxml==5.3.2 \
     httptools==0.6.4 \
     MarkupSafe==3.0.2 \
     pyyaml==6.0.2

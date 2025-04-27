@@ -1,3 +1,4 @@
+from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
@@ -18,8 +19,6 @@ from eddrit.routes.common.context import (
     get_posts_pages_common_context,
     get_templates_common_context,
 )
-from starlette.exceptions import HTTPException
-
 from eddrit.routes.common.request import get_instance_scheme_and_netloc
 from eddrit.templates import templates
 
@@ -140,7 +139,6 @@ def _get_request_context_for_subreddit_or_user(
                 request.query_params.get("sort", models.UserSortingMode.NEW)
             )
         )
-
 
         # Get sorting period
         sorting_period = models.SubredditSortingPeriod(

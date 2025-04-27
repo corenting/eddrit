@@ -18,6 +18,8 @@ from eddrit.routes.common.context import (
     get_posts_pages_common_context,
     get_templates_common_context,
 )
+from starlette.exceptions import HTTPException
+
 from eddrit.routes.common.request import get_instance_scheme_and_netloc
 from eddrit.templates import templates
 
@@ -127,26 +129,30 @@ def _get_request_context_for_subreddit_or_user(
     """
     is_user = request.url.path.startswith("/user")
 
-    # Get sorting mode
-    sorting_mode = (
-        models.SubredditSortingMode(
-            request.path_params.get("sorting_mode", models.SubredditSortingMode.HOT)
-        )
-        if not is_user
-        else models.UserSortingMode(
-            request.query_params.get("sort", models.UserSortingMode.NEW)
-        )
-    )
-
-    # Get sorting period
-    sorting_period = models.SubredditSortingPeriod(
-        request.query_params.get(
-            "t",
-            models.SubredditSortingPeriod.DAY
+    try:
+        # Get sorting mode
+        sorting_mode = (
+            models.SubredditSortingMode(
+                request.path_params.get("sorting_mode", models.SubredditSortingMode.HOT)
+            )
             if not is_user
-            else models.SubredditSortingPeriod.ALL,
+            else models.UserSortingMode(
+                request.query_params.get("sort", models.UserSortingMode.NEW)
+            )
         )
-    )
+
+
+        # Get sorting period
+        sorting_period = models.SubredditSortingPeriod(
+            request.query_params.get(
+                "t",
+                models.SubredditSortingPeriod.DAY
+                if not is_user
+                else models.SubredditSortingPeriod.ALL,
+            )
+        )
+    except ValueError:
+        raise HTTPException(status_code=400)
 
     # Get pagination
     request_pagination = models.Pagination(

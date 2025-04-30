@@ -99,11 +99,12 @@ content_expanded) %}
 
 {% macro render_content(post, expanded) %}
 <div class="post-content">
-    {% if post.content.type.value == 'text' %}
+    {% if post.content.text %}
     <div class="post-content-text">
         {{ post.content.text|safe }}
     </div>
     {% endif %}
+
     {% if post.content.type.value == 'picture' %}
     {# Put src in data-src (here and below) if not expanded and setting it up later in JS to avoid Firefox loading all the ressources in templates #}
     <a href="{{ post.url }}">

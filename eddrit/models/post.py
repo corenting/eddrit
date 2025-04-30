@@ -43,14 +43,19 @@ class PostPicture:
 
 
 @dataclass(kw_only=True)
-class PostContentBase:
+class PostContent:
     """Base class representing a post content."""
 
-    type: PostContentType
+    # The default type is text, as it doesn't
+    # need any other fields,
+    # and other post types can still include texts
+    type: PostContentType = PostContentType.TEXT
+
+    text: str | None = None
 
 
 @dataclass(kw_only=True)
-class PicturePostContent(PostContentBase):
+class PicturePostContent(PostContent):
     """Class representing a picture post content."""
 
     type: PostContentType = PostContentType.PICTURE
@@ -59,7 +64,7 @@ class PicturePostContent(PostContentBase):
 
 
 @dataclass(kw_only=True)
-class LinkPostContent(PostContentBase):
+class LinkPostContent(PostContent):
     """Class representing a link post content.
 
     The link is not in the class as it the same as the post link."""
@@ -68,16 +73,7 @@ class LinkPostContent(PostContentBase):
 
 
 @dataclass(kw_only=True)
-class TextPostContent(PostContentBase):
-    """Class representing a text post content."""
-
-    type: PostContentType = PostContentType.TEXT
-
-    text: str
-
-
-@dataclass(kw_only=True)
-class VideoPostContent(PostContentBase):
+class VideoPostContent(PostContent):
     """Class representing a video post content with different sources."""
 
     type: PostContentType = PostContentType.VIDEO
@@ -85,7 +81,7 @@ class VideoPostContent(PostContentBase):
 
 
 @dataclass(kw_only=True)
-class EmbedPostContent(PostContentBase):
+class EmbedPostContent(PostContent):
     """Class representing a embed post content."""
 
     type: PostContentType = PostContentType.EMBED
@@ -96,7 +92,7 @@ class EmbedPostContent(PostContentBase):
 
 
 @dataclass(kw_only=True)
-class GalleryPostContent(PostContentBase):
+class GalleryPostContent(PostContent):
     """Class representing a gallery post content."""
 
     type: PostContentType = PostContentType.GALLERY
@@ -148,7 +144,7 @@ class Post:
     thumbnail_url: str
     thumbnail_is_icon: bool
     flair: Flair | None
-    content: PostContentBase
+    content: PostContent
     url: str
     is_sticky: bool
     comments_count: int

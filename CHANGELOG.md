@@ -1,3 +1,8 @@
+# Version 0.12.0
+
+- Fix error when trying to access the page of a suspended user
+- Fix error 500 when trying to access some wrong URLs
+
 # Version 0.11.1
 
 - Fix error when trying to access the page of a suspended user

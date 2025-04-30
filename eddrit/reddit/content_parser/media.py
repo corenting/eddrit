@@ -73,9 +73,17 @@ def get_post_gallery_content(
     try:
         # Get image urls in order
         gallery_data = api_post_data["gallery_data"].get("items")
-        sorted_image_ids_and_captions = [
-            (item["media_id"], item.get("caption", "")) for item in gallery_data
-        ]
+        sorted_image_ids_and_captions: list[tuple] = []
+        for item in gallery_data:
+            caption = item.get("caption", "")
+            if item.get("outbound_url"):
+                url = item["outbound_url"]
+                if caption == "":
+                    caption = f"<a href={url}>{url}</a>"
+                else:
+                    caption = f"{caption}<br /><a href={url}>{url}</a>"
+
+            sorted_image_ids_and_captions.append((item["media_id"], caption))
 
         media_metadata = api_post_data["media_metadata"]
         sorted_image_metadata_and_caption = [

@@ -47,12 +47,14 @@ def clean_content(initial_content: str) -> str:
     return content
 
 
-def get_post_content(api_post_data: dict[Hashable, Any]) -> models.PostContentBase:
-    # Text posts
-    if api_post_data["is_self"] and api_post_data.get("selftext_html"):
-        content = clean_content(api_post_data.get("selftext_html", ""))
+def get_post_content(api_post_data: dict[Hashable, Any]) -> models.PostContent:
+    text = None
+    if api_post_data.get("selftext_html"):
+        text = clean_content(api_post_data.get("selftext_html", ""))
 
-        return models.TextPostContent(text=content)
+    # Text posts
+    if api_post_data["is_self"] and text:
+        return models.PostContent(text=text)
 
     # Check if it's a crosspost.
     # If it's a case, use crosspost data as the normal
@@ -65,7 +67,9 @@ def get_post_content(api_post_data: dict[Hashable, Any]) -> models.PostContentBa
 
     # Gallery posts
     if "gallery_data" in api_post_data:
-        return get_post_gallery_content(api_post_data)
+        content = get_post_gallery_content(api_post_data)
+        content.text = text
+        return content
 
     # Media posts
     hint = api_post_data.get("post_hint")
@@ -79,11 +83,13 @@ def get_post_content(api_post_data: dict[Hashable, Any]) -> models.PostContentBa
         # First try video: if link returned, try image
         content = get_post_video_content(api_post_data)
         if type(content) is models.LinkPostContent:
-            return get_post_image_content(api_post_data)
+            content = get_post_image_content(api_post_data)
+
+        content.text = text
         return content
 
     # Default case: link posts
-    return models.LinkPostContent()
+    return models.LinkPostContent(text=text)
 
 
 def get_post_thumbnail(data: dict[Hashable, Any]) -> tuple[str, bool]:

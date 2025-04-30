@@ -8,13 +8,12 @@ from eddrit.models.post import (
     Post,
     PostComment,
     PostCommentShowMore,
-    PostContentBase,
+    PostContent,
     PostContentType,
     PostPicture,
     PostVideo,
     PostVideoFormat,
     PostWithComments,
-    TextPostContent,
     VideoPostContent,
 )
 from eddrit.models.settings import Settings

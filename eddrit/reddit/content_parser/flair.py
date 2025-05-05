@@ -11,11 +11,16 @@ def get_post_flair(api_post_data: dict[Hashable, Any]) -> models.Flair | None:
     text_color = (
         "black" if api_post_data["link_flair_text_color"] == "dark" else "white"
     )
+
     if (
         api_post_data["link_flair_background_color"]
         and api_post_data["link_flair_background_color"] != "transparent"
     ):
         bg_color = api_post_data["link_flair_background_color"]
+
+        # Reset the text color to black if we have a white background
+        if bg_color == "#ffffff" and text_color == "white":
+            text_color = "#000000"
     else:
         bg_color = "lightblue"
 

@@ -24,7 +24,12 @@ STATIC_RES_PATH_REPLACEMENT = "$STATIC_RES_PATH"
 MEDIA_HOSTING_DOMAINS = ["imgur.com"]
 
 # Media domains to display as links (embed that cannot be displayed, scripts needed etc.)
-MEDIA_DOMAINS_TO_DISPLAY_AS_LINK = ["tiktok.com", "twitter.com"]
+MEDIA_DOMAINS_TO_DISPLAY_AS_LINK = [
+    "bsky.app",
+    "tiktok.com",
+    "twitter.com",
+    "x.com",
+]
 
 WIKI_LINKS_REGEX = re.compile(r'href="https:\/\/old\.reddit\.com\/r\/(.*)\/wiki\/(.*)"')
 

@@ -1,3 +1,7 @@
+# Version 0.13.0 (unreleased)
+
+- Fix: do not attempt to display broken embed for bsky.app links
+
 # Version 0.12.0
 
 - Fix error when trying to access the page of a suspended user

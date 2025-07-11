@@ -48,7 +48,7 @@ class RateLimitedError(RedditContentUnavailableError):
     Raised when rate-limit is reached
     """
 
-    detail = "eddrit made too much requests to Reddit and was rate-limited.Try again later or try another instance"
+    detail = "eddrit made too much requests to Reddit and was rate-limited. Try again later or on another instance."
 
     def __init__(self) -> None:
         super().__init__(status_code=429)

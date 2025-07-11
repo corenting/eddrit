@@ -1,5 +1,6 @@
 from typing import Any
 
+import httpcore
 import httpx
 from starlette.responses import Response
 
@@ -11,9 +12,9 @@ async def http_exception(request: Any, exc: Exception) -> Response:
     """Global exception handler"""
     # If we get an httpx timeout, it probably mean reddit blocked us
     # or is down
-    if type(exc) is httpx.ReadTimeout:
+    if type(exc) is httpx.ReadTimeout or type(exc) is httpcore.ReadTimeout:
         status_code = 429
-        detail = "Cannot fetch content from Reddit: either Reddit is down or eddrit is currently blocked. Try again later or on another instance."
+        detail = "Cannot fetch content from Reddit: either Reddit is down or eddrit is currently blocked. Try again later or on another instance"
     else:
         # Try to check if there is a status_code or a detail error
         # (for RedditContentUnavailableError and HTTPException)

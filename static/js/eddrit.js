@@ -10,6 +10,7 @@ function setSrcForContentImageIfNeeded(content) {
 }
 
 // Toggle content button logic
+// biome-ignore lint/correctness/noUnusedVariables: used from template
 function togglePostVisibility(postId) {
 	// Get root elements
 	const rootElement = document.getElementById(`content-${postId}`);
@@ -41,6 +42,7 @@ function togglePostVisibility(postId) {
 }
 
 // Toggle logic for comment
+// biome-ignore lint/correctness/noUnusedVariables: used from template
 function toggleCommentVisibility(commentId) {
 	const contentElement = document.getElementById(
 		`comment-${commentId}-content`,
@@ -62,6 +64,7 @@ function toggleCommentVisibility(commentId) {
 }
 
 // Logic for fetching more comments
+// biome-ignore lint/correctness/noUnusedVariables: used from template
 function fetchCommentsChildren(
 	subredditName,
 	postId,
@@ -168,6 +171,7 @@ function setupGallery(galleryElement) {
 }
 
 // On gallery button click
+// biome-ignore lint/correctness/noUnusedVariables: used from template
 function onGalleryButtonClick(postId, move) {
 	const parentElement = document.getElementById(`gallery-${postId}`);
 	const totalLength = Number.parseInt(parentElement.dataset.totalLength);

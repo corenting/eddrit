@@ -1,6 +1,7 @@
-# Version 0.13.0 (unreleased)
+# Version 0.13.0
 
 - Fix: do not attempt to display broken embed for bsky.app links
+- Better error message when Reddit is down or the instance is being blocked by Reddit
 
 # Version 0.12.0
 

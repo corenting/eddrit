@@ -8,7 +8,7 @@ import httpx
 import valkey
 from loguru import logger
 
-from eddrit.config import VALKEY_URL, PROXY
+from eddrit.config import PROXY, VALKEY_URL
 from eddrit.constants import REDDIT_BASE_API_URL_HOST
 from eddrit.exceptions import RateLimitedError
 
@@ -146,8 +146,7 @@ def oauth_login() -> None:
 
         # Login
         client = httpx.Client(
-            http2=True,
-            proxy=PROXY
+            http2=True, proxy=PROXY
         )  # not async but not supported by cachier
         id_to_encode = f"{OFFICIAL_ANDROID_OAUTH_ID}:"
         res = client.post(

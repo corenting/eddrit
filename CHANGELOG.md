@@ -1,3 +1,8 @@
+# Version 0.14.0
+
+- Add proxy support (via the `PROXY`) environment variable. This can be used to bypass
+IP-based blocks, for example if proxying the instance through Cloudflare WARP.
+
 # Version 0.13.0
 
 - Fix: do not attempt to display broken embed for bsky.app links

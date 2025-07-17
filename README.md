@@ -75,6 +75,8 @@ the `VALKEY_URL` environment variable (or in your env file).
 The following configuration parameters are also available:
 - `DEBUG` (default is `false`): enable [starlette](https://www.starlette.io/) debug mode. Should not be needed outside of development.
 - `LOG_LEVEL` (default is `WARNING`): only log if the message level is superior or equal to this level.
+- `PROXY` (default is null): if set, requests to Reddit will be sent through the specified proxy. This can be used to bypass
+IP-based blocks, for example if proxying the instance through Cloudflare WARP.
 
 ## Donations
 

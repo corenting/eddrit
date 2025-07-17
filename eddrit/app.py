@@ -64,6 +64,7 @@ async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
     """Init the app lifespan: httpx client etc.."""
     async with httpx.AsyncClient(
         http2=True,
+        proxy=config.PROXY,
         event_hooks={
             "request": [oauth_before_request],
             "response": [oauth_after_request],

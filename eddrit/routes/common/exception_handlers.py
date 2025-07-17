@@ -1,3 +1,4 @@
+from json import JSONDecodeError
 from typing import Any
 
 import httpcore
@@ -15,6 +16,10 @@ async def http_exception(request: Any, exc: Exception) -> Response:
     if type(exc) is httpx.ReadTimeout or type(exc) is httpcore.ReadTimeout:
         status_code = 429
         detail = "Cannot fetch content from Reddit: either Reddit is down or eddrit is currently blocked. Try again later or on another instance"
+    # Blocked error HTML page
+    elif type(exc) is JSONDecodeError and "Your request has been blocked" in exc.doc:
+        status_code = 429
+        detail = "Cannot fetch content from Reddit: eddrit is currently blocked. Try again later or on another instance"
     else:
         # Try to check if there is a status_code or a detail error
         # (for RedditContentUnavailableError and HTTPException)

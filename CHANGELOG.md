@@ -1,3 +1,8 @@
+# Version 0.15.0
+
+- Fix: do not link to user page for `[deleted]` users when displaying comments
+- Fix: layout issues when toggling comment visibility
+
 # Version 0.14.0
 
 - Add proxy support (via the `PROXY`) environment variable. This can be used to bypass

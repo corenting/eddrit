@@ -17,6 +17,7 @@ class User:
     def is_deleted(self) -> bool:
         return self.name == "[deleted]"
 
+
 class UserSortingMode(Enum):
     NEW = "new"
     HOT = "hot"

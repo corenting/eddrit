@@ -174,7 +174,7 @@ function setupGallery(galleryElement) {
 // biome-ignore lint/correctness/noUnusedVariables: used from template
 function onGalleryButtonClick(postId, move) {
 	const parentElement = document.getElementById(`gallery-${postId}`);
-	const totalLength = Number.parseInt(parentElement.dataset.totalLength);
+	const totalLength = Number.parseInt(parentElement.dataset.totalLength, 10);
 
 	// Get current displayed and current index
 	const currentDisplayedElement = document.getElementById(
@@ -182,6 +182,7 @@ function onGalleryButtonClick(postId, move) {
 	);
 	const currentIndex = Number.parseInt(
 		currentDisplayedElement.dataset.currentIndex,
+		10,
 	);
 	const newIndex = currentIndex + move;
 

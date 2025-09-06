@@ -53,8 +53,8 @@ function toggleCommentVisibility(commentId) {
 	const toggleElement = document.getElementById(`comment-${commentId}-toggle`);
 
 	if (contentElement.style.display === "none") {
-		contentElement.style.display = "inherit";
-		childrenElement.style.display = "inherit";
+		contentElement.style.display = "unset";
+		childrenElement.style.display = "unset";
 		toggleElement.innerText = "[-]";
 	} else {
 		contentElement.style.display = "none";

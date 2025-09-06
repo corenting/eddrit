@@ -2,32 +2,27 @@
 
 {% macro render_author(comment, subreddit_name) %}
 {% set author_tag = '' %}
+<!-- Initial part of the span varies -->
 {% if comment.is_submitter %}
 <span class="post-flair post-comment-title-item" style="color: white; background-color: darkblue;">
-    <span>
-        <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a>
-    </span>
-</span>
 {% set author_tag = '<abbr title="Submitter">[S]</abbr>' %}
 {% elif comment.is_admin %}
 <span class="post-flair post-comment-title-item" style="color: white; background-color: red;">
-    <span>
-        <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a>
-    </span>
-</span>
 {% set author_tag = '<abbr title="Reddit admin">[A]</abbr>' %}
 {% elif comment.is_moderator %}
 <span class="post-flair post-comment-title-item" style="color: white; background-color: green;">
-    <span>
-        <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a>
-    </span>
-</span>
 {% set author_tag = '<abbr title="Moderator of /r/' ~ subreddit_name ~ ', speaking officially">[M]</abbr>' %}
 {% else %}
 <span class="post-comment-title-item">
-    <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a>
-</span>
 {% endif %}
+
+<!-- Common part -->
+{% if comment.author.is_deleted %}
+     {{ comment.author.name }}
+{% else %}
+    <a href="{{ url_for('user', path=comment.author.name) }}">{{ comment.author.name }}</a>
+{% endif %}
+</span>
 {{ common_macros.render_flair(comment.author.flair) }}
 {{ author_tag | safe }}
 {% endmacro %}

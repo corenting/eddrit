@@ -13,6 +13,9 @@ class User:
     over18: bool = False
     public_description: str = ""
 
+    @property
+    def is_deleted(self) -> bool:
+        return self.name == "[deleted]"
 
 class UserSortingMode(Enum):
     NEW = "new"

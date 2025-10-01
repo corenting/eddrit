@@ -1,5 +1,5 @@
 # Python base (venv and user)
-FROM python:3.13 AS base
+FROM python:3.13-slim AS base
 
 # Install dumb-init
 RUN apt-get update && apt-get install -y dumb-init
@@ -20,9 +20,13 @@ RUN /usr/local/bin/pip install --user \
     MarkupSafe==3.0.2 \
     pyyaml==6.0.2
 
-# Dependencies
+# Create a fake eddrit package to install dependencies
 WORKDIR /app/
-COPY . /app/
+RUN mkdir /app/eddrit
+COPY eddrit/__init__.py /app/eddrit/
+
+# Install dependencies with poetry with only the needed files
+COPY pyproject.toml poetry.lock README.md /app/
 ENV CPPFLAGS=-I/usr/local/include/python3.13/ \
     PATH=/home/eddrit/.local/bin:$PATH
 RUN /usr/local/bin/pip install --user .
@@ -32,7 +36,8 @@ FROM python:3.13-slim AS prod
 
 COPY --from=base /home/eddrit/.local /home/eddrit/.local
 COPY --from=base /usr/bin/dumb-init /usr/bin/
-COPY --from=base /app /app
+
+WORKDIR /app/
 
 # User
 RUN useradd -m eddrit && \
@@ -43,7 +48,6 @@ USER eddrit
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PATH=/home/eddrit/.local/bin:$PATH
-WORKDIR /app/
 
 # App
 COPY eddrit /app/eddrit

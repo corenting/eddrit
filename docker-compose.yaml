@@ -2,6 +2,8 @@ services:
   eddrit:
     container_name: eddrit
     image: ghcr.io/corenting/eddrit:dev
+    ports:
+      - 8080:8080
     environment:
       VALKEY_URL: redis://eddrit-valkey:6379
       PUBLIC_ORIGIN: https://my.host.name #optional

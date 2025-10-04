@@ -1,0 +1,11 @@
+services:
+  eddrit:
+    container_name: eddrit
+    image: ghcr.io/corenting/eddrit:dev
+    environment:
+      VALKEY_URL: redis://eddrit-valkey:6379
+      PUBLIC_ORIGIN: https://my.host.name #optional
+
+  valkey:
+    container_name: eddrit-valkey
+    image: valkey/valkey:alpine

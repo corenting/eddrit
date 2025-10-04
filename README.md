@@ -14,6 +14,8 @@ A lightweight alternative frontend for Reddit.
 
 </div>
 
+10/3/2025: this fork adds the ability to set the url with env variable PUBLIC_ORIGIN. I use traefik and without this addition, I could not access some resources behind reverse proxy.
+
 **Official instance**: [eddrit.com](https://eddrit.com)
 
 - Lightweight

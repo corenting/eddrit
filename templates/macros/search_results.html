@@ -7,7 +7,7 @@
         {# Thumbnail (first column) #}
         <span class="col-auto">
             {% if not subreddit.icon_url %}
-            <img class="post-image-thumbnail-default dark-inverted" src="{{ url_for('static_with_key', key=global.app_version, path='images/icons/globe.svg') }}" height="60" width="60">
+            <img class="post-image-thumbnail-default dark-inverted" src="{{ ORIGIN|default('') }}/static/images/icons/globe.svg?v={{ global.app_version }}" height="60" width="60">
             {% else %}
             <img class="post-image-thumbnail" src="{{ subreddit.icon_url }}" height="60" width="60">
             {% endif %}

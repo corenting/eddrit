@@ -15,7 +15,6 @@
 {% else %}
 <span class="post-comment-title-item">
 {% endif %}
-
 <!-- Common part -->
 {% if comment.author.is_deleted %}
      {{ comment.author.name }}
@@ -135,7 +134,7 @@
 
                         <a href="{{ comment.current_comment_url }}">
                             <small><img class="dark-inverted"
-                                    src="{{ url_for('static_with_key', key=global.app_version, path='images/icons/chat-left.svg') }}" />
+                                    src="{{ ORIGIN|default('') }}/static/images/icons/chat-left.svg?v={{ global.app_version }}" />
                             </small>
                             <small>full comments ({{ comment.comments_count }})</small>
                         </a>

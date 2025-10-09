@@ -1,0 +1,16 @@
+services:
+  eddrit:
+    container_name: eddrit
+    image: ghcr.io/corenting/eddrit:dev
+    ports:
+      - 8080:8080
+    environment:
+      VALKEY_URL: "redis://eddrit-valkey:6379"
+      # Uncomment FORWARDED_ALLOW_IPS: "*" if behind a reverse proxy
+      # and not exposed directly on the Internet.
+      # Else this is not safe, see https://docs.gunicorn.org/en/stable/settings.html#forwarded-allow-ips
+      # FORWARDED_ALLOW_IPS: "*"
+
+  valkey:
+    container_name: eddrit-valkey
+    image: valkey/valkey:alpine

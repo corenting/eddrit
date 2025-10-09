@@ -1,5 +1,5 @@
 # Python base (venv and user)
-FROM python:3.13-slim AS base
+FROM python:3.13 AS base
 
 # Install dumb-init
 RUN apt-get update && apt-get install -y dumb-init
@@ -17,8 +17,8 @@ RUN /usr/local/bin/pip install --user \
     uvloop==0.21.0 \
     lxml==5.4.0 \
     httptools==0.6.4 \
-    MarkupSafe==3.0.2 \
-    pyyaml==6.0.2
+    MarkupSafe==3.0.3 \
+    pyyaml==6.0.3
 
 # Create a fake eddrit package to install dependencies
 WORKDIR /app/
@@ -56,8 +56,9 @@ COPY templates /app/templates
 
 # Default log level
 ENV LOG_LEVEL=WARNING
+ENV FORWARDED_ALLOWED_IP="127.0.0.1,::1"
 
 # Expose and run app
 EXPOSE 8080
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["uvicorn", "eddrit.app:app", "--workers", "2", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["gunicorn", "eddrit.app:app", "--workers", "2", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8080"]

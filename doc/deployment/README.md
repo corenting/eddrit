@@ -46,8 +46,9 @@ The application can be configured through environment variables (if a `.env` fil
 
 Mandatory configuration:
 - `VALKEY_URL`: the URL to your [valkey](https://github.com/valkey-io/valkey) instance. Example: `valkeys://my_user:my_password@example.com:15345/1`
-- `FORWARDED_ALLOW_IPS` (if using a proxy such as nginx, traefik etc. in front of the app): a comma-separated list of the IP addresses used by the proxy, to trust for setting up the correct public URL for the instance. For example `127.0.0.1,::1` for a proxy running locally. Set to * to disable checking of IPs. This is useful for setups where you don’t know in advance the IP address of front-end, but instead have ensured via other means that only your authorized front-ends can access the app.
-Also make sure that the proxy sets the correct `X-Forwarded-For`, `X-Forwarded-Proto` etc. headers.
+- `FORWARDED_ALLOW_IPS` (if using a proxy such as nginx, traefik etc. in front of the app): a comma-separated list of the IP addresses used by the proxy, to trust for setting up the correct public URL for the instance.
+    - Set to `*` to disable checking of IPs. This is useful for setups where you don’t know in advance the IP address of the proxy, but **this is dangerous** if you have not ensured via other means (private network etc.) that only your proxy can access eddrit, and not final clients. Else this make you vulnerable to IP spoofing attacks for example.
+    - Also make sure that the proxy sets the correct `X-Forwarded-For`, `X-Forwarded-Proto` etc. headers.
 
 
 Optional configuration:

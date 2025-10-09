@@ -56,7 +56,7 @@ COPY templates /app/templates
 
 # Default log level
 ENV LOG_LEVEL=WARNING
-ENV FORWARDED_ALLOWED_IP="*"
+ENV FORWARDED_ALLOWED_IP="127.0.0.1,::1"
 
 # Expose and run app
 EXPOSE 8080

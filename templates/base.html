@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ settings.theme.value }}">
+<html
+ lang="en"
+ {% if settings.theme.value %}
+ data-theme="{{ settings.theme.value }}"
+ {% endif %}
+>
 
 <head>
     {% block head %}

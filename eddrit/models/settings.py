@@ -14,7 +14,7 @@ class LayoutMode(Enum):
 
 
 class Theme(Enum):
-    SYSTEM = ""  # unset
+    SYSTEM = None
     LIGHT = "light"
     DARK = "dark"
 

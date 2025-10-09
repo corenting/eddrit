@@ -1,3 +1,9 @@
+# Version 0.16.0
+
+- Fix issue #270 : system theme not working
+- Update docker image and documentation for deploying behind a proxy
+- Add `docker-compose.yml` example ([@jon6fingrs](https://github.com/jon6fingrs))
+
 # Version 0.15.0
 
 - Fix: do not link to user page for `[deleted]` users when displaying comments

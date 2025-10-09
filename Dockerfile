@@ -1,5 +1,5 @@
 # Python base (venv and user)
-FROM python:3.13-slim AS base
+FROM python:3.13 AS base
 
 # Install dumb-init
 RUN apt-get update && apt-get install -y dumb-init

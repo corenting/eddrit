@@ -56,8 +56,9 @@ COPY templates /app/templates
 
 # Default log level
 ENV LOG_LEVEL=WARNING
+ENV FORWARDED_ALLOWED_IP="*"
 
 # Expose and run app
 EXPOSE 8080
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["uvicorn", "eddrit.app:app", "--workers", "2", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["gunicorn", "eddrit.app:app", "--workers", "2", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8080"]

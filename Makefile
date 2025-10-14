@@ -1,7 +1,6 @@
 PYTHON := poetry run
-BIOME := npx @biomejs/biome@latest
 SRC = eddrit
-JS_SRC = static/js
+BIOME_FILES = static/js static/css/main.css static/css/nojs.css
 
 .PHONY: init
 .SILENT: init
@@ -12,8 +11,8 @@ init:
 format:
 	$(PYTHON) ruff format $(SRC)
 	$(PYTHON) ruff check --fix $(SRC)
-	$(BIOME) format --write $(JS_SRC)
-	$(BIOME) check --write $(JS_SRC)
+	biome format --write $(BIOME_FILES)
+	biome check --write $(BIOME_FILES)
 
 
 .PHONY: style
@@ -21,7 +20,7 @@ style:
 	$(PYTHON) ruff format --check $(SRC)
 	$(PYTHON) ruff check $(SRC)
 	$(PYTHON) pyright -- $(SRC)
-	$(BIOME) lint $(JS_SRC)
+	biome lint $(BIOME_FILES)
 
 .PHONY: test
 .SILENT: test

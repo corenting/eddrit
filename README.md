@@ -37,6 +37,12 @@ Like Nitter, the URLs are identical to reddit, so if you can just replace `reddi
 
 If you wish to setup and configure your instance, please check [this](./doc/deployment/README.md) documentation.
 
+## Local development
+
+Tooling is managed through [mise](https://github.com/jdx/mise).
+
+A `Makefile` is provided to quickly run basic tasks (linting, formatting, running the app etc.).
+
 ## Donations
 
 If you wish to support the app, donations are possible on [Github Sponsors](https://github.com/sponsors/corenting/) or [here](https://corenting.fr/donate).

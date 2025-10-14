@@ -1,5 +1,5 @@
 /* Special stylesheet when javascript is disabled */
 
 .needs-js {
-  display: none;
+	display: none;
 }

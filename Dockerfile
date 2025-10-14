@@ -16,7 +16,7 @@ USER eddrit
 RUN /usr/local/bin/pip install --user \
     uvloop==0.21.0 \
     lxml==5.4.0 \
-    httptools==0.6.4 \
+    httptools==0.7.1 \
     MarkupSafe==3.0.3 \
     pyyaml==6.0.3
 

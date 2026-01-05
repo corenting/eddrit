@@ -14,8 +14,8 @@ USER eddrit
 # for some architectures directly so that they can be cached.
 # To keep in sync with poetry.lock to speedup CI
 RUN /usr/local/bin/pip install --user \
-    uvloop==0.21.0 \
-    lxml==5.4.0 \
+    uvloop==0.22.1 \
+    lxml==6.0.2 \
     httptools==0.7.1 \
     MarkupSafe==3.0.3 \
     pyyaml==6.0.3

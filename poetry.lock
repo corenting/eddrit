@@ -1151,14 +1151,14 @@ files = [
 
 [[package]]
 name = "starlette"
-version = "0.50.0"
+version = "0.51.0"
 description = "The little ASGI library that shines."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "starlette-0.50.0-py3-none-any.whl", hash = "sha256:9e5391843ec9b6e472eed1365a78c8098cfceb7a74bfd4d6b1c0c0095efb3bca"},
-    {file = "starlette-0.50.0.tar.gz", hash = "sha256:a2a17b22203254bcbc2e1f926d2d55f3f9497f769416b3190768befe598fa3ca"},
+    {file = "starlette-0.51.0-py3-none-any.whl", hash = "sha256:fb460a3d6fd3c958d729fdd96aee297f89a51b0181f16401fe8fd4cb6129165d"},
+    {file = "starlette-0.51.0.tar.gz", hash = "sha256:4c4fda9b1bc67f84037d3d14a5112e523509c369d9d47b111b2f984b0cc5ba6c"},
 ]
 
 [package.dependencies]

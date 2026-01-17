@@ -18,7 +18,8 @@ RUN /usr/local/bin/pip install --user \
     lxml==6.0.2 \
     httptools==0.7.1 \
     MarkupSafe==3.0.3 \
-    pyyaml==6.0.3
+    pyyaml==6.0.3 \
+    curl-cffi==0.14.0
 
 # Create a fake eddrit package to install dependencies
 WORKDIR /app/

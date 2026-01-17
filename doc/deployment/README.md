@@ -28,7 +28,6 @@ The following architectures are supported by the Docker image:
 - `linux/i386`
 - `linux/arm64`
 - `linux/arm/v7`
-- `linux/ppc64le`
 
 ### Option 2: without Docker
 

@@ -22,6 +22,7 @@ from eddrit.routes.pages import (
     subreddit_user_and_wiki,
 )
 from eddrit.routes.xhr import routes
+from eddrit.utils.http import get_httpx_async_transport
 from eddrit.utils.middlewares import (
     CookiesRefreshMiddleware,
     CurrentHostMiddleware,
@@ -64,6 +65,7 @@ async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
     """Init the app lifespan: httpx client etc.."""
     async with httpx.AsyncClient(
         http2=True,
+        transport=get_httpx_async_transport(),
         proxy=config.PROXY,
         event_hooks={
             "request": [oauth_before_request],

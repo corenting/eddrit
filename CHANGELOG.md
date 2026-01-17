@@ -1,3 +1,8 @@
+# Version 0.17.0
+
+- Attempt to better mimick Android in requests to Reddit to avoid being blocked by Reddit due to fingerprinting
+- Drop support of `ppc64le` platform
+
 # Version 0.16.0
 
 - Fix issue #270 : system theme not working

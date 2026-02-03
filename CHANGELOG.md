@@ -1,3 +1,7 @@
+# Version 0.18.0
+
+- Display subreddit name (r/<name>) in search result (fix #288)
+
 # Version 0.17.0
 
 - Attempt to better mimick Android in requests to Reddit to avoid being blocked by Reddit due to fingerprinting

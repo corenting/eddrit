@@ -64,6 +64,10 @@ blockquote > p {
 	.phone-only {
 		display: block;
 	}
+
+	nav {
+		flex-wrap: wrap;
+	}
 }
 
 /* Dark theme stuff (either set through JS or system) */

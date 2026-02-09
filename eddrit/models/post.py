@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 from eddrit.models.user import Flair, User
 
 
-class PostContentType(str, Enum):
+class PostContentType(StrEnum):
     GALLERY = "gallery"
     PICTURE = "picture"
     LINK = "link"
@@ -16,7 +16,7 @@ class PostContentType(str, Enum):
     EMBED = "embed"
 
 
-class PostVideoFormat(str, Enum):
+class PostVideoFormat(StrEnum):
     MP4 = "video/mp4"
     DASH = "application/dash+xml"
 

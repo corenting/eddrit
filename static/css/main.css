@@ -68,6 +68,10 @@ blockquote > p {
 	nav {
 		flex-wrap: wrap;
 	}
+
+	nav > ul {
+		flex-wrap: wrap;
+	}
 }
 
 /* Dark theme stuff (either set through JS or system) */

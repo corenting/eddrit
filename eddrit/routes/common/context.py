@@ -12,7 +12,7 @@ from eddrit.routes.common.cookies import get_bool_setting_value_from_cookie
 EnumTypeVar = TypeVar("EnumTypeVar", bound=Enum)
 
 
-def _get_setting_with_default_fallback(
+def _get_setting_with_default_fallback[EnumTypeVar: Enum](
     cookies_source: dict[str, str],
     setting_name: str,
     enum_cls: type[EnumTypeVar],

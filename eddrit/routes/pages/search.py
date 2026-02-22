@@ -1,5 +1,5 @@
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import RedirectResponse, Response
 from starlette.routing import Route
 
 from eddrit.reddit.fetch import search_posts, search_subreddits
@@ -12,6 +12,8 @@ from eddrit.templates import templates
 
 async def search(request: Request) -> Response:
     input_text = request.query_params.get("q", "")
+    if input_text == "":
+        return RedirectResponse("/")
 
     subreddit_search_results = await search_subreddits(
         request.state.http_client, input_text

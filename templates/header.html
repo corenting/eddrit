@@ -1,38 +1,43 @@
-<a class="phone-only" href="{{ url_for('root', path='') }}">
+<a class="small-only" href="{{ url_for('root', path='') }}">
     <img src="{{ url_for('static_with_key', key=global.app_version, path='images/logo.svg') }}" width="132" height="28">
 </a>
 
 <nav class="align-items-baseline">
     <ul>
         {# Logo #}
-        <li class="desktop-only">
+        <li class="not-small-only">
             <a href="{{ url_for('root', path='') }}">
-                <img src="{{ url_for('static_with_key', key=global.app_version, path='images/logo.svg') }}" width="132" height="28">
+                <img src="{{ url_for('static_with_key', key=global.app_version, path='images/logo.svg') }}" width="132"
+                    height="28">
             </a>
         </li>
 
         {# Main links #}
         <li>
-            <a href="/">
-                Popular
-            </a>
+            <details class="dropdown">
+                <summary>
+                    Subreddit
+                </summary>
+                <ul class="nav-subreddit-dropdown" dir="ltr">
+                    <li><a href="/">/r/popular</a></li>
+                    <li><a href="/r/all">/r/all</a></li>
+                </ul>
+            </details>
+        </li>
+        <li class="small-only">
+            <a href="/settings">Settings</a>
         </li>
         <li>
-            <a href="/r/all">
-                All
-            </a>
+            <form role="search" class="nav-search" action="/search" method="get">
+                <input type="search" id="search" name="q" placeholder="Search">
+                <input type="submit" value="  ↵   " />
+            </form>
         </li>
     </ul>
 
-    <ul class="align-items-baseline">
-        <li >
-            <form role="search" class="nav-search" action="/search" method="get">
-                <input type="search" id="search" name="q" placeholder="Search">
-                <input type="submit" value="Search" />
-            </form>
-        </li>
+    <ul class="not-small-only align-items-baseline">
         <li>
-            <a href="/settings" role="button" class="outline secondary">⚙️</a>
+            <a href="/settings">Settings</a>
         </li>
     </ul>
 </nav>

@@ -15,6 +15,8 @@ body {
 	--pico-line-height: 1.15;
 	--pico-font-size: 16px;
 	--post-content: 35rem;
+
+	--pico-nav-element-spacing-vertical: 0.8rem;
 }
 
 a:link {
@@ -44,25 +46,31 @@ blockquote > p {
 	margin-bottom: 0;
 }
 
-/* desktop-only and phone-only classes */
+/* nav wrapping on small screen */
 
-@media all and (min-width: 1200px) {
-	.desktop-only {
-		display: block;
+@media all and (max-width: 1023px) {
+	nav {
+		flex-wrap: wrap;
 	}
 
-	.phone-only {
+	nav > ul {
+		flex-wrap: wrap;
+	}
+}
+
+/* not-small-only: hidden on phone (<576px), visible on tablet and desktop */
+
+@media all and (max-width: 575px) {
+	.not-small-only {
 		display: none;
 	}
 }
 
-@media all and (max-width: 1199px) {
-	.desktop-only {
-		display: none;
-	}
+/* small-only: visible on phone (<576px), hidden on tablet and desktop */
 
-	.phone-only {
-		display: block;
+@media all and (min-width: 576px) {
+	.small-only {
+		display: none;
 	}
 }
 
@@ -78,10 +86,19 @@ html[data-theme="dark"] .dark-inverted {
 	filter: invert(100%);
 }
 
+html[data-theme="light"] .dark-inverted {
+	filter: unset;
+}
+
 /* Nav */
 
 .nav-search {
 	margin-bottom: 0;
+}
+
+details.dropdown > summary + ul.nav-subreddit-dropdown {
+	left: auto;
+	width: fit-content;
 }
 
 /* Posts */

@@ -15,6 +15,8 @@ body {
 	--pico-line-height: 1.15;
 	--pico-font-size: 16px;
 	--post-content: 35rem;
+
+	--pico-nav-element-spacing-vertical: 0.8rem;
 }
 
 a:link {
@@ -44,9 +46,9 @@ blockquote > p {
 	margin-bottom: 0;
 }
 
-/* desktop-only and phone-only classes */
+/* desktop-only and phone-only classes + nav wrapping */
 
-@media all and (min-width: 1200px) {
+@media all and (min-width: 1024px) {
 	.desktop-only {
 		display: block;
 	}
@@ -56,7 +58,7 @@ blockquote > p {
 	}
 }
 
-@media all and (max-width: 1199px) {
+@media all and (max-width: 1023px) {
 	.desktop-only {
 		display: none;
 	}
@@ -74,6 +76,22 @@ blockquote > p {
 	}
 }
 
+/* not-phone-only: hidden on phone (<576px), visible on tablet and desktop */
+
+@media all and (max-width: 575px) {
+	.not-phone-only {
+		display: none;
+	}
+}
+
+/* small-only: visible on phone (<576px), hidden on tablet and desktop */
+
+@media all and (min-width: 576px) {
+	.small-only {
+		display: none;
+	}
+}
+
 /* Dark theme stuff (either set through JS or system) */
 
 @media (prefers-color-scheme: dark) {
@@ -86,10 +104,19 @@ html[data-theme="dark"] .dark-inverted {
 	filter: invert(100%);
 }
 
+html[data-theme="light"] .dark-inverted {
+	filter: unset;
+}
+
 /* Nav */
 
 .nav-search {
 	margin-bottom: 0;
+}
+
+details.dropdown > summary + ul.nav-subreddit-dropdown {
+	left: auto;
+	width: fit-content;
 }
 
 /* Posts */

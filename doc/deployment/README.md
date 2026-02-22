@@ -34,7 +34,7 @@ The following architectures are supported by the Docker image:
 If you know how to deploy a Python ASGI application, you can also deploy it directly without Docker.
 
 For example, with [uvicorn](https://uvicorn.org/):
-1. Make sure Python >=3.13 is installed on your system as it's the minimum version supported by eddrit.
+1. Make sure Python >=3.14 is installed on your system as it's the minimum version supported by eddrit.
 2. Install [Poetry](https://python-poetry.org/) which is used to manage dependencies of the project.
 3. Download/clone the repository and run `poetry install --only main` to install the application.
 4. You can then run the app through uvicorn, for example with the following command: `poetry run uvicorn eddrit.app:app`

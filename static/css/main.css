@@ -46,27 +46,9 @@ blockquote > p {
 	margin-bottom: 0;
 }
 
-/* desktop-only and phone-only classes + nav wrapping */
-
-@media all and (min-width: 1024px) {
-	.desktop-only {
-		display: block;
-	}
-
-	.phone-only {
-		display: none;
-	}
-}
+/* nav wrapping on small screen */
 
 @media all and (max-width: 1023px) {
-	.desktop-only {
-		display: none;
-	}
-
-	.phone-only {
-		display: block;
-	}
-
 	nav {
 		flex-wrap: wrap;
 	}
@@ -76,10 +58,10 @@ blockquote > p {
 	}
 }
 
-/* not-phone-only: hidden on phone (<576px), visible on tablet and desktop */
+/* not-small-only: hidden on phone (<576px), visible on tablet and desktop */
 
 @media all and (max-width: 575px) {
-	.not-phone-only {
+	.not-small-only {
 		display: none;
 	}
 }

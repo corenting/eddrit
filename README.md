@@ -14,43 +14,34 @@ A lightweight alternative frontend for Reddit.
 
 </div>
 
-**Official instance**: [eddrit.com](https://eddrit.com)
+> **🌍 Official demo instance**: [eddrit.com](https://eddrit.com)
 
-- Lightweight
-- No ads
-- Compact design (closer to [old.reddit.com](https://old.reddit.com) than to the redesign)
-- Better mobile support
-- No need to register for an OAuth2 identifier for self-hosting: mimic the official Android app by default to bypass rate-limiting.
-- Basic RSS support (for subreddits and posts): fetch the original RSS feed from Reddit, and rewrite the URLs to point to the current eddrit instance.
+- Lightweight, with no ads
+- Compact design inspired by [old.reddit.com](https://old.reddit.com) rather than the redesign
+- Mobile-friendly
+- No OAuth2 registration needed for self-hosting: mimics the official Android app by default to bypass rate-limiting
+- Basic RSS support for subreddits and posts: fetches the original feed from Reddit and rewrites URLs to point to the current eddrit instance
 
-Inspired by [Nitter](https://github.com/zedeus/nitter), an alternative frontend for Twitter.
-
-Written with Python & [Starlette](https://www.starlette.io/).
-
-## Usage
-
-You can use the official instance at [eddrit.com](https://eddrit.com).
-
-Like Nitter, the URLs are identical to reddit, so if you can just replace `reddit.com` by `eddrit.com` to open a Reddit page in eddrit.
-
-## Deployment (for self-hosting)
-
-If you wish to setup and configure your instance, please check [this](./doc/deployment/README.md) documentation.
-
-## Local development
-
-Tooling is managed through [mise](https://github.com/jdx/mise).
-
-A `Makefile` is provided to quickly run basic tasks (linting, formatting, running the app etc.).
+URLs follow the same structure as Reddit, so you can simply replace `reddit.com` with `eddrit.com` to open any page in eddrit.
 
 ## Donations
 
 If you wish to support the app, donations are possible on [Github Sponsors](https://github.com/sponsors/corenting/) or [here](https://corenting.fr/donate).
 
+## Deployment (self-hosting)
+
+To setup and configure your own instance, see the [deployment documentation](./doc/deployment/README.md).
+
+## Development
+
+For local development instructions, see the [development documentation](./doc/dev.md).
+
 ## Credits
 
-- [Bootstrap Icons](https://icons.getbootstrap.com/) for the icons used in the frontend
-- [dash.js](https://github.com/Dash-Industry-Forum/dash.js): library used for DASH videos in the frontend
-- [Pico.css](https://picocss.com/): CSS framework used for the frontend
-- [redlib](https://github.com/redlib-org/redlib): for the backend Android app spoofing code
-- [Video.js](https://videojs.com/): the library used for the videos in the frontend
+eddrit is inspired by [Nitter](https://github.com/zedeus/nitter), an alternative frontend for Twitter.
+
+- [Bootstrap Icons](https://icons.getbootstrap.com/) for the icons
+- [dash.js](https://github.com/Dash-Industry-Forum/dash.js) for DASH video playback
+- [Pico.css](https://picocss.com/) as the CSS framework
+- [redlib](https://github.com/redlib-org/redlib) for the Android app spoofing code
+- [Video.js](https://videojs.com/) for video playback

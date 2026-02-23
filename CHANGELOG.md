@@ -1,6 +1,8 @@
 # Version 0.18.0
 
 - Display subreddit name (r/<name>) in search result (fix #288)
+- Rework navigation UI (search, subreddit list)
+- Fix icons colors being wrong sometimes
 
 # Version 0.17.0
 

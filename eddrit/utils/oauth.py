@@ -91,11 +91,9 @@ async def oauth_before_request(
 
     # For multi subreddits, the user-agent doesn't work so tweak it
     if "+" in request.url.path:
-        request.headers.encoding = "utf-8"
         request.headers["User-Agent"] = request.headers["User-Agent"].replace(
-            "Android", "Andr\u200boid"
+            "Android", "Amdroid"
         )
-
 
 def _get_login_headers_from_cache() -> dict[str, Any]:
     """

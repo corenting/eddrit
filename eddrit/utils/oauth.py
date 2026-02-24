@@ -95,6 +95,7 @@ async def oauth_before_request(
             "Android", "Amdroid"
         )
 
+
 def _get_login_headers_from_cache() -> dict[str, Any]:
     """
     Get the login headers from cache

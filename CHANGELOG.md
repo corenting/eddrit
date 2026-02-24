@@ -1,3 +1,7 @@
+# Version 0.18.1
+
+- Fix instance not being able to fetch multi-reddits if not behind a proxy
+
 # Version 0.18.0
 
 - Display subreddit name (r/<name>) in search result (fix #288)

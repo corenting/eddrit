@@ -22,7 +22,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Install mise and dependencies
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
         with:
           experimental: true # [default: false] enable experimental features
       - name: Install dependencies

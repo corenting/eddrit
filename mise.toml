@@ -1,5 +1,5 @@
 [tools]
-"node" = "22"
-"npm:@biomejs/biome" = "2.2.4"
+"node" = "24"
+"npm:@biomejs/biome" = "2.4.7"
 "pipx:poetry" = "latest"
 "python" = "3.14"

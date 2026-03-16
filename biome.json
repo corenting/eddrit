@@ -1,9 +1,22 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
-  "formatter": {
-    "enabled": true
-  },
-  "linter": {
-    "enabled": true
-  }
+	"$schema": "https://biomejs.dev/schemas/2.4.7/schema.json",
+	"formatter": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true
+	},
+	"files": {
+		"includes": [
+			"static/js",
+			"static/css/main.css",
+			"static/css/nojs.css",
+			"**/*.json"
+		]
+	},
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	}
 }

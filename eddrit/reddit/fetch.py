@@ -1,21 +1,10 @@
 from collections.abc import Iterable
 from dataclasses import asdict
-from json import JSONDecodeError
 
 import httpx
-from loguru import logger
 
 from eddrit import models
 from eddrit.constants import REDDIT_BASE_API_URL
-from eddrit.exceptions import (
-    ContentCannotBeViewedError,
-    RateLimitedError,
-    SubredditNotFoundError,
-    UserBlockedError,
-    UserNotFoundError,
-    UserSuspendedError,
-    WikiPageNotFoundError,
-)
 from eddrit.reddit import parser
 
 
@@ -186,7 +175,6 @@ async def _get_rss_feed_from_reddit(
     url += ".rss"
 
     res = await http_client.get(url, params=query_params)
-    _raise_if_content_is_not_available(res, is_json=False)
 
     rss_feed_content = res.text
     rss_feed_content = rss_feed_content.replace(
@@ -243,8 +231,6 @@ async def get_wiki_page(
     url = f"{REDDIT_BASE_API_URL}/r/{subreddit}/wiki/{page_name}.json"
     res = await http_client.get(url)
 
-    _raise_if_content_is_not_available(res)
-
     json_content = res.json()
     content = parser.clean_content(json_content["data"]["content_html"])
 
@@ -268,36 +254,14 @@ async def _get_posts_for_url(
     query_params: dict | None = None,
 ) -> tuple[list[models.Post | models.PostComment], models.Pagination]:
     res = await http_client.get(url, params=query_params)
-    try:
-        json_res = res.json()
-    except JSONDecodeError:
-        logger.exception(
-            "Cannot parse JSON from response with status code {api_status_code} and content {api_content}",
-            api_status_code=res.status_code,
-            api_content=res.text,
-        )
-        raise
-    else:
-        return parser.parse_posts_and_comments(json_res)
+    return parser.parse_posts_and_comments(res.json())
 
 
 async def get_user_information(
     http_client: httpx.AsyncClient, name: str
 ) -> models.User:
     res = await http_client.get(f"{REDDIT_BASE_API_URL}/user/{name}/about/.json")
-
-    # If user not found, the API redirects us to search endpoint
-    if res.status_code == 404:
-        raise UserNotFoundError(res.status_code)
-
-    json = res.json()
-
-    if json.get("data", {}).get("is_suspended", False):
-        raise UserSuspendedError(res.status_code)
-    if json.get("data", {}).get("is_blocked", False):
-        raise UserBlockedError(res.status_code)
-
-    return parser.parse_user_information(json)
+    return parser.parse_user_information(res.json())
 
 
 async def _get_subreddit_information(
@@ -306,12 +270,6 @@ async def _get_subreddit_information(
     res = await http_client.get(
         f"{REDDIT_BASE_API_URL}/r/{name}/about/.json?raw_json=1"
     )
-
-    # If subreddit not found, the API redirects us to search endpoint
-    if res.status_code == 302 and "search" in res.headers["location"]:
-        raise SubredditNotFoundError(status_code=404)
-
-    _raise_if_content_is_not_available(res)
 
     json = res.json()
     return parser.parse_subreddit_information(name, json["data"]["over18"], json)
@@ -323,54 +281,5 @@ async def _get_multi_information(
     # Check if there is a redirect to know if it's an NSFW multi
     res = await http_client.head(f"{REDDIT_BASE_API_URL}/r/{name}")
 
-    if len(res.history) > 0 and res.history[0].status_code != 200:
-        raise SubredditNotFoundError(status_code=404)
-
     over18 = res.status_code == 302 and "over18" in res.headers["location"]
     return parser.parse_subreddit_information(name, over18)
-
-
-def _raise_if_content_is_not_available(
-    api_res: httpx.Response, is_json: bool = True
-) -> None:
-    """Raise an exception if the subreddit is not available (banned, private etc.)"""
-
-    # Check for HTML 403 blocked page
-    if api_res.status_code == 403 and "blocked by network security" in api_res.text:
-        raise RateLimitedError()
-
-    json = {}
-    if is_json:
-        try:
-            json = api_res.json()
-        except JSONDecodeError:
-            logger.exception(
-                "Cannot parse JSON from response with status code {api_status_code} and content {api_content}",
-                api_status_code=api_res.status_code,
-                api_content=api_res.text,
-            )
-            return None
-
-    # Check for not found wiki pages
-    if (
-        api_res.status_code == 404
-        and is_json
-        and json.get("reason") == "PAGE_NOT_FOUND"
-    ):
-        raise WikiPageNotFoundError(status_code=api_res.status_code)
-
-    # Check for banned subreddits
-    if api_res.status_code == 404 and is_json and json.get("reason") == "banned":
-        raise ContentCannotBeViewedError(api_res.status_code, "banned")
-
-    # Check for subreddits that cannot be viewed (quarantine, privated, gated)
-    if api_res.status_code == 403 and is_json and (reason := json.get("reason")):
-        raise ContentCannotBeViewedError(api_res.status_code, reason)
-
-    # Check for subreddit not found
-    if len(api_res.history) > 0 and api_res.history[0].status_code != 200:
-        raise SubredditNotFoundError(status_code=api_res.status_code)
-
-    # If error, consider we didn't find the subreddit
-    if is_json and json.get("error") == 404:
-        raise SubredditNotFoundError(status_code=api_res.status_code)

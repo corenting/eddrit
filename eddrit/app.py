@@ -22,7 +22,10 @@ from eddrit.routes.pages import (
     subreddit_user_and_wiki,
 )
 from eddrit.routes.xhr import routes
-from eddrit.utils.http import get_httpx_async_transport
+from eddrit.utils.httpx import (
+    get_httpx_async_transport,
+    raise_if_content_is_not_available,
+)
 from eddrit.utils.middlewares import (
     CookiesRefreshMiddleware,
     CurrentHostMiddleware,
@@ -69,7 +72,7 @@ async def lifespan(app: Starlette) -> typing.AsyncIterator[State]:
         proxy=config.PROXY,
         event_hooks={
             "request": [oauth_before_request],
-            "response": [oauth_after_request],
+            "response": [oauth_after_request, raise_if_content_is_not_available],
         },
     ) as client:
         yield {"http_client": client}

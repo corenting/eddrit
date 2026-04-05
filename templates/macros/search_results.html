@@ -16,14 +16,14 @@
         {# Content (second column) #}
         <div class="col">
             {# Title + flairs #}
-            <div class="col post-title">
+            <div class="post-title">
                 <a href="{{ url_for('subreddit', path=subreddit.name) }}">
                     <strong>{{ subreddit.title }} - r/{{ subreddit.name }}</strong>
                 </a>
             </div>
 
             {# Infos #}
-            <span class="col">
+            <span>
                 <span class="row align-items-center">
                     {# Author / subreddit etc. #}
                     <small class="col">

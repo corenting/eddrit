@@ -29,7 +29,7 @@ content_expanded) %}
         {# Content (second column) #}
         <div class="col">
             {# Title + flairs #}
-            <div class="col post-title">
+            <div class="post-title">
                 <a href="{{ post.url }}">
                     <strong class="{{ 'post-sticky' if show_if_post_is_sticky and post.is_sticky else '' }}">{{
                         post.title }}</strong>
@@ -43,7 +43,7 @@ content_expanded) %}
             </div>
 
             {# Infos #}
-            <span class="col">
+            <span>
                 <span class="row align-items-center">
                     {# Open/close preview button #}
                     {% if post.content.type.value != "link" %}

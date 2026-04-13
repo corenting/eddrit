@@ -283,3 +283,4 @@ async def _get_multi_information(
 
     over18 = res.status_code == 302 and "over18" in res.headers["location"]
     return parser.parse_subreddit_information(name, over18)
+

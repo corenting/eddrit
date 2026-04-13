@@ -191,10 +191,21 @@ async def subreddit_or_user(request: Request) -> Response:
         is_user,
     )
 
-    # Get links
     links: list[Link] = []
+
+    # Add "Add to favorites" link for subreddits
+    if not is_user:
+        links.append(
+            Link(
+                name="Add to favorites",
+                target="#",
+            )
+        )
+
+    # Add wiki link if it's a subreddit with wiki enabled
     if not is_user and information.wiki_enabled:  # type: ignore
         links.append(Link(name="Wiki", target=f"/r/{request.path_params['name']}/wiki"))
+
 
     return templates.TemplateResponse(
         "posts_list.html",
@@ -207,9 +218,9 @@ async def subreddit_or_user(request: Request) -> Response:
                 sorting_mode,
                 sorting_period,
             ),
+            "rss_feed_url": _get_rss_feed_url(request),
             **get_templates_common_context(request),
             **get_canonical_url_context(request),
-            "rss_feed_url": _get_rss_feed_url(request),
         },
     )
 

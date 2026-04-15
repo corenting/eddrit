@@ -6,6 +6,8 @@ eddrit requires two components:
 - the app itself
 - a [valkey](https://github.com/valkey-io/valkey) instance (used to store OAuth tokens)
 
+**A proxy is also recommended for public instances, or if your hosting provider’s IP addresses are blocked by Reddit.** A common solution is to use [Cloudflare WARP](https://developers.cloudflare.com/warp-client/) as a proxy, as it has [a proxy mode](https://blog.cloudflare.com/announcing-warp-for-linux-and-proxy-mode/). You then need to configure the app to use it (see the configuration section below).
+
 ## Installation
 
 You can run the app through Docker, or directly if you know how to deploy a Python ASGI application.
@@ -51,4 +53,4 @@ Mandatory configuration:
 Optional configuration:
 - `DEBUG` (default: `false`): enable [starlette](https://www.starlette.io/) debug mode. Should not be needed outside of development.
 - `LOG_LEVEL` (default: `WARNING`): only log messages at or above this level.
-- `PROXY` (default: none): if set, requests to Reddit will be sent through the specified proxy. **This is recommended for public instances, or if your hosting provider’s IP addresses are blocked by Reddit.** A common solution is to use [Cloudflare WARP](https://developers.cloudflare.com/warp-client/) as a proxy, which has [a proxy mode](https://blog.cloudflare.com/announcing-warp-for-linux-and-proxy-mode/).
+- `PROXY` (default: none): if set, requests to Reddit will be sent through the specified proxy.

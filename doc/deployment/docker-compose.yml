@@ -6,9 +6,13 @@ services:
       - 8080:8080
     environment:
       VALKEY_URL: "redis://eddrit-valkey:6379"
-      # Uncomment FORWARDED_ALLOW_IPS: "*" if behind a reverse proxy
-      # and not exposed directly on the Internet.
-      # Else this is not safe, see https://docs.gunicorn.org/en/stable/settings.html#forwarded-allow-ips
+      # FORWARDED_ALLOW_IPS is required when using a reverse proxy in front
+      # of the app. Set it to a comma-separated list of the proxy's IPs, or
+      # to "*" to disable IP checking if the proxy's IP is not known in
+      # advance. Setting it to "*" is only safe if you have ensured through
+      # other means (e.g. a private network) that only your proxy can reach
+      # eddrit and not end clients directly. Otherwise, this makes you
+      # vulnerable to IP spoofing attacks.
       # FORWARDED_ALLOW_IPS: "*"
 
   valkey:

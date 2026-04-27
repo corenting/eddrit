@@ -44,6 +44,9 @@
     {% endif %}
 {% endif %}
 
+{# Activate sidebar #}
+{% set has_sidebar = about_information is defined and about_information.public_description is defined and about_information.public_description %}
+
 {% extends "base.html" %}
 
 {% block main_content %}
@@ -128,25 +131,6 @@
 
 </details>
 
-{% if links | length > 0 %}
-<details>
-    <summary>Links</summary>
-    <nav>
-        <ul class="row">
-            {% for link in links %}
-            <li class="post-button-list-item col">
-                <a role="button"
-                    class="post-button"
-                    href="{{link.target}}">
-                    {{link.name }}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    </nav>
-</details>
-{% endif %}
-
 {# No posts message if end of lists (in sorting mode for example) #}
 {% if posts | length == 0 %}
 <article>
@@ -189,4 +173,36 @@ False) }}
 </div>
 
 
+{% endblock %}
+
+{% block sidebar_content %}
+{% if about_information is defined and about_information.public_description is defined and about_information.public_description %}
+    <article>
+        <header>{{ about_information.title }}</header>
+        {{ about_information.public_description | safe }}
+        <hr>
+
+    {% if links | length > 0 %}
+    {% for link in links %}
+    {% if link.is_javascript_target %}
+        <a
+            href="#"
+            onclick="{{ link.target}}"
+            {% if link.html_id %}
+            id="{{ link.html_id }}"
+            {% endif %}
+            {% if link.html_data %}
+            data-element="{{ link.html_data }}"
+            {% endif %}
+        >
+            {{ link.name }}
+        </a>
+    {% else %}
+        <a href="{{link.target}}">{{ link.name }}</a>
+    {% endif %}
+    {% if not loop.last %} | {% endif %}
+    {% endfor %}
+    {% endif %}
+    </article>
+{% endif %}
 {% endblock %}

@@ -270,6 +270,12 @@ details.dropdown > summary + ul.nav-subreddit-dropdown {
 	width: 100%;
 }
 
+/* Sidebar */
+.link-button {
+	width: 5rem;
+	max-width: 100%;
+}
+
 /* Settings */
 
 .settings-item {

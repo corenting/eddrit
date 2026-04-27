@@ -184,7 +184,22 @@ False) }}
 
     {% if links | length > 0 %}
     {% for link in links %}
-    <a href="{{link.target}}">{{ link.name }}</a>
+    {% if link.is_javascript_target %}
+        <a
+            href="#"
+            onclick="{{ link.target}}"
+            {% if link.html_id %}
+            id="{{ link.html_id }}"
+            {% endif %}
+            {% if link.html_data %}
+            data-element="{{ link.html_data }}"
+            {% endif %}
+        >
+            {{ link.name }}
+        </a>
+    {% else %}
+        <a href="{{link.target}}">{{ link.name }}</a>
+    {% endif %}
     {% if not loop.last %} | {% endif %}
     {% endfor %}
     {% endif %}

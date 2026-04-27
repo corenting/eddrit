@@ -198,14 +198,22 @@ async def subreddit_or_user(request: Request) -> Response:
         links.append(
             Link(
                 name="Add to favorites",
-                target="#",
+                target=f"onFavoriteButtonClick('{request.path_params['name']}');",
+                is_javascript_target=True,
+                html_id="favorite-link",
+                html_data=request.path_params["name"],
             )
         )
 
     # Add wiki link if it's a subreddit with wiki enabled
     if not is_user and information.wiki_enabled:  # type: ignore
-        links.append(Link(name="Wiki", target=f"/r/{request.path_params['name']}/wiki"))
-
+        links.append(
+            Link(
+                name="Wiki",
+                target=f"/r/{request.path_params['name']}/wiki",
+                is_javascript_target=False,
+            )
+        )
 
     return templates.TemplateResponse(
         "posts_list.html",

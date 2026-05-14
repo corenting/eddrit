@@ -72,13 +72,38 @@
         <div>
             <div class="">
                 <div class="row">
-                    <div class="{{ 'col-12 order-2 col-lg-10 order-lg-1' if has_sidebar is defined and has_sidebar else 'col-12' }}">
+                    {% if has_sidebar is defined and has_sidebar %}
+                    <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle-state">
+                    {% endif %}
+                    <div class="{{ 'col-12 order-2 col-lg-10 order-lg-1 sidebar-aware-main' if has_sidebar is defined and has_sidebar else 'col-12' }}">
                         {% block main_content %}{% endblock %}
                     </div>
-                    {% if has_sidebar is defined %}
-                    <div class="col-12 order-1 col-lg-2 order-lg-2">
-                        {% block sidebar_content %}{% endblock %}
-                    </div>
+                    {% if has_sidebar is defined and has_sidebar %}
+                    <aside class="col-12 order-1 col-lg-2 order-lg-2 sidebar-aware">
+                        <details class="sidebar-mobile-toggle" open>
+                            <summary>About</summary>
+                        </details>
+                        <div class="sidebar-toggle-bar">
+                            <label for="sidebar-toggle" class="sidebar-toggle-label" aria-label="Toggle sidebar">
+                                <span class="sidebar-icon sidebar-icon-close" aria-hidden="true">&gt;</span>
+                                <span class="sidebar-icon sidebar-icon-open" aria-hidden="true">&lt;</span>
+                            </label>
+                        </div>
+                        <div class="sidebar-content-wrapper">
+                            {% block sidebar_content %}{% endblock %}
+                        </div>
+                    </aside>
+                    <script>
+                        (function () {
+                            try {
+                                if (localStorage.getItem('eddrit:sidebar-closed') === 'true') {
+                                    document.getElementById('sidebar-toggle').checked = true;
+                                    var details = document.querySelector('.sidebar-mobile-toggle');
+                                    if (details) { details.removeAttribute('open'); }
+                                }
+                            } catch (e) { /* localStorage unavailable */ }
+                        })();
+                    </script>
                     {% endif %}
                 </div>
             </div>
@@ -98,6 +123,8 @@
     src="{{ url_for('static_with_key', key=global.app_version, path='js/eddrit.js') }}"></script>
 <script type="text/javascript"
     src="{{ url_for('static_with_key', key=global.app_version, path='js/favorites.js') }}"></script>
+<script type="text/javascript"
+    src="{{ url_for('static_with_key', key=global.app_version, path='js/sidebar.js') }}"></script>
 <script type="text/javascript"
     src="{{ url_for('static_with_key', key=global.app_version, path='vendors/dashjs/dash.all.min.js') }}"></script>
 <script type="text/javascript"

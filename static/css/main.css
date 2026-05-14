@@ -276,6 +276,113 @@ details.dropdown > summary + ul.nav-subreddit-dropdown {
 	max-width: 100%;
 }
 
+/* Sidebar toggle */
+
+/* Visually hide the checkbox while keeping it focusable for keyboard users
+   (the desktop "checkbox hack" only works as a no-JS toggle if the checkbox
+   stays in the tab order). */
+.sidebar-toggle-state {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	opacity: 0;
+}
+
+.sidebar-content-wrapper {
+	min-width: 0;
+}
+
+/* --- Mobile (< lg): use the native <details>/<summary> disclosure --- */
+
+@media (max-width: 991.98px) {
+	/* Hide the desktop checkbox toggle bar on mobile. */
+	.sidebar-toggle-bar {
+		display: none;
+	}
+
+	/* When the mobile <details> is closed, hide the sidebar content. */
+	.sidebar-aware:has(.sidebar-mobile-toggle:not([open])) .sidebar-content-wrapper {
+		display: none;
+	}
+}
+
+/* --- Desktop (>= lg): two-column layout with the checkbox-hack toggle --- */
+
+@media (min-width: 992px) {
+	/* The native <details>/<summary> is mobile-only. */
+	.sidebar-mobile-toggle {
+		display: none;
+	}
+
+	/* Lay the sidebar out as two columns: a narrow toggle bar + the content. */
+	.sidebar-aware {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: calc(var(--pico-spacing) / 2);
+	}
+
+	.sidebar-toggle-bar {
+		display: block;
+		flex: 0 0 auto;
+	}
+
+	.sidebar-content-wrapper {
+		flex: 1 1 auto;
+	}
+
+	.sidebar-toggle-label {
+		cursor: pointer;
+		display: inline-block;
+		padding: calc(var(--pico-spacing) / 2);
+		font-weight: bold;
+		line-height: 1;
+		user-select: none;
+		color: var(--pico-secondary);
+	}
+
+	.sidebar-toggle-label:hover {
+		color: var(--pico-primary);
+	}
+
+	/* Mirror checkbox focus onto the label so keyboard users see a focus ring. */
+	.sidebar-toggle-state:focus-visible ~ .sidebar-aware .sidebar-toggle-label {
+		outline: 2px solid var(--pico-primary-focus);
+		outline-offset: 2px;
+	}
+
+	/* Default (unchecked = open): hide the open (<) glyph; the close (>) stays. */
+	.sidebar-icon-open {
+		display: none;
+	}
+
+	/* When checked (closed): swap glyphs, hide content, and shrink the column
+	   so the main column can reclaim the freed space. The :checked ~ overrides
+	   beat Bootstrap's col-lg-10 / col-lg-2 on specificity. */
+	.sidebar-toggle-state:checked ~ .sidebar-aware .sidebar-content-wrapper {
+		display: none;
+	}
+
+	.sidebar-toggle-state:checked ~ .sidebar-aware .sidebar-icon-close {
+		display: none;
+	}
+
+	.sidebar-toggle-state:checked ~ .sidebar-aware .sidebar-icon-open {
+		display: inline;
+	}
+
+	.sidebar-toggle-state:checked ~ .sidebar-aware-main {
+		flex: 0 0 calc(100% - 3rem);
+		max-width: calc(100% - 3rem);
+	}
+
+	.sidebar-toggle-state:checked ~ .sidebar-aware {
+		flex: 0 0 3rem;
+		max-width: 3rem;
+	}
+}
+
 /* Settings */
 
 .settings-item {

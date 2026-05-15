@@ -295,14 +295,15 @@ details.dropdown > summary + ul.nav-subreddit-dropdown {
 
 /* --- Mobile (< lg): use the native <details>/<summary> disclosure --- */
 
-@media (max-width: 991.98px) {
+@media (max-width: 992px) {
 	/* Hide the desktop checkbox toggle bar on mobile. */
 	.sidebar-toggle-bar {
 		display: none;
 	}
 
 	/* When the mobile <details> is closed, hide the sidebar content. */
-	.sidebar-aware:has(.sidebar-mobile-toggle:not([open])) .sidebar-content-wrapper {
+	.sidebar-aware:has(.sidebar-mobile-toggle:not([open]))
+	.sidebar-content-wrapper {
 		display: none;
 	}
 }

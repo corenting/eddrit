@@ -1,4 +1,5 @@
 PYTHON := poetry run
+EXEC_WRAPPER := mise exec --
 SRC = eddrit
 
 .PHONY: init
@@ -8,28 +9,28 @@ init:
 
 .PHONY: format
 format:
-	$(PYTHON) ruff format $(SRC)
-	$(PYTHON) ruff check --fix $(SRC)
-	biome format --write .
-	biome check --write .
+	$(EXEC_WRAPPER) $(PYTHON) ruff format $(SRC)
+	$(EXEC_WRAPPER) $(PYTHON) ruff check --fix $(SRC)
+	$(EXEC_WRAPPER) biome format --write .
+	$(EXEC_WRAPPER) biome check --write .
 
 
 .PHONY: style
 style:
-	$(PYTHON) ruff format --check $(SRC)
-	$(PYTHON) ruff check $(SRC)
-	$(PYTHON) pyright -- $(SRC)
-	biome lint .
+	$(EXEC_WRAPPER) $(PYTHON) ruff format --check $(SRC)
+	$(EXEC_WRAPPER) $(PYTHON) ruff check $(SRC)
+	$(EXEC_WRAPPER) $(PYTHON) pyright -- $(SRC)
+	$(EXEC_WRAPPER) biome lint .
 
 .PHONY: test
 .SILENT: test
 test:
-	$(PYTHON) pytest --cov=$(SRC)
+	$(EXEC_WRAPPER) $(PYTHON) pytest --cov=$(SRC)
 
 .PHONY: run
 .SILENT: run
 run:
-	$(PYTHON) uvicorn --reload $(SRC).app:app
+	$(EXEC_WRAPPER) $(PYTHON) uvicorn --reload $(SRC).app:app
 
 .PHONY: build
 .SILENT: build

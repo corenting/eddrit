@@ -1,52 +1,40 @@
 const LOCAL_STORAGE_FAVORITES_KEY = "favorites";
+const FAVORITE_LINK_ID = "favorite-link";
+const DROPDOWN_ID = "nav-subreddit-dropdown";
+const SEPARATOR_ID = "nav-subreddit-dropdown-separator";
+const FAVORITE_ITEM_CLASS = "nav-subreddit-dropdown-favorite-item";
 
-// Get stored favorites
+// Get stored favorites as an array. Legacy object-shaped data is discarded.
 function getStoredFavorites() {
-	var favorites = JSON.parse(localStorage.getItem(LOCAL_STORAGE_FAVORITES_KEY));
-	if (!favorites) {
-		favorites = {};
-	}
-	return favorites;
+	const stored = JSON.parse(localStorage.getItem(LOCAL_STORAGE_FAVORITES_KEY));
+	return Array.isArray(stored) ? stored : [];
 }
 
-// Add given subreddit to favorites
+function saveFavorites(favorites) {
+	localStorage.setItem(LOCAL_STORAGE_FAVORITES_KEY, JSON.stringify(favorites));
+}
+
 function addToFavorites(subredditName) {
-	// Add to storage
-	var favorites = getStoredFavorites();
-	favorites[subredditName] = true;
-	localStorage.setItem(LOCAL_STORAGE_FAVORITES_KEY, JSON.stringify(favorites));
+	const favorites = getStoredFavorites();
+	if (!favorites.includes(subredditName)) {
+		favorites.push(subredditName);
+		saveFavorites(favorites);
+	}
 }
 
-// Remove given subreddit from favorites
 function removeFromFavorites(subredditName) {
-	var favorites = getStoredFavorites();
-	delete favorites[subredditName];
-	localStorage.setItem(LOCAL_STORAGE_FAVORITES_KEY, JSON.stringify(favorites));
+	saveFavorites(getStoredFavorites().filter((name) => name !== subredditName));
 }
 
-// Check if given subreddit is in favorites
 function isFavorite(subredditName) {
-	const favoritesState = JSON.parse(
-		localStorage.getItem(LOCAL_STORAGE_FAVORITES_KEY),
-	);
-	if (
-		favoritesState &&
-		subredditName in favoritesState &&
-		favoritesState[subredditName]
-	) {
-		return true;
-	}
-	return false;
+	return getStoredFavorites().includes(subredditName);
 }
 
-// Change "Add to favorites" / "Remove from favorites" text from button
-function toggleFavoriteTextButton(isFavorite) {
-	const favoriteElement = document.getElementById(`favorite-link`);
-	if (isFavorite) {
-		favoriteElement.innerText = "Remove from favorites";
-	} else {
-		favoriteElement.innerText = "Add to favorites";
-	}
+function toggleFavoriteTextButton(isFav) {
+	const favoriteElement = document.getElementById(FAVORITE_LINK_ID);
+	favoriteElement.innerText = isFav
+		? "Remove from favorites"
+		: "Add to favorites";
 }
 
 // biome-ignore lint/correctness/noUnusedVariables: used in template
@@ -61,64 +49,57 @@ function onFavoriteButtonClick(subredditName) {
 	updateFavoritesDropdown();
 }
 
-// Update the favorites dropdown menu
 function updateFavoritesDropdown() {
-	// Fill the dropdown with the local favorites if any
-	const favorites = getStoredFavorites();
-	const hasFavorites = Object.keys(favorites).length;
-	const favoriteDropdown = document.getElementById(`nav-subreddit-dropdown`);
-	const favoriteSeparator = document.getElementById(
-		`nav-subreddit-dropdown-separator`,
+	const dropdown = document.getElementById(DROPDOWN_ID);
+
+	// Clear any existing favorite items and separator so the rebuild is idempotent.
+	const existingItems = Array.from(
+		document.getElementsByClassName(FAVORITE_ITEM_CLASS),
 	);
+	for (const item of existingItems) {
+		item.remove();
+	}
+	const existingSeparator = document.getElementById(SEPARATOR_ID);
+	if (existingSeparator) {
+		existingSeparator.remove();
+	}
 
-	if (hasFavorites) {
-		// Add hr separator to dropdown if not present
-		if (favoriteSeparator === null) {
-			const separator = document.createElement("hr");
-			separator.id = "nav-subreddit-dropdown-separator";
-			favoriteDropdown.appendChild(separator);
-		}
+    // Get stored favorites
+	const favorites = getStoredFavorites();
+	if (favorites.length === 0) {
+		return;
+	}
 
-		// Add dropdown options for subreddit
-		for (const [subredditName, _] of Object.entries(favorites)) {
-			const newElement = document.createElement("li");
-			newElement.className = "nav-subreddit-dropdown-favorite-item";
+    // Add separator
+	const separator = document.createElement("hr");
+	separator.id = SEPARATOR_ID;
+	dropdown.appendChild(separator);
 
-			const newLink = document.createElement("a");
-			newLink.text = "/r/" + subredditName;
-			newElement.appendChild(newLink);
-			newLink.href = "/r/" + subredditName;
-			favoriteDropdown.appendChild(newElement);
-		}
-	} else {
-		// Remove the separator if it is present
-		if (favoriteSeparator !== null) {
-			favoriteSeparator.remove();
-		}
-
-		// Clear favorites
-		const favoritesElements = document.getElementsByClassName(
-			"nav-subreddit-dropdown-favorite-item",
-		);
-		for (item of favoritesElements) {
-			item.remove();
-		}
+    // Add favorites, with sorting
+	const sorted = [...favorites].sort((a, b) =>
+		a.localeCompare(b, undefined, { sensitivity: "base" }),
+	);
+	for (const subredditName of sorted) {
+		const url = `/r/${subredditName}`;
+		const item = document.createElement("li");
+		item.className = FAVORITE_ITEM_CLASS;
+		const link = document.createElement("a");
+		link.text = url;
+		link.href = url;
+		item.appendChild(link);
+		dropdown.appendChild(item);
 	}
 }
 
-// Init on page load
 function initFavorites() {
-	// Get favorite link and subreddit name if present (posts lists)
-	const favoriteElement = document.getElementById(`favorite-link`);
+	const favoriteElement = document.getElementById(FAVORITE_LINK_ID);
 	if (favoriteElement) {
-		const favoriteSubredditName = favoriteElement.dataset.element;
-		toggleFavoriteTextButton(isFavorite(favoriteSubredditName));
+		const subredditName = favoriteElement.dataset.element;
+		toggleFavoriteTextButton(isFavorite(subredditName));
 	}
-
 	updateFavoritesDropdown();
 }
 
-// Init
 if (document.readyState !== "loading") {
 	initFavorites();
 } else {

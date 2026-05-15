@@ -8,7 +8,7 @@
 	},
 	"files": {
 		"includes": [
-			"static/js",
+			"static/js/**",
 			"static/css/main.css",
 			"static/css/nojs.css",
 			"**/*.json"

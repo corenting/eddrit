@@ -101,7 +101,7 @@ details.dropdown > summary + ul.nav-subreddit-dropdown {
 	width: fit-content;
 }
 
-.nav-subreddit-dropdown-separator {
+#nav-subreddit-dropdown-separator {
 	width: 100%;
 	margin: calc(var(--pico-typography-spacing-vertical) / 2);
 }

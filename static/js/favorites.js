@@ -64,18 +64,18 @@ function updateFavoritesDropdown() {
 		existingSeparator.remove();
 	}
 
-    // Get stored favorites
+	// Get stored favorites
 	const favorites = getStoredFavorites();
 	if (favorites.length === 0) {
 		return;
 	}
 
-    // Add separator
+	// Add separator
 	const separator = document.createElement("hr");
 	separator.id = SEPARATOR_ID;
 	dropdown.appendChild(separator);
 
-    // Add favorites, with sorting
+	// Add favorites, with sorting
 	const sorted = [...favorites].sort((a, b) =>
 		a.localeCompare(b, undefined, { sensitivity: "base" }),
 	);

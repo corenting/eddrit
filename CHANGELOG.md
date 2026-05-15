@@ -1,3 +1,8 @@
+# Version 0.19.0
+
+- Added sidebar with description of subreddit, links etc.
+- Added a way to save your favorites subreddits (on local storage). Favorites appear in the dropdown menu.
+
 # Version 0.18.1
 
 - Fix instance not being able to fetch multi-reddits if not behind a proxy

@@ -75,11 +75,11 @@
                     {% if has_sidebar is defined and has_sidebar %}
                     <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle-state">
                     {% endif %}
-                    <div class="{{ 'col-12 order-2 col-lg-10 order-lg-1 sidebar-aware-main' if has_sidebar is defined and has_sidebar else 'col-12' }}">
+                    <div class="{{ 'col-12 order-2 col-lg-9 order-lg-1 sidebar-aware-main' if has_sidebar is defined and has_sidebar else 'col-12' }}">
                         {% block main_content %}{% endblock %}
                     </div>
                     {% if has_sidebar is defined and has_sidebar %}
-                    <aside class="col-12 order-1 col-lg-2 order-lg-2 sidebar-aware">
+                    <aside class="col-12 order-1 col-lg-3 order-lg-2 sidebar-aware">
                         <details class="sidebar-mobile-toggle" open>
                             <summary>About</summary>
                         </details>

@@ -54,6 +54,7 @@ function initFavorites() {
     const favoriteElement = document.getElementById(`favorite-link`);
     if (favoriteElement) {
         const favoriteSubredditName = favoriteElement.dataset["element"];
+        toggleFavoriteTextButton(favoriteSubredditName, isFavorite(favoriteSubredditName))
     }
 
 

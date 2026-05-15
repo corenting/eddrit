@@ -26,7 +26,7 @@ URLs follow the same structure as Reddit, so you can simply replace `reddit.com`
 
 ## Donations
 
-If you wish to support the app, donations are possible on [Github Sponsors](https://github.com/sponsors/corenting/) or [here](https://corenting.fr/donate).
+If you wish to support the app, donations are possible on [GitHub Sponsors](https://github.com/sponsors/corenting/) or [here](https://corenting.fr/donate).
 
 ## Deployment (self-hosting)
 

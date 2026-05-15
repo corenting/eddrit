@@ -23,130 +23,33 @@
 {# Keep sorting period query parameter if needed #}
 {% if request.query_params['t'] %}
 
-    {% if pagination.after_post_id %}
-    {% set older_url = older_url ~ "&t=" ~ request.query_params['t'] %}
-    {% endif %}
+{% if pagination.after_post_id %}
+{% set older_url = older_url ~ "&t=" ~ request.query_params['t'] %}
+{% endif %}
 
-    {% if pagination.before_post_id %}
-    {% set newer_url = newer_url ~ "&t=" ~ request.query_params['t'] %}
-    {% endif %}
+{% if pagination.before_post_id %}
+{% set newer_url = newer_url ~ "&t=" ~ request.query_params['t'] %}
+{% endif %}
 {% endif %}
 
 {# Keep user sort mode query parameter if needed #}
 {% if request.query_params['sort'] %}
 
-    {% if pagination.after_post_id %}
-    {% set older_url = older_url ~ "&sort=" ~ request.query_params['sort'] %}
-    {% endif %}
-
-    {% if pagination.before_post_id %}
-    {% set newer_url = newer_url ~ "&sort=" ~ request.query_params['sort'] %}
-    {% endif %}
+{% if pagination.after_post_id %}
+{% set older_url = older_url ~ "&sort=" ~ request.query_params['sort'] %}
 {% endif %}
+
+{% if pagination.before_post_id %}
+{% set newer_url = newer_url ~ "&sort=" ~ request.query_params['sort'] %}
+{% endif %}
+{% endif %}
+
+{# Activate sidebar #}
+{% set has_sidebar = about_information is defined %}
 
 {% extends "base.html" %}
 
 {% block main_content %}
-{# Sorting selection #}
-<details>
-    <summary>Sorting mode</summary>
-    <nav>
-        <ul class="row">
-            {% for sorting_mode in sorting_modes %}
-
-            {# Default mode: no sorting in URL #}
-            {% if sorting_mode == default_sorting_mode %}
-                {% set sorting_mode_url = request.raw_path.decode('utf-8') or "/" %}
-
-            {# Else add sorting mode #}
-            {% else %}
-                {% if is_user_page %}
-                    {% set sorting_mode_url = request.raw_path.decode('utf-8') ~ '?sort=' ~ sorting_mode %}
-                {% else %}
-                    {% set sorting_mode_url =url_for('subreddit', path=about_information.name ~ '/' ~ sorting_mode) %}
-                {% endif %}
-            {% endif %}
-            <li class="post-button-list-item col">
-                <a role="button"
-                    class="post-button {{ 'secondary' if current_sorting_mode.value != sorting_mode else '' }}"
-                    href="{{ sorting_mode_url }}">
-                    {{ sorting_mode | capitalize }}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    </nav>
-</details>
-
-{% if has_sorting_period %}
-<details>
-    <summary>Sorting period</summary>
-    {# Sorting period selection #}
-
-    <nav>
-        <ul class="row">
-            {% for sorting_period in global.sorting_periods %}
-
-            {% if is_user_page %}
-
-                {% if sorting_mode == default_sorting_period %}
-                {% set sorting_period_url = request.raw_path.decode('utf-8') ~ '?sort=' ~ current_sorting_mode.value
-                ~
-                "&t="
-                ~ sorting_period %}
-                {% else %}
-                {% set sorting_period_url = request.raw_path.decode('utf-8') ~ '?sort=' ~ current_sorting_mode.value
-                ~
-                "&t=" ~ sorting_period %}
-                {% endif %}
-
-            {% else %}
-
-                {% if sorting_mode == default_sorting_period %}
-                    {% set sorting_period_url = url_for('subreddit', path=about_information.name ~ '/' ~ current_sorting_mode.value)
-                    ~
-                    "t="
-                    ~ sorting_period %}
-                {% else %}
-                    {% set sorting_period_url = url_for('subreddit', path=about_information.name ~ '/' ~ current_sorting_mode.value)
-                    ~
-                    "/?t=" ~ sorting_period %}
-                {% endif %}
-
-            {% endif %}
-            <li class="post-button-list-item col">
-                <a role="button"
-                    class="post-button {{ 'secondary' if current_sorting_period.value != sorting_period else '' }}"
-                    href="{{ sorting_period_url }}">
-                    {{ sorting_period | capitalize }}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    </nav>
-    {% endif %}
-
-</details>
-
-{% if links | length > 0 %}
-<details>
-    <summary>Links</summary>
-    <nav>
-        <ul class="row">
-            {% for link in links %}
-            <li class="post-button-list-item col">
-                <a role="button"
-                    class="post-button"
-                    href="{{link.target}}">
-                    {{link.name }}
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
-    </nav>
-</details>
-{% endif %}
-
 {# No posts message if end of lists (in sorting mode for example) #}
 {% if posts | length == 0 %}
 <article>
@@ -166,7 +69,8 @@ accordingly #}
 {# TODO: add display of comments #}
 
 {% if post_or_comment.children is not defined %}
-{{ post_macros.render_post_card(post_or_comment, not global.subreddit_is_homepage(about_information.title), about_information.show_thumbnails, about_information.over18, False) }}
+{{ post_macros.render_post_card(post_or_comment, not global.subreddit_is_homepage(about_information.title),
+about_information.show_thumbnails, about_information.over18, False) }}
 {% else %}
 {{ comments_macros.render_comment_card(post_or_comment, about_information.show_thumbnails, about_information.over18,
 False) }}
@@ -187,6 +91,118 @@ False) }}
         Older
     </a>
 </div>
+
+
+{% endblock %}
+
+{% block sidebar_content %}
+<article>
+    {# Display title (for subrredit) or name (for users)#}
+    <header>{{ about_information.title or about_information.name }}</header>
+
+    {% if about_information.public_description %}
+    {{ about_information.public_description | safe }}
+    <hr>
+    {% endif %}
+
+    {% if links | length > 0 %}
+    {% for link in links %}
+    {% if link.is_javascript_target %}
+    <a href="#" onclick="{{ link.target}}" {% if link.html_id %} id="{{ link.html_id }}" {% endif %} {% if
+        link.html_data %} data-element="{{ link.html_data }}" {% endif %}>
+        {{ link.name }}
+    </a>
+    {% else %}
+    <a href="{{link.target}}">{{ link.name }}</a>
+    {% endif %}
+    {% if not loop.last %} | {% endif %}
+    {% endfor %}
+
+    <hr />
+    {% endif %}
+
+    {# Sorting selection #}
+    <details>
+        <summary>Sorting mode</summary>
+        <nav>
+            <ul class="row">
+                {% for sorting_mode in sorting_modes %}
+
+                {# Default mode: no sorting in URL #}
+                {% if sorting_mode == default_sorting_mode %}
+                {% set sorting_mode_url = request.raw_path.decode('utf-8') or "/" %}
+
+                {# Else add sorting mode #}
+                {% else %}
+                {% if is_user_page %}
+                {% set sorting_mode_url = request.raw_path.decode('utf-8') ~ '?sort=' ~ sorting_mode %}
+                {% else %}
+                {% set sorting_mode_url =url_for('subreddit', path=about_information.name ~ '/' ~ sorting_mode) %}
+                {% endif %}
+                {% endif %}
+                <li class="post-button-list-item col">
+                    <a role="button"
+                        class="post-button {{ 'secondary' if current_sorting_mode.value != sorting_mode else '' }}"
+                        href="{{ sorting_mode_url }}">
+                        {{ sorting_mode | capitalize }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </details>
+
+    {# Sorting period selection #}
+    {% if has_sorting_period %}
+    <details>
+        <summary>Sorting period</summary>
+        <nav>
+            <ul class="row">
+                {% for sorting_period in global.sorting_periods %}
+
+                {% if is_user_page %}
+
+                {% if sorting_mode == default_sorting_period %}
+                {% set sorting_period_url = request.raw_path.decode('utf-8') ~ '?sort=' ~ current_sorting_mode.value
+                ~
+                "&t="
+                ~ sorting_period %}
+                {% else %}
+                {% set sorting_period_url = request.raw_path.decode('utf-8') ~ '?sort=' ~ current_sorting_mode.value
+                ~
+                "&t=" ~ sorting_period %}
+                {% endif %}
+
+                {% else %}
+
+                {% if sorting_mode == default_sorting_period %}
+                {% set sorting_period_url = url_for('subreddit', path=about_information.name ~ '/' ~
+                current_sorting_mode.value)
+                ~
+                "t="
+                ~ sorting_period %}
+                {% else %}
+                {% set sorting_period_url = url_for('subreddit', path=about_information.name ~ '/' ~
+                current_sorting_mode.value)
+                ~
+                "/?t=" ~ sorting_period %}
+                {% endif %}
+
+                {% endif %}
+                <li class="post-button-list-item col">
+                    <a role="button"
+                        class="post-button {{ 'secondary' if current_sorting_period.value != sorting_period else '' }}"
+                        href="{{ sorting_period_url }}">
+                        {{ sorting_period | capitalize }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    </details>
+</article>
 
 
 {% endblock %}

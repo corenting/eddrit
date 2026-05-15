@@ -337,6 +337,7 @@ details.dropdown > summary + ul.nav-subreddit-dropdown {
 		cursor: pointer;
 		display: inline-block;
 		padding: calc(var(--pico-spacing) / 2);
+		padding-top: 0; /* to align with top of posts lists */
 		font-weight: bold;
 		line-height: 1;
 		user-select: none;

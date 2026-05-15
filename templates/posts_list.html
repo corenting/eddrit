@@ -97,7 +97,8 @@ False) }}
 
 {% block sidebar_content %}
 <article>
-    <header>{{ about_information.title }}</header>
+    {# Display title (for subrredit) or name (for users)#}
+    <header>{{ about_information.title or about_information.name }}</header>
 
     {% if about_information.public_description %}
     {{ about_information.public_description | safe }}

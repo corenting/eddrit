@@ -15,7 +15,7 @@ COPY pyproject.toml poetry.lock README.md /app/
 RUN pip install --no-cache-dir /app/
 
 # Prod image
-FROM ghcr.io/corenting/base-container-images/python-3.14:latest AS prod
+FROM ghcr.io/corenting/base-container-images/python:3.14 AS prod
 
 # Copy venv from builder
 COPY --from=builder /app/.venv /app/.venv

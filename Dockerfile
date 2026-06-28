@@ -1,5 +1,5 @@
 # Builder (install dependencies into a venv)
-FROM ghcr.io/corenting/base-container-images/python-3.14:latest AS builder
+FROM ghcr.io/corenting/base-container-images/python:3.14 AS builder
 
 # Create venv
 ENV VIRTUAL_ENV=/app/.venv

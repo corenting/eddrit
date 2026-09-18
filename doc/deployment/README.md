@@ -30,6 +30,15 @@ The following architectures are supported:
 - `linux/arm64`
 - `linux/arm/v7`
 
+### Option 1b: Easypanel
+
+If you don't want to manage the Docker Compose setup yourself, [Easypanel](https://easypanel.io) is a self-hosted deployment platform with a one-click eddrit template (app + valkey wired up automatically):
+
+[![Deploy on Easypanel][easypanel-btn]][easypanel-deploy]
+
+[easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
+[easypanel-deploy]: https://easypanel.io/templates/eddrit
+
 ### Option 2: without Docker
 
 If you know how to deploy a Python ASGI application, you can deploy it directly without Docker.

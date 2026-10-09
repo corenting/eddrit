@@ -1,3 +1,6 @@
+const LOCAL_STORAGE_VOLUME_KEY = "videojs-volume";
+const LOCAL_STORAGE_MUTED_KEY = "videojs-muted";
+
 // If content has an image, set src from data-src
 // as it was put there to avoid Firefox loading it when the template is not used
 function setSrcForContentImageIfNeeded(content) {
@@ -98,6 +101,8 @@ function setupVideo(videoElement) {
 	}
 
 	const videos = JSON.parse(videoElement.getAttribute("data-videos"));
+	const savedVolume = localStorage.getItem(LOCAL_STORAGE_VOLUME_KEY);
+	const savedMuted = localStorage.getItem(LOCAL_STORAGE_MUTED_KEY);
 
 	const player = videojs(videoElement, {
 		controls: true,
@@ -113,7 +118,16 @@ function setupVideo(videoElement) {
 				height: x.height,
 			};
 		}),
+	}, function onPlayerReady() {
+		this.volume(savedVolume !== null ? parseFloat(savedVolume) : 1);
+		this.muted(savedMuted === "true");
+
+		this.on("volumechange", () => {
+			localStorage.setItem(LOCAL_STORAGE_VOLUME_KEY, this.volume());
+			localStorage.setItem(LOCAL_STORAGE_MUTED_KEY, this.muted());
+		});
 	});
+
 
 	player.on("sourceset", () => {
 		// Sometimes source returned from currentSource doesn't include
